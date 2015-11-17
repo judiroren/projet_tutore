@@ -7,15 +7,21 @@
 		echo 'Connexion échouée : ' . $e->getMessage();
 	}
 	
-	$treserv = $_POST['entreprise']."_reserv";
 	$temploye = $_POST['entreprise']."_employe";
 	$tprestation = $_POST['entreprise']."_prestation";
-	//$connexion->exec("INSERT INTO entreprise(nomEntreprise, mailEntreprise, loginAdmin, mdpAdmin) VALUES ('".$_POST['entreprise']."', '".$_POST['mail']."', '".$_POST['login']."', '".$_POST['mdp']."')");
+	$tclient = $_POST['entreprise']."_client";
+	$treserv = $_POST['entreprise']."_reserv";
+	
+	$connexion->exec("INSERT INTO entreprise(nomEntreprise, mailEntreprise, loginAdmin, mdpAdmin) VALUES ('".$_POST['entreprise']."', '".$_POST['mail']."', '".$_POST['login']."', '".$_POST['mdp']."')");
    try{
-   	print_r($_POST);
-	$stmt =  $connexion->prepare("CREATE TABLE ".$treserv." ( test CHAR(10) PRIMARY KEY)");
-   //$stmt->bindValue(1, $treserv);
-   $stmt->execute();
+	$connexion->exec("CREATE TABLE ".$temploye." ( id_employe CHAR(8) PRIMARY KEY, nom_employe VARCHAR(40), prenom_employe VARCHAR(50), competenceA CHAR(8), competenceB CHAR(8), competenceC CHAR(8), absent BOOLEAN)");
+	$connexion->exec("CREATE TABLE ".$tprestation." ( id_presta CHAR(8) PRIMARY KEY, descriptif_presta TEXT, prix DECIMAL(5,2), paypal BOOLEAN, duree INT)");
+	$connexion->exec("CREATE TABLE ".$tclient." ( id_client CHAR(8) PRIMARY KEY, nom_client VARCHAR(40), prenom_client VARCHAR(50), mail VARCHAR(50), login_client VARCHAR(30), mdp_client VARCHAR(30))");
+	$connexion->exec("CREATE TABLE ".$treserv." ( id_reserv CHAR(8) PRIMARY KEY, client CHAR(8), employe CHAR(8), presta CHAR(8), paye BOOLEAN, date DATE, heure TIME)");
+	
+//	$stmt =  $connexion->prepare("CREATE TABLE ".$treserv." ( id_reserv CHAR(8) PRIMARY KEY, client CHAR(8), employe CHAR(8), presta CHAR(8), paye BOOLEAN, date DATE, heure TIME)");
+	//$stmt->bindValue(1, $treserv);
+//	$stmt->execute();
    } catch (Exception $e) {
    echo	$e->getMessage();
    }
