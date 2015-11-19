@@ -30,19 +30,13 @@ $i = $rqt->fetch(PDO::FETCH_OBJ);
 						<div id="logo">
 							
 							<h1><?php echo $i->nomEntreprise?></h1>
-							<p>Page d'accueil - Employés</p>
-							<?php 
-							if(!empty($_POST['login'])){
-								echo "Admin connecté";
-							}
-							
-							?>
+							<p>Page d'accueil</p>
 						</div>
 						<form method="post" action="accueil_backoffice.php">
 								<div class="row">
 									<div class="6u 12u$(mobile)"><input type="text" name="login" placeholder="Login" /></div>
 									</br></br></br>
-									<div class="6u 12u$(mobile)"><input type="text" name="mdp" placeholder="Mot de passe" /></div>				
+									<div class="6u 12u$(mobile)"><input type="text" name="mdp" placeholder="Mot de passe" /></div>
 								</div>
 								</br>
 								<div align = "center" class="12u$">
