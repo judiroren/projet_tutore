@@ -15,7 +15,7 @@ $nomE = $i->nomEntreprise;
 
 <html>
 	<head>
-		<title>Portail de réservation : Accueil BackOffice</title>
+		<title>Portail de réservation : BackOffice</title>
 		<link rel="stylesheet" href="assets/css/main.css" />
 
 	</head>
@@ -30,21 +30,14 @@ $nomE = $i->nomEntreprise;
 						<div id="logo">
 							
 							<h1><?php echo $nomE?></h1>
-							<p>Page d'accueil</p>
-						</div>
-						<form method="post" action="accueil_backoffice.php">
-								<div class="row">
-									<div class="6u 12u$(mobile)"><input type="text" name="login" placeholder="Login" /></div>
-									</br></br></br>
-									<div class="6u 12u$(mobile)"><input type="text" name="mdp" placeholder="Mot de passe" /></div>
-								</div>
-								</br>
-								<div align = "center" class="12u$">
-									<input type="submit" value="Connection" />
-								</div>
-							</form>
-								
+							<p>Gestion des prestations</p>
+							<a href="modif_entreprise.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des informations de l'entreprise </a></br>
+							<a href="modif_employe.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des employés </a></br>
+							<a href="modif_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
+							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
 
+						</div>
+						
 				</div>
 
 				<div class="bottom">
