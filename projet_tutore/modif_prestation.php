@@ -28,7 +28,9 @@ $nomE = $i->nomEntreprise;
 
 					<!-- Logo -->
 						<div id="logo">
-							
+							<?php if($i->logoEntreprise !=""){
+							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
+							} ?>
 							<h1><?php echo $nomE?></h1>
 							<p>Gestion des prestations</p>
 							<a href="modif_entreprise.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des informations de l'entreprise </a></br>

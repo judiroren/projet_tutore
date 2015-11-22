@@ -28,7 +28,9 @@ $nomE = $i->nomEntreprise;
 
 					<!-- Logo -->
 						<div id="logo">
-							
+						<?php if($i->logoEntreprise !=""){
+							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
+						} ?>
 							<h1><?php echo $nomE?></h1>
 							<p>Page de gestion de l'entreprise</p>
 							<?php 
