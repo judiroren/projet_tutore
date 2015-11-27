@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  127.0.0.1
--- Généré le :  Dim 22 Novembre 2015 à 10:44
+-- Généré le :  Ven 27 Novembre 2015 à 08:11
 -- Version du serveur :  5.6.17
 -- Version de PHP :  5.5.12
 
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `entreprise` (
 --
 
 INSERT INTO `entreprise` (`nomEntreprise`, `mailEntreprise`, `telEntreprise`, `adresseEntreprise`, `logoEntreprise`, `descEntreprise`, `loginAdmin`, `mdpAdmin`) VALUES
-('tiff', 'truc@mail.com', '', '', '', '', 'log', 'mdp');
+('tiff', 'truc@gmail.com', '', '', '', '', 'log', 'mdp');
 
 -- --------------------------------------------------------
 
@@ -76,6 +76,29 @@ CREATE TABLE IF NOT EXISTS `tiff_employe` (
   `competenceC` char(8) DEFAULT NULL,
   `absent` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id_employe`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tiff_planning`
+--
+
+CREATE TABLE IF NOT EXISTS `tiff_planning` (
+  `code_employe` char(8) NOT NULL,
+  `id_planning` varchar(10) NOT NULL,
+  `LundiM` tinyint(1) DEFAULT NULL,
+  `LundiA` tinyint(1) DEFAULT NULL,
+  `MardiM` tinyint(1) DEFAULT NULL,
+  `MardiA` tinyint(1) DEFAULT NULL,
+  `MercrediM` tinyint(1) DEFAULT NULL,
+  `MercrediA` tinyint(1) DEFAULT NULL,
+  `JeudiM` tinyint(1) DEFAULT NULL,
+  `JeudiA` tinyint(1) DEFAULT NULL,
+  `VendrediM` tinyint(1) DEFAULT NULL,
+  `VendrediA` tinyint(1) DEFAULT NULL,
+  `SamediM` tinyint(1) DEFAULT NULL,
+  `SamediA` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
