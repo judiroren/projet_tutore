@@ -14,7 +14,7 @@ $i = $rqt->fetch(PDO::FETCH_OBJ);
 $nomE = $i->nomEntreprise;
 
 if(isset($_POST['verif'])){
-	$connexion->exec("UPDATE entreprise SET nomEntreprise = '".$_POST['nom']."', mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$_POST['logo']."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."', mdpAdmin = '".$_POST['mdp']."' WHERE nomEntreprise = '".$nomE."'");
+	$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$_POST['logo']."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."', mdpAdmin = '".$_POST['mdp']."' WHERE nomEntreprise = '".$nomE."'");
 }
 ?>
 
@@ -40,7 +40,7 @@ if(isset($_POST['verif'])){
 							<p>Modification des informations de l'entreprise</p>
 							<a href="modif_entreprise.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des informations de l'entreprise </a></br>
 							<a href="ajout_employe.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des employés </a></br>
-							<a href="modif_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
+							<a href="ajout_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
 							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
 
 						</div>
@@ -58,6 +58,7 @@ if(isset($_POST['verif'])){
 
 				<!-- Intro -->
 						<div class="container">
+						
 							<h1>Modification des informations de l'entreprise</h1>
 							<?php 
 							if(isset($_POST['verif'])){

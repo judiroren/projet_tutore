@@ -8,21 +8,22 @@ try {
 }
 
 $nomE=$_GET['nomEntreprise'];
-$rqt = $connexion->query("SELECT * FROM ".$nomE."_employe");
+$rqtEmp = $connexion->query("SELECT * FROM ".$nomE."_employe WHERE id_employe = ".$_GET['id_employe']);
+$valEmp = $rqtEmp->fetch(PDO::FETCH_OBJ);
+$rqtPlan = $connexion->query("SELECT * FROM ".$nomE."_planning WHERE code_employe = ".$_GET['id_employe']);
+$valPlan = $rqtPlan->fetch(PDO::FETCH_OBJ);
 $infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
 $i = $infoE->fetch(PDO::FETCH_OBJ);
 
 if(isset($_POST['modif'])){
-	$connexion->exec("INSERT INTO ".$nomE."_employe(nom_employe, prenom_employe, adresse_emp, mail_emp, telephone_emp, competenceA, competenceB, competenceC) VALUES ('".$_POST['nom']."', '".$_POST['prenom']."', '".$_POST['adresse']."', '".$_POST['mail']."', '".$_POST['tel']."', '".$_POST['cmp1']."', '".$_POST['cmp2']."', '".$_POST['cmp3']."')");
+	$connexion->exec("UPDATE ".$nomE."_employe SET nom_employe = '".$_POST['nom']."', prenom_employe = '".$_POST['prenom']."', adresse_emp = '".$_POST['adresse']."', mail_emp = '".$_POST['mail']."', telephone_emp = '".$_POST['tel']."', competenceA = '".$_POST['presta_1']."', competenceB = '".$_POST['presta_2']."', competenceC = '".$_POST['presta_3']."' WHERE id_employe = '".$_GET['id_employe']."'");
 	$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
 	$MardiM = (isset($_POST['MarM']) )? 1 : 0;		$MardiA = (isset($_POST['MarA']) )? 1 : 0;
 	$MercrediM = (isset($_POST['MerM']) )? 1 : 0;	$MercrediA = (isset($_POST['MerA']) )? 1 : 0;
-	$JeudiM = (isset($_POST['JeuM']) )? 1 : 0;		$JeusiA = (isset($_POST['JeuA']) )? 1 : 0;
+	$JeudiM = (isset($_POST['JeuM']) )? 1 : 0;		$JeudiA = (isset($_POST['JeuA']) )? 1 : 0;
 	$VendrediM = (isset($_POST['VenM']) )? 1 : 0;	$VendrediA = (isset($_POST['VenA']) )? 1 : 0;
 	$SamediM = (isset($_POST['SamM']) )? 1 : 0;		$SamediA = (isset($_POST['SamA']) )? 1 : 0;
-	$rqt2 = $connexion->query("SELECT id_employe FROM ".$nomE."_employe WHERE nom_employe = '".$_POST['nom']."'");
-	$idemp = $rqt2->fetch(PDO::FETCH_OBJ);
-	$connexion->exec("INSERT INTO ".$nomE."_planning(code_employe, LundiM, LundiA, MardiM, MardiA, MercrediM, MercrediA, JeudiM, JeudiA, VendrediM, VendrediA, SamediM, SamediA) VALUES ('".$idemp->id_employe."', ".$LundiM.", ".$LundiA.", ".$MardiM.", ".$MardiA.", ".$MercrediM.", ".$MercrediA.", ".$JeudiM.", ".$JeusiA.", ".$VendrediM.", ".$VendrediA.", ".$SamediM.", ".$SamediA.")");
+	$connexion->exec("UPDATE ".$nomE."_planning SET LundiM = ".$LundiM.", LundiA = ".$LundiA.", MardiM = ".$MardiM.", MardiA = ".$MardiA.", MercrediM = ".$MercrediM.", MercrediA = ".$MercrediA.", JeudiM = ".$JeudiM.", JeudiA = ".$JeudiA.", VendrediM = ".$VendrediM.", VendrediA = ".$VendrediA.", SamediM = ".$SamediM.", SamediA = ".$SamediA." WHERE code_employe = ".$_GET['id_employe']);
 }
 
 ?>
@@ -49,7 +50,7 @@ if(isset($_POST['modif'])){
 							<p>Gestion des employés</p>
 							<a href="modif_entreprise.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des informations de l'entreprise </a></br>
 							<a href="ajout_employe.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des employés </a></br>
-							<a href="modif_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
+							<a href="ajout_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
 							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
 
 						</div>
@@ -79,37 +80,45 @@ if(isset($_POST['modif'])){
 							<form method="post" action="">
 								<div class="row">
 								</br>
-									Nom de l'employé : <div class="6u 12u$(mobile)"><input type="text" name="nom"  /></div>			
+									Nom de l'employé : <div class="6u 12u$(mobile)">
+									<input type="text" name="nom"  value="<?php echo $valEmp->nom_employe;?>"></div>			
 									</br></br></br>
-									Prénom de l'employé: <div class="6u 12u$(mobile)"><input type="text" name="prenom" /></div>				
+									Prénom de l'employé: <div class="6u 12u$(mobile)">
+									<input type="text" name="prenom" value="<?php echo $valEmp->prenom_employe;?>"></div>				
 									</br></br></br>
-									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" /></div>	
+									Adresse postale : <div class="6u 12u$(mobile)">
+									<input type="text" name="adresse" value="<?php echo $valEmp->adresse_emp;?>"></div>	
 									</br></br></br>
-									Adresse mail : <div class="6u 12u$(mobile)"><input type="text" name="mail" /></div>				
+									Adresse mail : <div class="6u 12u$(mobile)">
+									<input type="text" name="mail" value="<?php echo $valEmp->mail_emp;?>"></div>				
 									</br></br></br>
-									Numéro de téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" /></div>				
+									Numéro de téléphone : <div class="6u 12u$(mobile)">
+									<input type="text" name="tel" value="<?php echo $valEmp->telephone_emp;?>"></div>				
 									</br></br></br>
-									Compétence 1 : <div class="6u 12u$(mobile)"><input type="text" name="presta_1" /></div>
+									Compétence 1 : <div class="6u 12u$(mobile)">
+									<input type="text" name="presta_1" value="<?php echo $valEmp->competenceA;?>"></div>
 									</br></br></br>
-									Compétence 2 : <div class="6u 12u$(mobile)"><input type="text" name="presta_2" /></div>
+									Compétence 2 : <div class="6u 12u$(mobile)">
+									<input type="text" name="presta_2" value="<?php echo $valEmp->competenceB;?>"></div>
 									</br></br></br>
-									Compétence 3 : <div class="6u 12u$(mobile)"><input type="text" name="presta_3" /></div>
+									Compétence 3 : <div class="6u 12u$(mobile)">
+									<input type="text" name="presta_3" value="<?php echo $valEmp->competenceC;?>"></div>
 								</div>
 								</br>
-									
+
 								<table>
 									<tr><td></td><td>Matin</td><td>Après-Midi</td></tr>
-									<tr><td>Lundi</td><td><input type="checkbox" name="LunM" value=1 /></td><td><input type="checkbox" name="LunA" value=1 /></td></tr>
-									<tr><td>Mardi</td><td><input type="checkbox" name="MarM" value=1 /></td><td><input type="checkbox" name="MarA" value=1 /></td></tr>
-									<tr><td>Mercredi</td><td><input type="checkbox" name="MerM" value=1 /></td><td><input type="checkbox" name="MerA" value=1 /></td></tr>
-									<tr><td>Jeudi</td><td><input type="checkbox" name="JeuM" value=1 /></td><td><input type="checkbox" name="JeuA" value=1 /></td></tr>
-									<tr><td>Vendredi</td><td><input type="checkbox" name="VenM" value=1 /></td><td><input type="checkbox" name="VenA" value=1 /></td></tr>
-									<tr><td>Samedi</td><td><input type="checkbox" name="SamM" value=1 /></td><td><input type="checkbox" name="SamA" value=1/></td></tr>
+									<tr><td>Lundi</td><td><input type="checkbox" name="LunM" value=1 <?php if($valPlan->LundiM==1){echo "checked='checked'";}?>/></td><td><input type="checkbox" name="LunA" value=1 <?php if($valPlan->LundiA==1){echo "checked='checked'";}?>/></td></tr>
+									<tr><td>Mardi</td><td><input type="checkbox" name="MarM" value=1 <?php if($valPlan->MardiM==1){echo "checked='checked'";}?>/></td><td><input type="checkbox" name="MarA" value=1 <?php if($valPlan->MardiA==1){echo "checked='checked'";}?>/></td></tr>
+									<tr><td>Mercredi</td><td><input type="checkbox" name="MerM" value=1 <?php if($valPlan->MercrediM==1){echo "checked='checked'";}?>/></td><td><input type="checkbox" name="MerA" value=1 <?php if($valPlan->MercrediA==1){echo "checked='checked'";}?>/></td></tr>
+									<tr><td>Jeudi</td><td><input type="checkbox" name="JeuM" value=1 <?php if($valPlan->JeudiM==1){echo "checked='checked'";}?>/></td><td><input type="checkbox" name="JeuA" value=1 <?php if($valPlan->JeudiA==1){echo "checked='checked'";}?>/></td></tr>
+									<tr><td>Vendredi</td><td><input type="checkbox" name="VenM" value=1 <?php if($valPlan->VendrediM==1){echo "checked='checked'";}?>/></td><td><input type="checkbox" name="VenA" value=1 <?php if($valPlan->VendrediA==1){echo "checked='checked'";}?>/></td></tr>
+									<tr><td>Samedi</td><td><input type="checkbox" name="SamM" value=1 <?php if($valPlan->SamediM==1){echo "checked='checked'";}?>/></td><td><input type="checkbox" name="SamA" value=1 <?php if($valPlan->SamediA==1){echo "checked='checked'";}?>/></td></tr>
 								</table>
 								</br>
-								<input type="hidden" name="ajout" value="ok"> 
+								<input type="hidden" name="modif" value="ok"> 
 								<div align = "center" class="12u$">
-									<input type="submit" value="Ajouter" />
+									<input type="submit" value="Modifier" />
 								</div>
 							</form>
 						</div>
