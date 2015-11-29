@@ -1,4 +1,3 @@
-<?php
 <!DOCTYPE HTML>
 <?php
 try {
