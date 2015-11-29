@@ -1,6 +1,5 @@
-<?php
 <!DOCTYPE HTML>
-<?php
+<?php 
 try {
 	$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "root", "" );
 	$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -11,10 +10,11 @@ try {
 $nomE=$_GET['nomEntreprise'];
 $rqt = $connexion->query("SELECT * FROM ".$nomE."_employe");
 $infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
+$listePresta = $connexion->query("SELECT id_presta FROM ".$nomE."_prestation");
 $i = $infoE->fetch(PDO::FETCH_OBJ);
 
-if(isset($_POST['modif'])){
-	$connexion->exec("INSERT INTO ".$nomE."_employe(nom_employe, prenom_employe, adresse_emp, mail_emp, telephone_emp, competenceA, competenceB, competenceC) VALUES ('".$_POST['nom']."', '".$_POST['prenom']."', '".$_POST['adresse']."', '".$_POST['mail']."', '".$_POST['tel']."', '".$_POST['cmp1']."', '".$_POST['cmp2']."', '".$_POST['cmp3']."')");
+if(isset($_POST['ajout'])){
+	$connexion->exec("INSERT INTO ".$nomE."_employe(nom_employe, prenom_employe, adresse_emp, mail_emp, telephone_emp, competenceA, competenceB, competenceC) VALUES ('".$_POST['nom']."', '".$_POST['prenom']."', '".$_POST['adresse']."', '".$_POST['mail']."', '".$_POST['tel']."', '".$_POST['presta_1']."', '".$_POST['presta_2']."', '".$_POST['presta_3']."')");
 	$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
 	$MardiM = (isset($_POST['MarM']) )? 1 : 0;		$MardiA = (isset($_POST['MarA']) )? 1 : 0;
 	$MercrediM = (isset($_POST['MerM']) )? 1 : 0;	$MercrediA = (isset($_POST['MerA']) )? 1 : 0;
@@ -24,6 +24,14 @@ if(isset($_POST['modif'])){
 	$rqt2 = $connexion->query("SELECT id_employe FROM ".$nomE."_employe WHERE nom_employe = '".$_POST['nom']."'");
 	$idemp = $rqt2->fetch(PDO::FETCH_OBJ);
 	$connexion->exec("INSERT INTO ".$nomE."_planning(code_employe, LundiM, LundiA, MardiM, MardiA, MercrediM, MercrediA, JeudiM, JeudiA, VendrediM, VendrediA, SamediM, SamediA) VALUES ('".$idemp->id_employe."', ".$LundiM.", ".$LundiA.", ".$MardiM.", ".$MardiA.", ".$MercrediM.", ".$MercrediA.", ".$JeudiM.", ".$JeusiA.", ".$VendrediM.", ".$VendrediA.", ".$SamediM.", ".$SamediA.")");
+}
+
+if(isset($_POST['supprime'])){
+	$connexion->exec("DELETE FROM ".$nomE."_planning WHERE code_employe=".$_POST['employe_modif']);
+	$connexion->exec("DELETE FROM ".$nomE."_employe WHERE id_employe=".$_POST['employe_modif']);
+}
+if(isset($_POST['modifie'])){
+	header('Location: http://localhost/projet_tutore/projet_tutore/modif_employe.php?nomEntreprise=tiff&id_employe='.$_POST['employe_modif']);
 }
 
 ?>
@@ -67,16 +75,36 @@ if(isset($_POST['modif'])){
 			<div id="main">
 
 				<!-- Intro -->
-				
 						<div class="container">
 							<h1>Gestion des employés de l'entreprise</h1>
 							<?php 
-							if(isset($_POST['modif'])){
-								echo "<p> Modification d'employé effectué </p>";
+							if(isset($_POST['ajout'])){
+								echo "<p> Ajout d'employé effectué </p>";
+							}
+							if(isset($_POST['supprime'])){
+								echo "<p> Suppression d'employé effectué </p>";
 							}
 							?>
+							<form method="post" action="">
+								<div class="6u 12u$(mobile)"><select name="employe_modif">
+								<?php 
+								$listeEmp = $connexion->query("SELECT id_employe, nom_employe, prenom_employe FROM ".$nomE."_employe");
+								while($donnees=$listeEmp->fetch(PDO::FETCH_OBJ)){
+									$identite = $donnees->nom_employe." ".$donnees->prenom_employe;
+								?>
+									<option value="<?php echo $donnees->id_employe ?>"><?php echo $identite; ?></option>   
+								<?php
+								}
+								?>
+								</select></div></br>
+								<div align = "center" class="12u$">
+									<input type="submit"  name="supprime" value="Supprimer" />
+									<input type="submit"  name="modifie" value="Modifier" />
+								</div>
+							</form>
+							
 							</br>
-							<h2>Modification d'un employé</h2>
+							<h2>Ajout d'un employé</h2>
 							<form method="post" action="">
 								<div class="row">
 								</br>
