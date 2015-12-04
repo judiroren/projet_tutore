@@ -18,7 +18,13 @@
 		vertical-align: baseline;
 	}
 
-	h2 {
+	table, tr, td {
+		border : 1px solid black;
+		font-size:95%;
+		text-align:center;
+	}
+	
+	h1, h2 {
 		text-align:center;
 	}
 	article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {

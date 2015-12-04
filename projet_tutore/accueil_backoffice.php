@@ -7,10 +7,14 @@ try {
 	echo 'Connexion échouée : ' . $e->getMessage();
 }
 
-$nom=$_GET['nomEntreprise'];
-$rqt = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nom.'"');
+$nomE=$_GET['nomEntreprise'];
+$rqt = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
 $i = $rqt->fetch(PDO::FETCH_OBJ);
-$nomE = $i->nomEntreprise;
+$planning = $connexion->query('SELECT * FROM '.$nomE.'_planning JOIN '.$nomE.'_employe ON code_employe = id_employe');
+$reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_employe ON employe = id_employe JOIN '.$nomE.'_client ON client = id_client JOIN '.$nomE.'_prestation ON presta = id_presta');
+
+
+
 ?>
 
 <html>
@@ -36,10 +40,12 @@ $nomE = $i->nomEntreprise;
 							<?php 
 							if(!empty($_POST['login']) && !empty($_POST['mdp']) && $_POST['login']==$i->loginAdmin && $_POST['mdp']==$i->mdpAdmin ){
 							?>
+							
 								<a href="modif_entreprise.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des informations de l'entreprise </a></br>
 								<a href="ajout_employe.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des employés </a></br>
 								<a href="ajout_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
 								<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
+							</div>
 							<?php
 							}else{
 							
@@ -60,9 +66,6 @@ $nomE = $i->nomEntreprise;
 
 				</div>
 
-				<div class="bottom">
-
-				</div>
 
 			</div>
 
@@ -72,8 +75,27 @@ $nomE = $i->nomEntreprise;
 				<!-- Intro -->
 					
 						<div class="container">
-
-							
+							<h1>Page d'accueil back-office <br> Entreprise <?php echo $nomE;?></h1>
+							<table>
+									<tr><td rowspan="2"></td><td colspan="2">Lundi</td><td colspan="2">Mardi</td><td colspan="2">Mercredi</td><td colspan="2">Jeudi</td><td colspan="2">Vendredi</td><td colspan="2">Samedi</td></tr>
+									<tr>
+										<?php 
+											$cpt = 0;
+											while($cpt != 6){
+												echo "<td>Matin</td><td>Après-Midi</td>";
+												$cpt = $cpt + 1;
+											}
+										?>
+									</tr>
+									<?php 
+										while($valeur = $planning->fetch(PDO::FETCH_OBJ)){
+											$identite = $valeur->prenom_employe ." ". $valeur->nom_employe;
+									?>
+										<tr><td><?php echo $identite?></td><td><?php if($valeur->LundiM==1){echo "X";}?></td><td><?php if($valeur->LundiA==1){echo "X";}?></td><td><?php if($valeur->MardiM==1){echo "X";}?></td><td><?php if($valeur->MardiA==1){echo "X";}?></td><td><?php if($valeur->MercrediM==1){echo "X";}?></td><td><?php if($valeur->MercrediA==1){echo "X";}?></td><td><?php if($valeur->JeudiM==1){echo "X";}?></td><td><?php if($valeur->JeudiA==1){echo "X";}?></td><td><?php if($valeur->VendrediM==1){echo "X";}?></td><td><?php if($valeur->VendrediA==1){echo "X";}?></td><td><?php if($valeur->SamediM==1){echo "X";}?></td><td><?php if($valeur->SamediA==1){echo "X";}?></td></tr>
+									<?php 
+										}
+									?>
+								</table>
 						</div>
 
 						
