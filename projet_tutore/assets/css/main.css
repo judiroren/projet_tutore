@@ -27,6 +27,7 @@
 	h1, h2 {
 		text-align:center;
 	}
+	
 	article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
 		display: block;
 	}

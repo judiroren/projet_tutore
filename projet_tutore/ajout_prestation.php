@@ -11,12 +11,12 @@ $nomE=$_GET['nomEntreprise'];
 $infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
 $listePresta = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
 $i = $infoE->fetch(PDO::FETCH_OBJ);
-
+$emp = $connexion->query('SELECT * FROM '.$nomE.'_employe');
 
 if(isset($_POST['ajout'])){
 	$cpt = 0;
 	$prefixe = 'PRES';
-	$ajout = oui;
+	$ajout = "oui";
 	while($val=$listePresta->fetch(PDO::FETCH_OBJ)){
 		$cpt++;
 	}
@@ -35,6 +35,16 @@ if(isset($_POST['ajout'])){
 	
 	$paypal = (isset($_POST['paypal']) )? 1 : 0;
 	$connexion->exec("INSERT INTO ".$nomE."_prestation(id_presta, descriptif_presta, prix, paypal, duree) VALUES ('".$code."', '".$_POST['descrip']."', '".$_POST['prix']."', '".$paypal."', '".$_POST['duree']."')");
+	$modifEmploye = $connexion->query("SELECT * FROM ".$nomE."_employe WHERE id_employe = ".$_POST['employe']);
+	$val = $modifEmploye->fetch(PDO::FETCH_OBJ);
+	if($val->competenceA == ""){
+		$connexion->exec("UPDATE ".$nomE."_employe SET competenceA = '".$code."' WHERE id_employe = '".$_POST['employe']."'");
+	}elseif($val->competenceB ==""){
+		$connexion->exec("UPDATE ".$nomE."_employe SET competenceB = '".$code."' WHERE id_employe = '".$_POST['employe']."'");
+	}else{
+		$connexion->exec("UPDATE ".$nomE."_employe SET competenceC = '".$code."' WHERE id_employe = '".$_POST['employe']."'");
+	}
+	
 }
 
 if(isset($_POST['supprime'])){
@@ -135,7 +145,20 @@ if(isset($_POST['modifie'])){
 									 
 								</div>
 								</br>
-								
+								<h2>Associer un employe à la nouvelle prestation</h2>
+								<select name="employe">
+									<?php 
+									while($valeur=$emp->fetch(PDO::FETCH_OBJ)){
+										if($valeur->competenceA == "" || $valeur->competenceB == "" || $valeur->competenceC == "" ){
+										$identite = $valeur->nom_employe." ".$valeur->prenom_employe;
+									?>
+										<option value="<?php echo $valeur->id_employe ?>"><?php echo $identite; ?></option>   
+									<?php 
+										}
+									}
+									?>
+								</select>
+								</br>
 								<input type="hidden" name="ajout" value="ok"> 
 								<div align = "center" class="12u$">
 									<input type="submit" value="Ajouter" />

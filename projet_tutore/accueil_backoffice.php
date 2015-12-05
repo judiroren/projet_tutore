@@ -89,12 +89,26 @@ $reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_empl
 									</tr>
 									<?php 
 										while($valeur = $planning->fetch(PDO::FETCH_OBJ)){
-											$identite = $valeur->prenom_employe ." ". $valeur->nom_employe;
+											$identite = $valeur->nom_employe ." ". $valeur->prenom_employe;
 									?>
 										<tr><td><?php echo $identite?></td><td><?php if($valeur->LundiM==1){echo "X";}?></td><td><?php if($valeur->LundiA==1){echo "X";}?></td><td><?php if($valeur->MardiM==1){echo "X";}?></td><td><?php if($valeur->MardiA==1){echo "X";}?></td><td><?php if($valeur->MercrediM==1){echo "X";}?></td><td><?php if($valeur->MercrediA==1){echo "X";}?></td><td><?php if($valeur->JeudiM==1){echo "X";}?></td><td><?php if($valeur->JeudiA==1){echo "X";}?></td><td><?php if($valeur->VendrediM==1){echo "X";}?></td><td><?php if($valeur->VendrediA==1){echo "X";}?></td><td><?php if($valeur->SamediM==1){echo "X";}?></td><td><?php if($valeur->SamediA==1){echo "X";}?></td></tr>
 									<?php 
 										}
 									?>
+								</table>
+								
+								<h1>Liste des réservations</h1>
+								<table>
+								<tr><td>Date </br>(année:mois:jour)</td><td>Heure</td><td>Employé</td><td>Client</td><td>Prestation</td><td>Déjà payé ?</td></tr>
+								<?php 
+									while($valeur2 = $reserva->fetch(PDO::FETCH_OBJ)){
+										$idClient = $valeur2->nom_client ." ". $valeur2->prenom_client;
+										$idEmploye = $valeur2->nom_employe ." ". $valeur2->prenom_employe;
+								?>
+									<tr><td><?php echo $valeur2->date;?></td><td><?php echo $valeur2->heure;?></td><td><?php echo $idEmploye?></td><td><?php echo $idClient;?></td><td><?php echo $valeur2->descriptif_presta;?></td><td><?php if($valeur2->paye==1){echo "oui";}else{echo "non";}?></td></tr>
+								<?php 
+									}
+								?>
 								</table>
 						</div>
 
