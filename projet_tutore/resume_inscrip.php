@@ -28,6 +28,14 @@
   									`JeudiM` BOOLEAN, `JeudiA` BOOLEAN,
   									`VendrediM` BOOLEAN, `VendrediA` BOOLEAN,
   									`SamediM` BOOLEAN, `SamediA` BOOLEAN)");
+				$connexion->exec("CREATE TABLE IF NOT EXISTS `absence` (
+  									'id_absence' char(8) NOT NULL,
+									`code_employe` char(8) NOT NULL,
+ 									`motif` varchar(100) NOT NULL,
+  									`dateDébut` date NOT NULL,
+  									`dateFin` date NOT NULL,
+  									`absenceFini` tinyint(1) NOT NULL,
+  									PRIMARY KEY (`id_absence`)");
 	
 		   } catch (Exception $e) {
 			echo $e->getMessage();
