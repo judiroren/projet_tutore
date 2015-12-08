@@ -1,11 +1,7 @@
 <!DOCTYPE HTML>
 <?php
-try {
-	$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "root", "" );
-	$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-	echo 'Connexion échouée : ' . $e->getMessage();
-}
+require "fonctions.inc.php";
+$connexion = connect();
 
 $nomE=$_GET['nomEntreprise'];
 $rqt = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
@@ -89,11 +85,21 @@ $reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_empl
 										?>
 									</tr>
 									<?php 
+									
 										while($valeur = $planning->fetch(PDO::FETCH_OBJ)){
+											$id_employe = $valeur->code_employe;
 											$identite = $valeur->nom_employe ." ". $valeur->prenom_employe;
-									?>
-										<tr><td><?php echo $identite?></td><td><?php if($valeur->LundiM==1){echo "X";}?></td><td><?php if($valeur->LundiA==1){echo "X";}?></td><td><?php if($valeur->MardiM==1){echo "X";}?></td><td><?php if($valeur->MardiA==1){echo "X";}?></td><td><?php if($valeur->MercrediM==1){echo "X";}?></td><td><?php if($valeur->MercrediA==1){echo "X";}?></td><td><?php if($valeur->JeudiM==1){echo "X";}?></td><td><?php if($valeur->JeudiA==1){echo "X";}?></td><td><?php if($valeur->VendrediM==1){echo "X";}?></td><td><?php if($valeur->VendrediA==1){echo "X";}?></td><td><?php if($valeur->SamediM==1){echo "X";}?></td><td><?php if($valeur->SamediA==1){echo "X";}?></td></tr>
-									<?php 
+											$tab = absence($nomE, $id_employe);
+											if($tab==null){
+												?>
+												<tr><td><?php echo $identite?></td><td><?php if($valeur->LundiM==1){echo "X";}?></td><td><?php if($valeur->LundiA==1){echo "X";}?></td><td><?php if($valeur->MardiM==1){echo "X";}?></td><td><?php if($valeur->MardiA==1){echo "X";}?></td><td><?php if($valeur->MercrediM==1){echo "X";}?></td><td><?php if($valeur->MercrediA==1){echo "X";}?></td><td><?php if($valeur->JeudiM==1){echo "X";}?></td><td><?php if($valeur->JeudiA==1){echo "X";}?></td><td><?php if($valeur->VendrediM==1){echo "X";}?></td><td><?php if($valeur->VendrediA==1){echo "X";}?></td><td><?php if($valeur->SamediM==1){echo "X";}?></td><td><?php if($valeur->SamediA==1){echo "X";}?></td></tr>
+												<?php
+											}else{
+												?>
+												<tr><td><?php echo $identite?></td><td><?php echo $tab[0][0];?></td><td><?php echo $tab[0][1];?></td><td><?php echo $tab[1][0];?></td><td><?php echo $tab[1][1];?></td><td><?php echo $tab[2][0];?></td><td><?php echo $tab[2][1];?></td><td><?php echo $tab[3][0];?></td><td><?php echo $tab[3][1];?></td><td><?php echo $tab[4][0];?></td><td><?php echo $tab[4][1];?></td><td><?php echo $tab[5][0];?></td><td><?php echo $tab[5][1];?></td></tr>
+												<?php 											
+											}
+									
 										}
 									?>
 								</table>

@@ -1,11 +1,7 @@
 <!DOCTYPE HTML>
 <?php 
-try {
-	$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "root", "" );
-	$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-	echo 'Connexion échouée : ' . $e->getMessage();
-}
+require "fonctions.inc.php";
+$connexion = connect();
 
 $nomE=$_GET['nomEntreprise'];
 $infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
