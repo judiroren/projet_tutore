@@ -35,7 +35,7 @@ if(isset($_POST['ajout'])){
 	
 	$paypal = (isset($_POST['paypal']) )? 1 : 0;
 	$connexion->exec("INSERT INTO ".$nomE."_prestation(id_presta, descriptif_presta, prix, paypal, duree) VALUES ('".$code."', '".$_POST['descrip']."', '".$_POST['prix']."', '".$paypal."', '".$_POST['duree']."')");
-	$modifEmploye = $connexion->query("SELECT * FROM ".$nomE."_employe WHERE id_employe = ".$_POST['employe']);
+	$modifEmploye = $connexion->query("SELECT * FROM ".$nomE."_employe WHERE id_employe = '".$_POST['employe']."'");
 	$val = $modifEmploye->fetch(PDO::FETCH_OBJ);
 	if($val->competenceA == ""){
 		$connexion->exec("UPDATE ".$nomE."_employe SET competenceA = '".$code."' WHERE id_employe = '".$_POST['employe']."'");
@@ -51,7 +51,7 @@ if(isset($_POST['supprime'])){
 	$connexion->exec("DELETE FROM ".$nomE."_prestation WHERE id_presta='".$_POST['presta_modif']."'");
 }
 if(isset($_POST['modifie'])){
-	header('Location: http://localhost/projet_tutore/projet_tutore/modif_prestation.php?nomEntreprise=tiff&id_presta='.$_POST['presta_modif']);
+	header('Location: http://localhost/projet_tutore/projet_tutore/modif_prestation.php?nomEntreprise='.$nomE.'&id_presta='.$_POST['presta_modif']);
 }
 
 ?>

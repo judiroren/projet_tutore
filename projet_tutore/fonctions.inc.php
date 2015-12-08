@@ -15,9 +15,9 @@ function absence($nomE, $id_employe){
 	
 	$tab = tableauDate();
 	
-	$rqt = $connexion->query('SELECT * FROM '.$nomE.'_planning WHERE code_employe = '.$id_employe);
+	$rqt = $connexion->query('SELECT * FROM '.$nomE.'_planning WHERE code_employe = "'.$id_employe.'"');
 	$donnees=$rqt->fetch(PDO::FETCH_OBJ);
-	$rqtabs = $connexion->query('SELECT * FROM '.$nomE.'_absence WHERE code_employe = '.$id_employe.' AND dateDebut <= CURDATE() AND dateFin >= CURDATE()');
+	$rqtabs = $connexion->query('SELECT * FROM '.$nomE.'_absence WHERE code_employe = "'.$id_employe.'" AND dateDebut <= CURDATE() AND dateFin >= CURDATE()');
 	$val = array(array());
 	if($rqtabs->rowCount()==0){
 		return null;

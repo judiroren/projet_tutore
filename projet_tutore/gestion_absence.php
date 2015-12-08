@@ -31,7 +31,7 @@ if(isset($_POST['ajout'])){
 	$ok = 0;
 	$erreurDate = 0;
 	$erreurReserv = 0;
-	$reserv = $connexion->query('SELECT date FROM '.$nomE.'_reserv WHERE employe = '.$_POST['employe_absent'].' AND date BETWEEN '.$_POST['debut'].' AND '.$_POST['fin']);
+	$reserv = $connexion->query('SELECT date FROM '.$nomE.'_reserv WHERE employe = "'.$_POST['employe_absent'].'" AND date BETWEEN '.$_POST['debut'].' AND '.$_POST['fin']);
 	if($_POST['debut']>$_POST['fin']){
 		$erreurDate = 1;
 	}elseif ($reserv==NULL){
@@ -39,7 +39,7 @@ if(isset($_POST['ajout'])){
 	}else{
 		$ok = 1;
 		$fin = 0;
-		$connexion->exec("INSERT INTO ".$nomE."_absence(id_absence, code_employe, motif, dateDebut, dateFin, absenceFini) VALUES ('".$code."', ".$_POST['employe_absent'].", '".$_POST['motif']."', '".$_POST['debut']."', '".$_POST['fin']."', '".$fin."')");
+		$connexion->exec("INSERT INTO ".$nomE."_absence(id_absence, code_employe, motif, dateDebut, dateFin, absenceFini) VALUES ('".$code."', '".$_POST['employe_absent']."', '".$_POST['motif']."', '".$_POST['debut']."', '".$_POST['fin']."', '".$fin."')");
 	}
 }
 

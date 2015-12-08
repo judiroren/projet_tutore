@@ -12,30 +12,30 @@
 			$tclient = $_POST['entreprise']."_client";
 			$treserv = $_POST['entreprise']."_reserv";
 			$tplanning = $_POST['entreprise']."_planning";
+			$tabsence = $_POST['entreprise']."_absence";
 	
 			$connexion->exec("INSERT INTO entreprise(nomEntreprise, mailEntreprise, loginAdmin, mdpAdmin) VALUES ('".$_POST['entreprise']."', '".$_POST['mail']."', '".$_POST['login']."', '".$_POST['mdp']."')");
 		   try{
-				$connexion->exec("CREATE TABLE ".$temploye." ( id_employe CHAR(8) PRIMARY KEY, nom_employe VARCHAR(40), prenom_employe VARCHAR(50), competenceA CHAR(8), competenceB CHAR(8), competenceC CHAR(8), absent BOOLEAN)");
+				$connexion->exec("CREATE TABLE ".$temploye." ( id_employe CHAR(8) PRIMARY KEY, nom_employe VARCHAR(40), prenom_employe VARCHAR(50), competenceA CHAR(8), competenceB CHAR(8), competenceC CHAR(8), telephone_emp CHAR(10), adresse_emp VARCHAR(200), mail_emp VARCHAR(50))");
 				$connexion->exec("CREATE TABLE ".$tprestation." ( id_presta CHAR(8) PRIMARY KEY, descriptif_presta TEXT, prix DECIMAL(5,2), paypal BOOLEAN, duree INT)");
 				$connexion->exec("CREATE TABLE ".$tclient." ( id_client CHAR(8) PRIMARY KEY, nom_client VARCHAR(40), prenom_client VARCHAR(50), mail VARCHAR(50), login_client VARCHAR(30), mdp_client VARCHAR(30))");
 				$connexion->exec("CREATE TABLE ".$treserv." ( id_reserv CHAR(8) PRIMARY KEY, client CHAR(8), employe CHAR(8), presta CHAR(8), paye BOOLEAN, date DATE, heure TIME)");
 				$connexion->exec("CREATE TABLE ".$tplanning." (
-  									`code_employe` char(8) NOT NULL,
-  									`id_planning` varchar(10) NOT NULL,
+  									`id_agenda` varchar(150) PRIMARY KEY,
+									`code_employe` char(8) NOT NULL,
  									`LundiM` BOOLEAN, `LundiA` BOOLEAN,
   									`MardiM` BOOLEAN, `MardiA` BOOLEAN,
   									`MercrediM` BOOLEAN, `MercrediA` BOOLEAN,
   									`JeudiM` BOOLEAN, `JeudiA` BOOLEAN,
   									`VendrediM` BOOLEAN, `VendrediA` BOOLEAN,
   									`SamediM` BOOLEAN, `SamediA` BOOLEAN)");
-				$connexion->exec("CREATE TABLE IF NOT EXISTS `absence` (
-  									'id_absence' char(8) NOT NULL,
+				$connexion->exec("CREATE TABLE ".$tabsence." (
+  									`id_absence` char(8) PRIMARY KEY,
 									`code_employe` char(8) NOT NULL,
- 									`motif` varchar(100) NOT NULL,
-  									`dateDébut` date NOT NULL,
-  									`dateFin` date NOT NULL,
-  									`absenceFini` tinyint(1) NOT NULL,
-  									PRIMARY KEY (`id_absence`)");
+ 									`motif` varchar(100),
+  									`dateDebut` date,
+  									`dateFin` date,
+  									`absenceFini` BOOLEAN)");
 	
 		   } catch (Exception $e) {
 			echo $e->getMessage();

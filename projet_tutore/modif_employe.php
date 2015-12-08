@@ -8,9 +8,9 @@ try {
 }
 
 $nomE=$_GET['nomEntreprise'];
-$rqtEmp = $connexion->query("SELECT * FROM ".$nomE."_employe WHERE id_employe = ".$_GET['id_employe']);
+$rqtEmp = $connexion->query('SELECT * FROM '.$nomE.'_employe WHERE id_employe = "'.$_GET['id_employe'].'"');
 $valEmp = $rqtEmp->fetch(PDO::FETCH_OBJ);
-$rqtPlan = $connexion->query("SELECT * FROM ".$nomE."_planning WHERE code_employe = ".$_GET['id_employe']);
+$rqtPlan = $connexion->query('SELECT * FROM '.$nomE.'_planning WHERE code_employe = "'.$_GET['id_employe'].'"');
 $valPlan = $rqtPlan->fetch(PDO::FETCH_OBJ);
 $infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
 $i = $infoE->fetch(PDO::FETCH_OBJ);
@@ -23,7 +23,7 @@ if(isset($_POST['modif'])){
 	$JeudiM = (isset($_POST['JeuM']) )? 1 : 0;		$JeudiA = (isset($_POST['JeuA']) )? 1 : 0;
 	$VendrediM = (isset($_POST['VenM']) )? 1 : 0;	$VendrediA = (isset($_POST['VenA']) )? 1 : 0;
 	$SamediM = (isset($_POST['SamM']) )? 1 : 0;		$SamediA = (isset($_POST['SamA']) )? 1 : 0;
-	$connexion->exec("UPDATE ".$nomE."_planning SET LundiM = ".$LundiM.", LundiA = ".$LundiA.", MardiM = ".$MardiM.", MardiA = ".$MardiA.", MercrediM = ".$MercrediM.", MercrediA = ".$MercrediA.", JeudiM = ".$JeudiM.", JeudiA = ".$JeudiA.", VendrediM = ".$VendrediM.", VendrediA = ".$VendrediA.", SamediM = ".$SamediM.", SamediA = ".$SamediA." WHERE code_employe = ".$_GET['id_employe']);
+	$connexion->exec("UPDATE ".$nomE."_planning SET LundiM = ".$LundiM.", LundiA = ".$LundiA.", MardiM = ".$MardiM.", MardiA = ".$MardiA.", MercrediM = ".$MercrediM.", MercrediA = ".$MercrediA.", JeudiM = ".$JeudiM.", JeudiA = ".$JeudiA.", VendrediM = ".$VendrediM.", VendrediA = ".$VendrediA.", SamediM = ".$SamediM.", SamediA = ".$SamediA." WHERE code_employe = '".$_GET['id_employe']."'");
 }
 
 ?>

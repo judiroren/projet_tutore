@@ -11,10 +11,30 @@ $nomE=$_GET['nomEntreprise'];
 $rqt = $connexion->query("SELECT * FROM ".$nomE."_employe");
 $infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
 $listePresta = $connexion->query("SELECT id_presta FROM ".$nomE."_prestation");
+$listeEmpCpt = $connexion->query("SELECT * FROM ".$nomE."_employe");
+$listePlan = $connexion->query("SELECT * FROM ".$nomE."_planning");
 $i = $infoE->fetch(PDO::FETCH_OBJ);
 
 if(isset($_POST['ajout'])){
-	$connexion->exec("INSERT INTO ".$nomE."_employe(nom_employe, prenom_employe, adresse_emp, mail_emp, telephone_emp, competenceA, competenceB, competenceC) VALUES ('".$_POST['nom']."', '".$_POST['prenom']."', '".$_POST['adresse']."', '".$_POST['mail']."', '".$_POST['tel']."', '".$_POST['presta_1']."', '".$_POST['presta_2']."', '".$_POST['presta_3']."')");
+	$cpt = 0;
+	$prefixe = 'EMPL';
+	$ajout = "oui";
+	while($val=$listeEmpCpt->fetch(PDO::FETCH_OBJ)){
+		$cpt++;
+	}
+	$cpt++;
+	if($cpt<9){
+		$code = $prefixe.'000'.$cpt;
+	}else if($cpt<99){
+		$code = $prefixe.'00'.$cpt;
+	}else if($cpt<999){
+		$code = $prefixe.'0'.$cpt;
+	}else if($cpt<9999){
+		$code = $prefixe.$cpt;
+	}else{
+		$ajout = "non";
+	}
+	$connexion->exec("INSERT INTO ".$nomE."_employe(id_employe, nom_employe, prenom_employe, adresse_emp, mail_emp, telephone_emp, competenceA, competenceB, competenceC) VALUES ('".$code."', '".$_POST['nom']."', '".$_POST['prenom']."', '".$_POST['adresse']."', '".$_POST['mail']."', '".$_POST['tel']."', '".$_POST['presta_1']."', '".$_POST['presta_2']."', '".$_POST['presta_3']."')");
 	$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
 	$MardiM = (isset($_POST['MarM']) )? 1 : 0;		$MardiA = (isset($_POST['MarA']) )? 1 : 0;
 	$MercrediM = (isset($_POST['MerM']) )? 1 : 0;	$MercrediA = (isset($_POST['MerA']) )? 1 : 0;
@@ -23,15 +43,34 @@ if(isset($_POST['ajout'])){
 	$SamediM = (isset($_POST['SamM']) )? 1 : 0;		$SamediA = (isset($_POST['SamA']) )? 1 : 0;
 	$rqt2 = $connexion->query("SELECT id_employe FROM ".$nomE."_employe WHERE nom_employe = '".$_POST['nom']."'");
 	$idemp = $rqt2->fetch(PDO::FETCH_OBJ);
-	$connexion->exec("INSERT INTO ".$nomE."_planning(code_employe, LundiM, LundiA, MardiM, MardiA, MercrediM, MercrediA, JeudiM, JeudiA, VendrediM, VendrediA, SamediM, SamediA) VALUES ('".$idemp->id_employe."', ".$LundiM.", ".$LundiA.", ".$MardiM.", ".$MardiA.", ".$MercrediM.", ".$MercrediA.", ".$JeudiM.", ".$JeusiA.", ".$VendrediM.", ".$VendrediA.", ".$SamediM.", ".$SamediA.")");
+	
+	$cpt = 0;
+	$prefixe = 'PLAN';
+	$ajout = "oui";
+	while($val=$listePlan->fetch(PDO::FETCH_OBJ)){
+		$cpt++;
+	}
+	$cpt++;
+	if($cpt<9){
+		$code = $prefixe.'000'.$cpt;
+	}else if($cpt<99){
+		$code = $prefixe.'00'.$cpt;
+	}else if($cpt<999){
+		$code = $prefixe.'0'.$cpt;
+	}else if($cpt<9999){
+		$code = $prefixe.$cpt;
+	}else{
+		$ajout = "non";
+	}
+	$connexion->exec("INSERT INTO ".$nomE."_planning(id_agenda, code_employe, LundiM, LundiA, MardiM, MardiA, MercrediM, MercrediA, JeudiM, JeudiA, VendrediM, VendrediA, SamediM, SamediA) VALUES ('".$code."', '".$idemp->id_employe."', ".$LundiM.", ".$LundiA.", ".$MardiM.", ".$MardiA.", ".$MercrediM.", ".$MercrediA.", ".$JeudiM.", ".$JeusiA.", ".$VendrediM.", ".$VendrediA.", ".$SamediM.", ".$SamediA.")");
 }
 
 if(isset($_POST['supprime'])){
-	$connexion->exec("DELETE FROM ".$nomE."_planning WHERE code_employe=".$_POST['employe_modif']);
-	$connexion->exec("DELETE FROM ".$nomE."_employe WHERE id_employe=".$_POST['employe_modif']);
+	$connexion->exec("DELETE FROM ".$nomE."_planning WHERE code_employe='".$_POST['employe_modif']."'");
+	$connexion->exec("DELETE FROM ".$nomE."_employe WHERE id_employe='".$_POST['employe_modif']."'");
 }
 if(isset($_POST['modifie'])){
-	header('Location: http://localhost/projet_tutore/projet_tutore/modif_employe.php?nomEntreprise=tiff&id_employe='.$_POST['employe_modif']);
+	header('Location: http://localhost/projet_tutore/projet_tutore/modif_employe.php?nomEntreprise='.$nomE.'&id_employe='.$_POST['employe_modif']);
 }
 
 ?>
