@@ -99,5 +99,4 @@ function tableauDate(){
 	}
 	return $tab;
 }
-
 ?>

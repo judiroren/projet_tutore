@@ -33,13 +33,18 @@
 				<!-- Intro -->
 					
 						<div class="container">
-
+							
+							<h1>Inscription d'une entreprise sur le portail</h1>
 							<form method="post" action="resume_inscrip.php">
 								<div class="row">
-									<div class="6u 12u$(mobile)"><input type="text" name="entreprise" placeholder="Nom de l'entreprise" /></div>
-									<div class="6u 12u$(mobile)"><input type="text" name="login" placeholder="login admnistrateur" /></div>
-									<div class="6u 12u$(mobile)"><input type="text" name="mdp" placeholder="Mot de passe administrateur" /></div>
-									<div class="6u 12u$(mobile)"><input type="text" name="mail" placeholder="E-mail Entreprise" /></div>
+									</br>
+									Nom de l'entreprise :</br><input type="text" name="entreprise" />
+									</br>
+									Login de l'administrateur :</br><input type="text" name="login" />
+									</br>
+									Mot de passe de l'administrateur : </br><input type="text" name="mdp" />
+									</br>
+									Adresse mail de l'administrateur : </br><input type="text" name="mail" />
 								</div>
 								</br>
 								<div class="12u$">

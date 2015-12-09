@@ -6,8 +6,10 @@ $connexion = connect();
 $nomE=$_GET['nomEntreprise'];
 $rqt = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
 $i = $rqt->fetch(PDO::FETCH_OBJ);
-
-if(isset($_POST['login']) && isset($_POST['mdp']) && $_POST['login']==$i->loginAdmin && $_POST['mdp']==$i->mdpAdmin){
+if(isset($_POST['mdp'])){
+	$mdp =md5($_POST['mdp']);
+}
+if(isset($_POST['login']) && isset($_POST['mdp']) && $_POST['login']==$i->loginAdmin && $mdp == $i->mdpAdmin ){
 	session_start();
 	$_SESSION["estConnecte"]=1;
 }
@@ -62,7 +64,7 @@ $absences = $connexion->query('SELECT * FROM '.$nomE.'_absence JOIN '.$nomE.'_em
 								<div class="row">
 									<div class="6u 12u$(mobile)"><input type="text" name="login" placeholder="Login" /></div>
 									</br></br></br>
-									<div class="6u 12u$(mobile)"><input type="text" name="mdp" placeholder="Mot de passe" /></div>				
+									<div class="6u 12u$(mobile)"><input type="password" name="mdp" placeholder="Mot de passe" /></div>				
 								</div>
 								</br>
 								<div align = "center" class="12u$">

@@ -10,7 +10,7 @@ try {
 $nomE=$_GET['nomEntreprise'];
 $rqt = $connexion->query("SELECT * FROM ".$nomE."_employe");
 $infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
-$listePresta = $connexion->query("SELECT id_presta FROM ".$nomE."_prestation");
+$listePresta = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
 $listeEmpCpt = $connexion->query("SELECT * FROM ".$nomE."_employe");
 $listePlan = $connexion->query("SELECT * FROM ".$nomE."_planning");
 $i = $infoE->fetch(PDO::FETCH_OBJ);
@@ -136,7 +136,7 @@ if(isset($_POST['modifie'])){
 								}
 							}
 							?>
-							<form method="post" action="">
+							<form method="post" action="" class="formulaire">
 								<div class="6u 12u$(mobile)"><select name="employe_modif">
 								<?php 
 								$listeEmp = $connexion->query("SELECT id_employe, nom_employe, prenom_employe FROM ".$nomE."_employe");
@@ -156,24 +156,52 @@ if(isset($_POST['modifie'])){
 							
 							</br>
 							<h2>Ajout d'un employé</h2>
-							<form method="post" action="">
+							<form method="post" action="" class="formulaire">
 								<div class="row">
 								</br>
-									Nom de l'employé : <div class="6u 12u$(mobile)"><input type="text" name="nom"  /></div>			
+									Nom de l'employé : <div class="6u 12u$(mobile)"><input type="text" name="nom"  /></div>	
 									</br></br></br>
 									Prénom de l'employé: <div class="6u 12u$(mobile)"><input type="text" name="prenom" /></div>				
 									</br></br></br>
-									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" /></div>	
+									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" /></div>		
 									</br></br></br>
-									Adresse mail : <div class="6u 12u$(mobile)"><input type="text" name="mail" /></div>				
+									Adresse mail : <div class="6u 12u$(mobile)"><input type="text" name="mail" /></div>			
 									</br></br></br>
-									Numéro de téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" /></div>				
+									Numéro de téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" /></div>					
 									</br></br></br>
-									Compétence 1 : <div class="6u 12u$(mobile)"><input type="text" name="presta_1" /></div>
+									Compétence 1 : <div class="6u 12u$(mobile)"><select name="presta_1">
+										<option value=""  selected="selected"></option>
+									<?php 
+									while($rqtPresta1=$listePresta->fetch(PDO::FETCH_OBJ)){
+										?>
+										<option value="<?php echo $rqtPresta1->id_presta;?>"><?php echo $rqtPresta1->descriptif_presta;?></option>
+									<?php 
+									}
+									?>
+									</select></div>	
 									</br></br></br>
-									Compétence 2 : <div class="6u 12u$(mobile)"><input type="text" name="presta_2" /></div>
+									Compétence 2 : <div class="6u 12u$(mobile)"><select name="presta_2">
+										<option value=""  selected="selected"></option>
+									<?php 
+									while($rqtPresta2=$listePresta->fetch(PDO::FETCH_OBJ)){
+										?>
+										<option value="<?php echo $rqtPresta2->id_presta;?>"><?php echo $rqtPresta2->descriptif_presta;?></option>
+									<?php 
+									}
+									?>
+									</select></div>
 									</br></br></br>
-									Compétence 3 : <div class="6u 12u$(mobile)"><input type="text" name="presta_3" /></div>
+									Compétence 3 :<div class="6u 12u$(mobile)"><select name="presta_3">
+										<option value=""  selected="selected"></option>
+									<?php 
+									while($rqtPresta3=$listePresta->fetch(PDO::FETCH_OBJ)){
+										?>
+										<option value="<?php echo $rqtPresta3->id_presta;?>"><?php echo $rqtPresta3->descriptif_presta;?></option>
+									<?php 
+									}
+									?>
+									</select></div>	
+									
 								</div>
 								</br>
 									
