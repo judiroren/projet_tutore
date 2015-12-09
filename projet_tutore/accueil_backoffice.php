@@ -6,9 +6,18 @@ $connexion = connect();
 $nomE=$_GET['nomEntreprise'];
 $rqt = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
 $i = $rqt->fetch(PDO::FETCH_OBJ);
+
+if(isset($_POST['login']) && isset($_POST['mdp']) && $_POST['login']==$i->loginAdmin && $_POST['mdp']==$i->mdpAdmin){
+	session_start();
+	$_SESSION["estConnecte"]=1;
+}
+if(isset($_POST['deco'])){
+	session_destroy();
+}
+
 $planning = $connexion->query('SELECT * FROM '.$nomE.'_planning JOIN '.$nomE.'_employe ON code_employe = id_employe');
 $reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_employe ON employe = id_employe JOIN '.$nomE.'_client ON client = id_client JOIN '.$nomE.'_prestation ON presta = id_presta');
-
+$absences = $connexion->query('SELECT * FROM '.$nomE.'_absence JOIN '.$nomE.'_employe ON code_employe = id_employe');
 
 
 ?>
@@ -34,9 +43,10 @@ $reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_empl
 							<h1><?php echo $nomE?></h1>
 							<p>Page de gestion de l'entreprise</p>
 							<?php 
-							if(!empty($_POST['login']) && !empty($_POST['mdp']) && $_POST['login']==$i->loginAdmin && $_POST['mdp']==$i->mdpAdmin ){
+							if(isset($_SESSION["estConnecte"])){
 							?>
 							
+								<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
 								<a href="modif_entreprise.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des informations de l'entreprise </a></br>
 								<a href="ajout_employe.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des employés </a></br>
 								<a href="ajout_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
@@ -56,7 +66,7 @@ $reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_empl
 								</div>
 								</br>
 								<div align = "center" class="12u$">
-									<input type="submit" value="Connection" />
+									<input type="submit" name ="connecte" value="Connection" />
 								</div>
 							</form>
 							<?php } ?>
@@ -73,6 +83,8 @@ $reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_empl
 					
 						<div class="container">
 							<h1>Page d'accueil back-office <br> Entreprise <?php echo $nomE;?></h1>
+							<h3>Planning : </h3>
+							<?php if($planning->rowCount()==0){ echo "Pas de planning à afficher.";}else{?>
 							<table>
 									<tr><td rowspan="2"></td><td colspan="2">Lundi</td><td colspan="2">Mardi</td><td colspan="2">Mercredi</td><td colspan="2">Jeudi</td><td colspan="2">Vendredi</td><td colspan="2">Samedi</td></tr>
 									<tr>
@@ -101,10 +113,12 @@ $reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_empl
 											}
 									
 										}
+								}
 									?>
 								</table>
 								
-								<h1>Liste des réservations</h1>
+								<h3>Liste des réservations : </h3>
+								<?php if($reserva->rowCount()==0){ echo "Pas de réservation en attente."; } else { ?>
 								<table>
 								<tr><td>Date </br>(année:mois:jour)</td><td>Heure</td><td>Employé</td><td>Client</td><td>Prestation</td><td>Déjà payé ?</td></tr>
 								<?php 
@@ -117,6 +131,22 @@ $reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_empl
 									}
 								?>
 								</table>
+								<?php } ?>
+								
+								<h3>Liste des absences : </h3>
+								<?php if($absences->rowCount()==0){ echo "Pas d'absences d'enregistrée."; } else { ?>
+								<table>
+								<tr><td> Employé </td><td>Date de début du congé</td><td>Date de fin du congé</td><td> Motif </td></tr>
+								<?php 
+									while($valeur3 = $absences->fetch(PDO::FETCH_OBJ)){
+										$idEmploye = $valeur3->nom_employe ." ". $valeur3->prenom_employe;
+								?>
+									<tr><td> <?php echo $idEmploye;?> </td><td><?php echo $valeur3->dateDebut;?></td><td><?php echo $valeur3->dateFin;?></td><td><?php echo $valeur3->motif;?></td></tr>
+								<?php 
+									}
+								?>
+								</table>
+								<?php } ?>
 						</div>
 
 						

@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<?php 
+<?php
 try {
 	$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "root", "" );
 	$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -66,8 +66,14 @@ if(isset($_POST['ajout'])){
 }
 
 if(isset($_POST['supprime'])){
-	$connexion->exec("DELETE FROM ".$nomE."_planning WHERE code_employe='".$_POST['employe_modif']."'");
-	$connexion->exec("DELETE FROM ".$nomE."_employe WHERE id_employe='".$_POST['employe_modif']."'");
+	$rqt = $connexion->query('SELECT * FROM '.$nomE.'_reserv WHERE employe = "'.$_POST['employe_modif'].'"');
+	if($rqt->rowCount()==0){
+		$connexion->exec("DELETE FROM ".$nomE."_planning WHERE code_employe='".$_POST['employe_modif']."'");
+		$connexion->exec("DELETE FROM ".$nomE."_employe WHERE id_employe='".$_POST['employe_modif']."'");
+		$supprimeOk = 1;
+	}else{
+		$supprimeOk = 0;
+	}
 }
 if(isset($_POST['modifie'])){
 	header('Location: http://localhost/projet_tutore/projet_tutore/modif_employe.php?nomEntreprise='.$nomE.'&id_employe='.$_POST['employe_modif']);
@@ -95,11 +101,12 @@ if(isset($_POST['modifie'])){
 							} ?>
 							<h1><?php echo $nomE?></h1>
 							<p>Gestion des employés</p>
+							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
 							<a href="modif_entreprise.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des informations de l'entreprise </a></br>
 							<a href="ajout_employe.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des employés </a></br>
 							<a href="ajout_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
 							<a href="gestion_absence.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des absences </a></br>
-							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
+							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" name="deco" value="Déconnexion"></a>
 
 						</div>
 						
@@ -122,7 +129,11 @@ if(isset($_POST['modifie'])){
 								echo "<p> Ajout d'employé effectué </p>";
 							}
 							if(isset($_POST['supprime'])){
-								echo "<p> Suppression d'employé effectué </p>";
+								if($supprimeOk==1){
+									echo "<p> Suppression d'employé effectué. </p>";
+								}else{
+									echo "<p> Suppression d'employe impossible : cet employé à encore des rendez-vous de prévu. ";	
+								}
 							}
 							?>
 							<form method="post" action="">
