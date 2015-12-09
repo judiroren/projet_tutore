@@ -21,7 +21,7 @@
 				$connexion->exec("CREATE TABLE ".$tclient." ( id_client CHAR(8) PRIMARY KEY, nom_client VARCHAR(40), prenom_client VARCHAR(50), mail VARCHAR(50), login_client VARCHAR(30), mdp_client VARCHAR(30))");
 				$connexion->exec("CREATE TABLE ".$treserv." ( id_reserv CHAR(8) PRIMARY KEY, client CHAR(8), employe CHAR(8), presta CHAR(8), paye BOOLEAN, date DATE, heure TIME)");
 				$connexion->exec("CREATE TABLE ".$tplanning." (
-  									`id_agenda` varchar(150) PRIMARY KEY,
+  									`id_agenda` char(8) PRIMARY KEY,
 									`code_employe` char(8) NOT NULL,
  									`LundiM` BOOLEAN, `LundiA` BOOLEAN,
   									`MardiM` BOOLEAN, `MardiA` BOOLEAN,
