@@ -47,23 +47,30 @@ if(isset($_POST['ajout'])){
 	$cpt = 0;
 	$prefixe = 'PLAN';
 	$ajout = "oui";
+	$planOk = 1;
 	while($val=$listePlan->fetch(PDO::FETCH_OBJ)){
+		if($val->code_employe==$code){
+			$planOk = 0;
+		}
 		$cpt++;
 	}
-	$cpt++;
-	if($cpt<9){
-		$code = $prefixe.'000'.$cpt;
-	}else if($cpt<99){
-		$code = $prefixe.'00'.$cpt;
-	}else if($cpt<999){
-		$code = $prefixe.'0'.$cpt;
-	}else if($cpt<9999){
-		$code = $prefixe.$cpt;
-	}else{
-		$ajout = "non";
+	if($planOk==1){
+		$cpt++;
+		if($cpt<9){
+			$code = $prefixe.'000'.$cpt;
+		}else if($cpt<99){
+			$code = $prefixe.'00'.$cpt;
+		}else if($cpt<999){
+			$code = $prefixe.'0'.$cpt;
+		}else if($cpt<9999){
+			$code = $prefixe.$cpt;
+		}else{
+			$ajout = "non";
+		}
+		$connexion->exec("INSERT INTO ".$nomE."_planning(id_agenda, code_employe, LundiM, LundiA, MardiM, MardiA, MercrediM, MercrediA, JeudiM, JeudiA, VendrediM, VendrediA, SamediM, SamediA) VALUES ('".$code."', '".$idemp->id_employe."', ".$LundiM.", ".$LundiA.", ".$MardiM.", ".$MardiA.", ".$MercrediM.", ".$MercrediA.", ".$JeudiM.", ".$JeusiA.", ".$VendrediM.", ".$VendrediA.", ".$SamediM.", ".$SamediA.")");
 	}
-	$connexion->exec("INSERT INTO ".$nomE."_planning(id_agenda, code_employe, LundiM, LundiA, MardiM, MardiA, MercrediM, MercrediA, JeudiM, JeudiA, VendrediM, VendrediA, SamediM, SamediA) VALUES ('".$code."', '".$idemp->id_employe."', ".$LundiM.", ".$LundiA.", ".$MardiM.", ".$MardiA.", ".$MercrediM.", ".$MercrediA.", ".$JeudiM.", ".$JeusiA.", ".$VendrediM.", ".$VendrediA.", ".$SamediM.", ".$SamediA.")");
 }
+	
 
 if(isset($_POST['supprime'])){
 	$rqt = $connexion->query('SELECT * FROM '.$nomE.'_reserv WHERE employe = "'.$_POST['employe_modif'].'"');
@@ -126,13 +133,17 @@ if(isset($_POST['modifie'])){
 							<h1>Gestion des employés de l'entreprise</h1>
 							<?php 
 							if(isset($_POST['ajout'])){
-								echo "<p> Ajout d'employé effectué </p>";
+								if($planOk==1){
+									echo "<p> Ajout de planning effectué </p>";
+								}else{
+									echo "<p> Ajout de planning impossible : il existe déjà un emploi du temps associé à cet employé. </p>";
+								}
 							}
 							if(isset($_POST['supprime'])){
 								if($supprimeOk==1){
 									echo "<p> Suppression d'employé effectué. </p>";
 								}else{
-									echo "<p> Suppression d'employe impossible : cet employé à encore des rendez-vous de prévu. ";	
+									echo "<p> Suppression d'employe impossible : cet employé à encore des rendez-vous de prévu. </p>";	
 								}
 							}
 							?>
