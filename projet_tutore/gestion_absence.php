@@ -109,7 +109,6 @@ if(isset($_POST['ajout'])){
 							</br>
 							<h2>Ajout d'une absence</h2>
 							<form method="post" action="">
-								<div class="row">
 								</br>
 									<div class="6u 12u$(mobile)"><select name="employe_absent">
 									<?php 
@@ -129,7 +128,6 @@ if(isset($_POST['ajout'])){
 									Fin de l'absence : <div class="6u 12u$(mobile)"><input type="date" name="fin"></div>
 									</br>
 									</div>
-								</div>
 								</br>			
 								<input type="hidden" name="ajout" value="ok"> 
 								<div align = "center" class="12u$">

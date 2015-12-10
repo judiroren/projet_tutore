@@ -1,11 +1,7 @@
 <!DOCTYPE HTML>
 <?php
-	try {
-			$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "root", "" ); 	
-			$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		} catch (PDOException $e) {
-			echo 'Connexion échouée : ' . $e->getMessage();
-		}
+require "fonctions.inc.php";
+$connexion = connect();
 		
 			$temploye = $_POST['entreprise']."_employe";
 			$tprestation = $_POST['entreprise']."_prestation";
@@ -14,7 +10,7 @@
 			$tplanning = $_POST['entreprise']."_planning";
 			$tabsence = $_POST['entreprise']."_absence";
 	
-			$mdpHash = md5($_POST['mdp']);
+			$mdpHash = password_hash($_POST['mdp'],PASSWORD_DEFAULT);
 			$connexion->exec("INSERT INTO entreprise(nomEntreprise, mailEntreprise, loginAdmin, mdpAdmin) VALUES ('".$_POST['entreprise']."', '".$_POST['mail']."', '".$_POST['login']."', '".$mdpHash."')");
 		   try{
 				$connexion->exec("CREATE TABLE ".$temploye." ( id_employe CHAR(8) PRIMARY KEY, nom_employe VARCHAR(40), prenom_employe VARCHAR(50), competenceA CHAR(8), competenceB CHAR(8), competenceC CHAR(8), telephone_emp CHAR(10), adresse_emp VARCHAR(200), mail_emp VARCHAR(50))");
@@ -80,12 +76,10 @@
 
 							<h1>Inscription d'une entreprise sur le portail : Résumé</h1>
 							<p>Ajout des informations de l'entreprise à la table 'entreprise'</p>
-							<p>Table des employés <?php echo $_POST['entreprise']?>_employe créée</p>
-							<p>Table des clients <?php echo $_POST['entreprise']?>_client créée</p>
-							<p>Table des prestations <?php echo $_POST['entreprise']?>_prestation créée</p>
-							<p>Table des réservations <?php echo $_POST['entreprise']?>_reserv créée</p>
-							<p>Table des emplois du temps <?php echo $_POST['entreprise']?>_planning créée</p>
-							<p>Table des absences <?php echo $_POST['entreprise']?>_absence créée</p>
+							<p>Tables de l'entreprise <?php echo $_POST['entreprise']?>créés : employés, client, absences, prestations, réservations et planning</p>
+							<p>Login administrateur : <?php echo $_POST['login']?></p>
+							<p>Mot de passe administrateur : <?php echo $_POST['mdp']?></p>
+							<p>Adresse mail de l'entreprise : <?php echo $_POST['mail']?></p>
 							<p>Lien permettant l'accès à l'accueil côté entreprise :  </br>
 							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $_POST['entreprise'] ?>"> "http://localhost/projet_tutore/projet_tutore/accueil_backoffice.php?nomEntreprise=<?php echo $_POST['entreprise'] ?>" </a></p></br>
 							<p>Lien permettant l'accès à l'accueil côté client :  </br>

@@ -1,11 +1,7 @@
 <!DOCTYPE HTML>
 <?php
-try {
-	$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "root", "" );
-	$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-	echo 'Connexion échouée : ' . $e->getMessage();
-}
+require "fonctions.inc.php";
+$connexion = connect();
 
 $nomE=$_GET['nomEntreprise'];
 $id=$_GET['id_presta'];
@@ -74,22 +70,18 @@ if(isset($_POST['modif'])){
 							</br>
 							<h2>Ajout d'une prestation</h2>
 							<form method="post" action="">
-								<div class="row">
+								
 								</br>
 									Descriptif de la prestation : </br>
 									<div class="6u 12u$(mobile)"><textarea name="descrip" ><?php echo $presta->descriptif_presta; ?></textarea></div>			
-									</br></br></br>
-									</br></br></br>
-									</br></br></br></br></br>
+									</br>
 									Prix de la prestation (en €): <div class="6u 12u$(mobile)"><input type="text" name="prix" value=<?php echo $presta->prix;?>></div>				
-									</br></br></br>
+									</br>
 									Durée de la prestation (en minutes) : <div class="6u 12u$(mobile)"><input type="text" name="duree" value=<?php echo $presta->duree;?>></div>	
-									</br></br></br>
-									Paiement PayPal :</br> <input type="checkbox" name="paypal" value=1 <?php if($presta->paypal==1){echo "checked='checked'";}?>/>
-									
-									 
-								</div>
-								</br>
+									</br>
+									Paiement PayPal : <input type="checkbox" name="paypal" value=1 <?php if($presta->paypal==1){echo "checked='checked'";}?>/>
+								
+								</br></br>
 								
 								<input type="hidden" name="modif" value="ok"> 
 								<div align = "center" class="12u$">

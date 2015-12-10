@@ -1,12 +1,11 @@
+<?php
+session_start();
+?>
 <!DOCTYPE HTML>
 <?php
 
-try {
-	$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "root", "" );
-	$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-	echo 'Connexion échouée : ' . $e->getMessage();
-}
+require "fonctions.inc.php";
+$connexion = connect();
 
 $nom=$_GET['nomEntreprise'];
 $rqt = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nom.'"');
@@ -14,7 +13,13 @@ $i = $rqt->fetch(PDO::FETCH_OBJ);
 $nomE = $i->nomEntreprise;
 
 if(isset($_POST['verif'])){
-	$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$_POST['logo']."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."', mdpAdmin = '".$_POST['mdp']."' WHERE nomEntreprise = '".$nomE."'");
+	if(!empty($_POST['mdp'])){
+		$mdp = md5($_POST['mdp']);
+		$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$_POST['logo']."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."', mdpAdmin = '".$mdp."' WHERE nomEntreprise = '".$nomE."'");
+	}else{
+		$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$_POST['logo']."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."' WHERE nomEntreprise = '".$nomE."'");
+	}
+	
 }
 ?>
 
@@ -68,24 +73,26 @@ if(isset($_POST['verif'])){
 							}
 							?>
 							<form method="post" action="">
-								<div class="row">
 								</br>
-									E-mail : <div class="6u 12u$(mobile)"><input type="text" name="mail" value="<?php echo $i->mailEntreprise?>" /></div>			
-									</br></br></br>
-									Téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" value="<?php echo $i->telEntreprise?>"/></div>				
-									</br></br></br>
-									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" value="<?php echo $i->adresseEntreprise?>"/></div>	
-									</br></br></br>
-									URL du logo : <div class="6u 12u$(mobile)"><input type="text" name="logo" value="<?php echo $i->logoEntreprise?>"/></div>				
-									</br></br></br>
-								Compte administrateur :	</br>
+									<h3>Compte administrateur :	</h3></br>
 									Login : <div class="6u 12u$(mobile)"><input type="text" name="login" value="<?php echo $i->loginAdmin?>"/></div>				
-									</br></br></br>
-									Mot de passe : <div class="6u 12u$(mobile)"><input type="text" name="mdp" value="<?php echo $i->mdpAdmin?>"/></div>								
-									</br></br></br>
-								Description de l'entreprise : <div class="6u 12u$(mobile)"><textarea name="descrip" ><?php echo $i->descEntreprise?></textarea></div>				
+									</br>
+									Mot de passe : <div class="6u 12u$(mobile)"><input type="text" name="mdp" /></div>								
+									</br>
+									<h3>Informations générale : </h3></br>
+									E-mail : <div class="6u 12u$(mobile)"><input type="text" name="mail" value="<?php echo $i->mailEntreprise?>" /></div>			
+									</br>
+									Téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" value="<?php echo $i->telEntreprise?>"/></div>				
+									</br>
+									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" value="<?php echo $i->adresseEntreprise?>"/></div>	
+									</br>
+									URL du logo : <div class="6u 12u$(mobile)"><input type="text" name="logo" value="<?php echo $i->logoEntreprise?>"/></div>				
+									</br>
+									Description de l'entreprise : <div class="6u 12u$(mobile)"><textarea name="descrip" ><?php echo $i->descEntreprise?></textarea></div>				
+								
+								
 									<input type="hidden" name="verif" value="ok"> 
-								</div>
+								
 								</br>
 								<div align = "center" class="12u$">
 									<input type="submit" value="Valider" />

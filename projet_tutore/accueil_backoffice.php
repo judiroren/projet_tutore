@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE HTML>
 <?php
 require "fonctions.inc.php";
@@ -10,11 +13,7 @@ if(isset($_POST['mdp'])){
 	$mdp =md5($_POST['mdp']);
 }
 if(isset($_POST['login']) && isset($_POST['mdp']) && $_POST['login']==$i->loginAdmin && $mdp == $i->mdpAdmin ){
-	session_start();
 	$_SESSION["estConnecte"]=1;
-}
-if(isset($_POST['deco'])){
-	session_destroy();
 }
 
 $planning = $connexion->query('SELECT * FROM '.$nomE.'_planning JOIN '.$nomE.'_employe ON code_employe = id_employe');

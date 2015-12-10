@@ -1,60 +1,36 @@
+<?php
+session_start();
+?>
 <!DOCTYPE HTML>
 <?php
-try {
-	$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "root", "" );
-	$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-	echo 'Connexion échouée : ' . $e->getMessage();
-}
+require "fonctions.inc.php";
+$connexion = connect();
 
 $nomE=$_GET['nomEntreprise'];
 $rqt = $connexion->query("SELECT * FROM ".$nomE."_employe");
 $infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
-$listePresta = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
+$listePresta1 = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
+$listePresta2 = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
+$listePresta3 = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
 $listeEmpCpt = $connexion->query("SELECT * FROM ".$nomE."_employe");
+$listeEmpVerif = $connexion->query("SELECT nom_employe, prenom_employe FROM ".$nomE."_employe");
 $listePlan = $connexion->query("SELECT * FROM ".$nomE."_planning");
 $i = $infoE->fetch(PDO::FETCH_OBJ);
 
 if(isset($_POST['ajout'])){
-	$cpt = 0;
-	$prefixe = 'EMPL';
-	$ajout = "oui";
-	while($val=$listeEmpCpt->fetch(PDO::FETCH_OBJ)){
-		$cpt++;
-	}
-	$cpt++;
-	if($cpt<9){
-		$code = $prefixe.'000'.$cpt;
-	}else if($cpt<99){
-		$code = $prefixe.'00'.$cpt;
-	}else if($cpt<999){
-		$code = $prefixe.'0'.$cpt;
-	}else if($cpt<9999){
-		$code = $prefixe.$cpt;
-	}else{
-		$ajout = "non";
-	}
-	$connexion->exec("INSERT INTO ".$nomE."_employe(id_employe, nom_employe, prenom_employe, adresse_emp, mail_emp, telephone_emp, competenceA, competenceB, competenceC) VALUES ('".$code."', '".$_POST['nom']."', '".$_POST['prenom']."', '".$_POST['adresse']."', '".$_POST['mail']."', '".$_POST['tel']."', '".$_POST['presta_1']."', '".$_POST['presta_2']."', '".$_POST['presta_3']."')");
-	$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
-	$MardiM = (isset($_POST['MarM']) )? 1 : 0;		$MardiA = (isset($_POST['MarA']) )? 1 : 0;
-	$MercrediM = (isset($_POST['MerM']) )? 1 : 0;	$MercrediA = (isset($_POST['MerA']) )? 1 : 0;
-	$JeudiM = (isset($_POST['JeuM']) )? 1 : 0;		$JeusiA = (isset($_POST['JeuA']) )? 1 : 0;
-	$VendrediM = (isset($_POST['VenM']) )? 1 : 0;	$VendrediA = (isset($_POST['VenA']) )? 1 : 0;
-	$SamediM = (isset($_POST['SamM']) )? 1 : 0;		$SamediA = (isset($_POST['SamA']) )? 1 : 0;
-	$rqt2 = $connexion->query("SELECT id_employe FROM ".$nomE."_employe WHERE nom_employe = '".$_POST['nom']."'");
-	$idemp = $rqt2->fetch(PDO::FETCH_OBJ);
-	
-	$cpt = 0;
-	$prefixe = 'PLAN';
-	$ajout = "oui";
-	$planOk = 1;
-	while($val=$listePlan->fetch(PDO::FETCH_OBJ)){
-		if($val->code_employe==$code){
-			$planOk = 0;
+	$ajoutOk = 1;
+	while($val=$listeEmpVerif->fetch(PDO::FETCH_OBJ)){
+		if($val->nom_employe==$_POST['nom'] && $val->prenom_employe==$_POST['prenom']){
+			$ajoutOk = 0;
 		}
-		$cpt++;
 	}
-	if($planOk==1){
+	if($ajoutOk == 1){
+		$cpt = 0;
+		$prefixe = 'EMPL';
+		$ajoutE = "oui";
+		while($val=$listeEmpCpt->fetch(PDO::FETCH_OBJ)){
+			$cpt++;
+		}
 		$cpt++;
 		if($cpt<9){
 			$code = $prefixe.'000'.$cpt;
@@ -65,10 +41,40 @@ if(isset($_POST['ajout'])){
 		}else if($cpt<9999){
 			$code = $prefixe.$cpt;
 		}else{
-			$ajout = "non";
+			$ajoutE = "non";
+		}
+		$connexion->exec("INSERT INTO ".$nomE."_employe(id_employe, nom_employe, prenom_employe, adresse_emp, mail_emp, telephone_emp, competenceA, competenceB, competenceC) VALUES ('".$code."', '".$_POST['nom']."', '".$_POST['prenom']."', '".$_POST['adresse']."', '".$_POST['mail']."', '".$_POST['tel']."', '".$_POST['presta_1']."', '".$_POST['presta_2']."', '".$_POST['presta_3']."')");
+		$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
+		$MardiM = (isset($_POST['MarM']) )? 1 : 0;		$MardiA = (isset($_POST['MarA']) )? 1 : 0;
+		$MercrediM = (isset($_POST['MerM']) )? 1 : 0;	$MercrediA = (isset($_POST['MerA']) )? 1 : 0;
+		$JeudiM = (isset($_POST['JeuM']) )? 1 : 0;		$JeusiA = (isset($_POST['JeuA']) )? 1 : 0;
+		$VendrediM = (isset($_POST['VenM']) )? 1 : 0;	$VendrediA = (isset($_POST['VenA']) )? 1 : 0;
+		$SamediM = (isset($_POST['SamM']) )? 1 : 0;		$SamediA = (isset($_POST['SamA']) )? 1 : 0;
+		$rqt2 = $connexion->query("SELECT id_employe FROM ".$nomE."_employe WHERE nom_employe = '".$_POST['nom']."'");
+		$idemp = $rqt2->fetch(PDO::FETCH_OBJ);
+		
+		$cpt = 0;
+		$prefixe = 'PLAN';
+		$ajoutP = "oui";
+		while($val=$listePlan->fetch(PDO::FETCH_OBJ)){
+			$cpt++;
+		}
+		$cpt++;
+		if($cpt<9){
+			$code = $prefixe.'000'.$cpt;
+		}else if($cpt<99){
+			$code = $prefixe.'00'.$cpt;
+		}else if($cpt<999){
+			$code = $prefixe.'0'.$cpt;
+		}else if($cpt<9999){
+			$code = $prefixe.$cpt;
+		}else{
+			$ajoutP = "non";
 		}
 		$connexion->exec("INSERT INTO ".$nomE."_planning(id_agenda, code_employe, LundiM, LundiA, MardiM, MardiA, MercrediM, MercrediA, JeudiM, JeudiA, VendrediM, VendrediA, SamediM, SamediA) VALUES ('".$code."', '".$idemp->id_employe."', ".$LundiM.", ".$LundiA.", ".$MardiM.", ".$MardiA.", ".$MercrediM.", ".$MercrediA.", ".$JeudiM.", ".$JeusiA.", ".$VendrediM.", ".$VendrediA.", ".$SamediM.", ".$SamediA.")");
+		
 	}
+	
 }
 	
 
@@ -113,7 +119,7 @@ if(isset($_POST['modifie'])){
 							<a href="ajout_employe.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des employés </a></br>
 							<a href="ajout_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
 							<a href="gestion_absence.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des absences </a></br>
-							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" name="deco" value="Déconnexion"></a>
+							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
 
 						</div>
 						
@@ -133,10 +139,19 @@ if(isset($_POST['modifie'])){
 							<h1>Gestion des employés de l'entreprise</h1>
 							<?php 
 							if(isset($_POST['ajout'])){
-								if($planOk==1){
-									echo "<p> Ajout de planning effectué </p>";
+								if($ajoutOk==0){
+									echo "<p> Cet employé existe déjà !</p>";
 								}else{
-									echo "<p> Ajout de planning impossible : il existe déjà un emploi du temps associé à cet employé. </p>";
+									if($ajoutE=="oui"){
+										echo "<p> Ajout d'employé effectué. </p>";
+									}else{
+										echo "<p> Nombre maximum d'employé atteint. </p>";
+									}
+									if($ajoutP=="oui"){
+										echo "<p> Ajout de planning effectué. </p>";
+									}else{
+										echo "<p> Nombre maximum de planning atteint. </p>";
+									}
 								}
 							}
 							if(isset($_POST['supprime'])){
@@ -168,44 +183,44 @@ if(isset($_POST['modifie'])){
 							</br>
 							<h2>Ajout d'un employé</h2>
 							<form method="post" action="" class="formulaire">
-								<div class="row">
+								
 								</br>
 									Nom de l'employé : <div class="6u 12u$(mobile)"><input type="text" name="nom"  /></div>	
-									</br></br></br>
+									</br>
 									Prénom de l'employé: <div class="6u 12u$(mobile)"><input type="text" name="prenom" /></div>				
-									</br></br></br>
+									</br>
 									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" /></div>		
-									</br></br></br>
+									</br>
 									Adresse mail : <div class="6u 12u$(mobile)"><input type="text" name="mail" /></div>			
-									</br></br></br>
+									</br>
 									Numéro de téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" /></div>					
-									</br></br></br>
+									</br>
 									Compétence 1 : <div class="6u 12u$(mobile)"><select name="presta_1">
 										<option value=""  selected="selected"></option>
 									<?php 
-									while($rqtPresta1=$listePresta->fetch(PDO::FETCH_OBJ)){
+									while($rqtPresta1=$listePresta1->fetch(PDO::FETCH_OBJ)){
 										?>
 										<option value="<?php echo $rqtPresta1->id_presta;?>"><?php echo $rqtPresta1->descriptif_presta;?></option>
 									<?php 
 									}
 									?>
 									</select></div>	
-									</br></br></br>
+									</br>
 									Compétence 2 : <div class="6u 12u$(mobile)"><select name="presta_2">
 										<option value=""  selected="selected"></option>
 									<?php 
-									while($rqtPresta2=$listePresta->fetch(PDO::FETCH_OBJ)){
+									while($rqtPresta2=$listePresta2->fetch(PDO::FETCH_OBJ)){
 										?>
 										<option value="<?php echo $rqtPresta2->id_presta;?>"><?php echo $rqtPresta2->descriptif_presta;?></option>
 									<?php 
 									}
 									?>
 									</select></div>
-									</br></br></br>
+									</br>
 									Compétence 3 :<div class="6u 12u$(mobile)"><select name="presta_3">
 										<option value=""  selected="selected"></option>
 									<?php 
-									while($rqtPresta3=$listePresta->fetch(PDO::FETCH_OBJ)){
+									while($rqtPresta3=$listePresta3->fetch(PDO::FETCH_OBJ)){
 										?>
 										<option value="<?php echo $rqtPresta3->id_presta;?>"><?php echo $rqtPresta3->descriptif_presta;?></option>
 									<?php 
@@ -213,9 +228,9 @@ if(isset($_POST['modifie'])){
 									?>
 									</select></div>	
 									
-								</div>
+								
 								</br>
-									
+									<h3>Planning de l'employé : </h3>
 								<table>
 									<tr><td></td><td>Matin</td><td>Après-Midi</td></tr>
 									<tr><td>Lundi</td><td><input type="checkbox" name="LunM" value=1 /></td><td><input type="checkbox" name="LunA" value=1 /></td></tr>

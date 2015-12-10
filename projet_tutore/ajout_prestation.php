@@ -1,11 +1,7 @@
 <!DOCTYPE HTML>
 <?php
-try {
-	$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "root", "" );
-	$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-	echo 'Connexion échouée : ' . $e->getMessage();
-}
+require "fonctions.inc.php";
+$connexion = connect();
 
 $nomE=$_GET['nomEntreprise'];
 $infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
@@ -129,25 +125,20 @@ if(isset($_POST['modifie'])){
 							</form>
 							
 							</br>
-							<h2>Ajout d'une prestation</h2>
+							<h3>Ajout d'une prestation</h3>
 							<form method="post" action="">
-								<div class="row">
 								</br>
 									Descriptif de la prestation : </br>
 									<div class="6u 12u$(mobile)"><textarea name="descrip" ></textarea></div>			
-									</br></br></br>
-									</br></br></br>
-									</br></br></br></br></br>
+									</br>
 									Prix de la prestation (en €): <div class="6u 12u$(mobile)"><input type="text" name="prix" /></div>				
-									</br></br></br>
+									</br>
 									Durée de la prestation (en minutes) : <div class="6u 12u$(mobile)"><input type="text" name="duree" /></div>	
-									</br></br></br>
-									Paiement PayPal :</br> <input type="checkbox" name="paypal" value=1 />
-									
-									 
-								</div>
-								</br>
-								<h2>Associer un employe à la nouvelle prestation</h2>
+									</br>
+									Paiement PayPal : <input type="checkbox" name="paypal" value=1 />
+								
+								</br></br>
+								<h3>Associer un employe à la nouvelle prestation</h3>
 								<select name="employe">
 									<?php 
 									while($valeur=$emp->fetch(PDO::FETCH_OBJ)){
