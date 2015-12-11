@@ -10,7 +10,7 @@ $connexion = connect();
 			$tplanning = $_POST['entreprise']."_planning";
 			$tabsence = $_POST['entreprise']."_absence";
 	
-			$mdpHash = password_hash($_POST['mdp'],PASSWORD_DEFAULT);
+			$mdpHash = md5($_POST['mdp']);
 			$connexion->exec("INSERT INTO entreprise(nomEntreprise, mailEntreprise, loginAdmin, mdpAdmin) VALUES ('".$_POST['entreprise']."', '".$_POST['mail']."', '".$_POST['login']."', '".$mdpHash."')");
 		   try{
 				$connexion->exec("CREATE TABLE ".$temploye." ( id_employe CHAR(8) PRIMARY KEY, nom_employe VARCHAR(40), prenom_employe VARCHAR(50), competenceA CHAR(8), competenceB CHAR(8), competenceC CHAR(8), telephone_emp CHAR(10), adresse_emp VARCHAR(200), mail_emp VARCHAR(50))");
