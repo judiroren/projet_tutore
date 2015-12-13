@@ -17,7 +17,7 @@ if(!empty($_POST['logo'])){
 }
 if(isset($_POST['verif'])){
 	if(isset($_POST['tel']) || !empty($_POST['mail']) || !empty($_POST['adresse'])){
-		if(!empty($_POST['tel']) && strlen($_POST['tel'])==10){
+		if(!empty($_POST['tel']) && strlen($_POST['tel'])==10 && !is_numeric($_POST['tel'])){
 			if(!empty($_POST['mail']) && filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 				if(!empty($_POST['mdp'])){
 					$mdp = md5($_POST['mdp']);

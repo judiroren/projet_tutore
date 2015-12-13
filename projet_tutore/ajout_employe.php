@@ -24,7 +24,7 @@ if(isset($_POST['ajout'])){
 	}elseif(empty($_POST['tel']) && empty($_POST['mail']) && empty($_POST['adresse'])){
 		$ajoutOk = 2;
 	}
-	if(!empty($_POST['tel']) && strlen($_POST['tel'])!=10){
+	if(!empty($_POST['tel']) && (strlen($_POST['tel'])!=10 || !is_numeric($_POST['tel']))){
 		$ajoutOk = 5;
 	}elseif(!empty($_POST['mail']) && !filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 		$ajoutOk = 6;
@@ -52,7 +52,7 @@ if(isset($_POST['ajout'])){
 		}else{
 			$ajoutOk = 3;
 		}
-			if(ajoutOk==1){
+			if($ajoutOk==1){
 				$connexion->exec("INSERT INTO ".$nomE."_employe(id_employe, nom_employe, prenom_employe, adresse_emp, mail_emp, telephone_emp, competenceA, competenceB, competenceC) VALUES ('".$code."', '".$_POST['nom']."', '".$_POST['prenom']."', '".$_POST['adresse']."', '".$_POST['mail']."', '".$_POST['tel']."', '".$_POST['presta_1']."', '".$_POST['presta_2']."', '".$_POST['presta_3']."')");
 				$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
 				$MardiM = (isset($_POST['MarM']) )? 1 : 0;		$MardiA = (isset($_POST['MarA']) )? 1 : 0;

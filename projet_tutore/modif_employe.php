@@ -41,7 +41,7 @@ if(isset($_POST['modif'])){
 		}
 	}
 	if(!empty($_POST['tel']) ){
-		if(strlen($_POST['tel'])!=10){
+		if(strlen($_POST['tel'])!=10 || !is_numeric($_POST['tel'])){
 			$modifOk = 4;
 		}
 	}

@@ -12,7 +12,8 @@ $chemin = $tabconfig["chemin"];
 			$treserv = $_POST['entreprise']."_reserv";
 			$tplanning = $_POST['entreprise']."_planning";
 			$tabsence = $_POST['entreprise']."_absence";
-			if(!empty($_POST['entreprise']) && !empty($_POST['mdp']) && !empty($_POST['mail']) && !empty($_POST['login']) && filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
+			if(!empty($_POST['entreprise']) && !empty($_POST['mdp']) && !empty($_POST['mail']) && !empty($_POST['login']) 
+					&& filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 				$mdpHash = md5($_POST['mdp']);
 				$connexion->exec("INSERT INTO entreprise(nomEntreprise, mailEntreprise, loginAdmin, mdpAdmin) VALUES ('".$_POST['entreprise']."', '".$_POST['mail']."', '".$_POST['login']."', '".$mdpHash."')");
 			   try{
