@@ -2,7 +2,10 @@
 <?php
 require "fonctions.inc.php";
 $connexion = connect();
-		
+
+$tabconfig = parse_ini_file("config.ini");
+$chemin = $tabconfig["chemin"];
+
 			$temploye = $_POST['entreprise']."_employe";
 			$tprestation = $_POST['entreprise']."_prestation";
 			$tclient = $_POST['entreprise']."_client";
@@ -91,9 +94,9 @@ $connexion = connect();
 							<p>Mot de passe administrateur : <?php echo $_POST['mdp']?></p>
 							<p>Adresse mail de l'entreprise : <?php echo $_POST['mail']?></p>
 							<p>Lien permettant l'accès à l'accueil côté entreprise :  </br>
-							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $_POST['entreprise'] ?>"> "http://localhost/accueil_backoffice.php?nomEntreprise=<?php echo $_POST['entreprise'] ?>" </a></p></br>
+							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $_POST['entreprise'] ?>"> "http://<?php echo $chemin?>/accueil_backoffice.php?nomEntreprise=<?php echo $_POST['entreprise'] ?>" </a></p></br>
 							<p>Lien permettant l'accès à l'accueil côté client :  </br>
-							<a href="accueil_client.php?nomEntreprise=<?php echo $_POST['entreprise'] ?>"> "http://localhost/accueil_client.php?nomEntreprise=<?php echo $_POST['entreprise'] ?>" </a></p></br>
+							<a href="accueil_client.php?nomEntreprise=<?php echo $_POST['entreprise'] ?>"> "http://<?php echo $chemin?>/accueil_client.php?nomEntreprise=<?php echo $_POST['entreprise'] ?>" </a></p></br>
 							<?php
 							} 
 							?>

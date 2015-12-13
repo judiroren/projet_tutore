@@ -11,16 +11,19 @@ $nom=$_GET['nomEntreprise'];
 $rqt = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nom.'"');
 $i = $rqt->fetch(PDO::FETCH_OBJ);
 $nomE = $i->nomEntreprise;
-
+$logo = '';
+if(!empty($_POST['logo'])){
+	$logo = 'images/'.$_POST['logo'];
+}
 if(isset($_POST['verif'])){
-	if(!empty($_POST['tel']) || !empty($_POST['mail']) || !empty($_POST['adresse'])){
+	if(isset($_POST['tel']) || !empty($_POST['mail']) || !empty($_POST['adresse'])){
 		if(!empty($_POST['tel']) && strlen($_POST['tel'])==10){
 			if(!empty($_POST['mail']) && filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 				if(!empty($_POST['mdp'])){
 					$mdp = md5($_POST['mdp']);
-					$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$_POST['logo']."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."', mdpAdmin = '".$mdp."' WHERE nomEntreprise = '".$nomE."'");
+					$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$logo."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."', mdpAdmin = '".$mdp."' WHERE nomEntreprise = '".$nomE."'");
 				}else{
-					$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$_POST['logo']."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."' WHERE nomEntreprise = '".$nomE."'");
+					$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$logo."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."' WHERE nomEntreprise = '".$nomE."'");
 				}
 			}else{
 				$mailErr=0;
@@ -106,7 +109,11 @@ if(isset($_POST['verif'])){
 									</br>
 									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" value="<?php echo $i->adresseEntreprise?>"/></div>	
 									</br>
-									Logo (Lien si l'image vient d'Internet, ou son chemin d'accès si elle est dans le dossier www): <div class="6u 12u$(mobile)"><input type="text" name="logo" value="<?php echo $i->logoEntreprise?>"/></div>				
+									<?php 
+									$tailleLogo = strlen($i->logoEntreprise)-7;
+									$nomlogo = substr($i->logoEntreprise, -$tailleLogo);
+									?>
+									Logo (nom du logo. Ce dernier doit être dans le dossier images): <div class="6u 12u$(mobile)"><input type="text" name="logo" value="<?php echo $nomlogo ?>"/></div>				
 									</br>
 									Description de l'entreprise : <div class="6u 12u$(mobile)"><textarea name="descrip" ><?php echo $i->descEntreprise?></textarea></div>				
 								
