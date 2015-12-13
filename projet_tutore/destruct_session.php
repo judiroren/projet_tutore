@@ -1,5 +1,7 @@
 <?php
 session_start();
 session_destroy();
-header('Location: http://localhost/projet_tutore/projet_tutore/accueil_backoffice.php?nomEntreprise='.$_GET['nomEntreprise']);
+$tabconfig = parse_ini_file("config.ini");
+$chemin = $tabconfig["chemin"];
+header('Location: http://'.$chemin.'/accueil_backoffice.php?nomEntreprise='.$_GET['nomEntreprise']);
 ?>

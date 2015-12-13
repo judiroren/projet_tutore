@@ -31,16 +31,25 @@ if(isset($_POST['ajout'])){
 	$ok = 0;
 	$erreurDate = 0;
 	$erreurReserv = 0;
-	$reserv = $connexion->query('SELECT date FROM '.$nomE.'_reserv WHERE employe = "'.$_POST['employe_absent'].'" AND date BETWEEN '.$_POST['debut'].' AND '.$_POST['fin']);
-	if($_POST['debut']>$_POST['fin']){
-		$erreurDate = 1;
-	}elseif ($reserv==NULL){
-		$erreurReserv = 1;
+	$erreurMotif = 0;
+	$erreurDateInconnu = 0;
+	if(empty($_POST['debut']) || empty($_POST['fin'])){
+		$erreurDateInconnu = 1;
 	}else{
-		$ok = 1;
-		$fin = 0;
-		$connexion->exec("INSERT INTO ".$nomE."_absence(id_absence, code_employe, motif, dateDebut, dateFin, absenceFini) VALUES ('".$code."', '".$_POST['employe_absent']."', '".$_POST['motif']."', '".$_POST['debut']."', '".$_POST['fin']."', '".$fin."')");
+		$reserv = $connexion->query('SELECT date FROM '.$nomE.'_reserv WHERE employe = "'.$_POST['employe_absent'].'" AND date BETWEEN '.$_POST['debut'].' AND '.$_POST['fin']);
+		if($_POST['debut']>$_POST['fin']){
+			$erreurDate = 1;
+		}elseif ($reserv==NULL){
+			$erreurReserv = 1;
+		}elseif(empty($_POST['motif'])){
+			$erreurMotif = 1;
+		}else{
+			$ok = 1;
+			$fin = 0;
+			$connexion->exec("INSERT INTO ".$nomE."_absence(id_absence, code_employe, motif, dateDebut, dateFin, absenceFini) VALUES ('".$code."', '".$_POST['employe_absent']."', '".$_POST['motif']."', '".$_POST['debut']."', '".$_POST['fin']."', '".$fin."')");
+		}
 	}
+	
 }
 
 ?>
@@ -98,6 +107,12 @@ if(isset($_POST['ajout'])){
 								}
 								if($erreurNbAbs == 1){
 									echo "<p> Erreur : Nombre d'absence max atteint !</p>";
+								}
+								if($erreurDateInconnu==1){
+									echo "<p> Erreur : Toutes les dates ne sont pas renseigné !</p>";
+								}
+								if($erreurMotif==1){
+									echo "<p> Erreur : Le motif n'a pas été renseigné !</p>";
 								}
 								if($ok==1){
 									echo "<p> Ajout d'absence effectué </p>";

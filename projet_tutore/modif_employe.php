@@ -9,22 +9,54 @@ $nomE=$_GET['nomEntreprise'];
 $listePresta1 = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
 $listePresta2 = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
 $listePresta3 = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
+
 $rqtEmp = $connexion->query('SELECT * FROM '.$nomE.'_employe WHERE id_employe = "'.$_GET['id_employe'].'"');
 $valEmp = $rqtEmp->fetch(PDO::FETCH_OBJ);
+
 $rqtPlan = $connexion->query('SELECT * FROM '.$nomE.'_planning WHERE code_employe = "'.$_GET['id_employe'].'"');
 $valPlan = $rqtPlan->fetch(PDO::FETCH_OBJ);
+
 $infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
 $i = $infoE->fetch(PDO::FETCH_OBJ);
 
+$listeEmpVerif = $connexion->query("SELECT nom_employe, prenom_employe FROM ".$nomE."_employe");
+$modifOk = 0;
+
+
 if(isset($_POST['modif'])){
-	$connexion->exec("UPDATE ".$nomE."_employe SET nom_employe = '".$_POST['nom']."', prenom_employe = '".$_POST['prenom']."', adresse_emp = '".$_POST['adresse']."', mail_emp = '".$_POST['mail']."', telephone_emp = '".$_POST['tel']."', competenceA = '".$_POST['presta_1']."', competenceB = '".$_POST['presta_2']."', competenceC = '".$_POST['presta_3']."' WHERE id_employe = '".$_GET['id_employe']."'");
-	$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
-	$MardiM = (isset($_POST['MarM']) )? 1 : 0;		$MardiA = (isset($_POST['MarA']) )? 1 : 0;
-	$MercrediM = (isset($_POST['MerM']) )? 1 : 0;	$MercrediA = (isset($_POST['MerA']) )? 1 : 0;
-	$JeudiM = (isset($_POST['JeuM']) )? 1 : 0;		$JeudiA = (isset($_POST['JeuA']) )? 1 : 0;
-	$VendrediM = (isset($_POST['VenM']) )? 1 : 0;	$VendrediA = (isset($_POST['VenA']) )? 1 : 0;
-	$SamediM = (isset($_POST['SamM']) )? 1 : 0;		$SamediA = (isset($_POST['SamA']) )? 1 : 0;
-	$connexion->exec("UPDATE ".$nomE."_planning SET LundiM = ".$LundiM.", LundiA = ".$LundiA.", MardiM = ".$MardiM.", MardiA = ".$MardiA.", MercrediM = ".$MercrediM.", MercrediA = ".$MercrediA.", JeudiM = ".$JeudiM.", JeudiA = ".$JeudiA.", VendrediM = ".$VendrediM.", VendrediA = ".$VendrediA.", SamediM = ".$SamediM.", SamediA = ".$SamediA." WHERE code_employe = '".$_GET['id_employe']."'");
+	
+	while($val=$listeEmpVerif->fetch(PDO::FETCH_OBJ)){
+		if($val->nom_employe==$_POST['nom'] && $val->prenom_employe==$_POST['prenom']){
+			if($valEmp->nom_employe!=$_POST['nom'] && $valEmp->prenom_employe!=$_POST['prenom']){
+				$modifOk = 1;
+			}
+		}
+	}
+	if(empty($_POST['tel']) && empty($_POST['mail']) && empty($_POST['adresse'])){
+		$modifOk = 2;
+	}
+	if(!empty($_POST['mail'])){
+		if( !filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
+			$modifOk = 3;
+		}
+	}
+	if(!empty($_POST['tel']) ){
+		if(strlen($_POST['tel'])!=10){
+			$modifOk = 4;
+		}
+	}
+	if(!empty($_POST['nom'])&&!empty($_POST['prenom'])){
+		if($modifOk==0){
+			$connexion->exec("UPDATE ".$nomE."_employe SET nom_employe = '".$_POST['nom']."', prenom_employe = '".$_POST['prenom']."', adresse_emp = '".$_POST['adresse']."', mail_emp = '".$_POST['mail']."', telephone_emp = '".$_POST['tel']."', competenceA = '".$_POST['presta_1']."', competenceB = '".$_POST['presta_2']."', competenceC = '".$_POST['presta_3']."' WHERE id_employe = '".$_GET['id_employe']."'");
+			$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
+			$MardiM = (isset($_POST['MarM']) )? 1 : 0;		$MardiA = (isset($_POST['MarA']) )? 1 : 0;
+			$MercrediM = (isset($_POST['MerM']) )? 1 : 0;	$MercrediA = (isset($_POST['MerA']) )? 1 : 0;
+			$JeudiM = (isset($_POST['JeuM']) )? 1 : 0;		$JeudiA = (isset($_POST['JeuA']) )? 1 : 0;
+			$VendrediM = (isset($_POST['VenM']) )? 1 : 0;	$VendrediA = (isset($_POST['VenA']) )? 1 : 0;
+			$SamediM = (isset($_POST['SamM']) )? 1 : 0;		$SamediA = (isset($_POST['SamA']) )? 1 : 0;
+			$connexion->exec("UPDATE ".$nomE."_planning SET LundiM = ".$LundiM.", LundiA = ".$LundiA.", MardiM = ".$MardiM.", MardiA = ".$MardiA.", MercrediM = ".$MercrediM.", MercrediA = ".$MercrediA.", JeudiM = ".$JeudiM.", JeudiA = ".$JeudiA.", VendrediM = ".$VendrediM.", VendrediA = ".$VendrediA.", SamediM = ".$SamediM.", SamediA = ".$SamediA." WHERE code_employe = '".$_GET['id_employe']."'");
+		}
+	}
 }
 
 ?>
@@ -75,7 +107,17 @@ if(isset($_POST['modif'])){
 							<h1>Gestion des employés de l'entreprise</h1>
 							<?php 
 							if(isset($_POST['modif'])){
-								echo "<p> Modification d'employé effectué </p>";
+								if($modifOk==1){
+									echo "<p> Modification impossible : il existe déjà un employé avec ce nom et ce prénom ! </p>";
+								}elseif($modifOk==2){
+									echo "<p> Modification impossible : il faut renseigner au moins 1 des 3 champs : téléphone, adresse postale ou adresse mail ! </p>";
+								}elseif($modifOk==3){
+									echo "<p> Modification impossible : adresse mail invalide ! </p>";
+								}elseif($modifOk==4){
+									echo "<p> Modification impossible : numéro de téléphone invalide ! </p>";
+								}else{
+									echo "<p> Modification d'employé effectué </p>";
+								}
 							}
 							?>
 							</br>

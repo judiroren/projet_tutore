@@ -15,11 +15,15 @@ if(isset($_POST['mdp'])){
 if(isset($_POST['login']) && isset($_POST['mdp']) && $_POST['login']==$i->loginAdmin && $mdp == $i->mdpAdmin ){
 	$_SESSION["estConnecte"]=1;
 }
-
+majAbsence($nomE);
 $planning = $connexion->query('SELECT * FROM '.$nomE.'_planning JOIN '.$nomE.'_employe ON code_employe = id_employe');
-$reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_employe ON employe = id_employe JOIN '.$nomE.'_client ON client = id_client JOIN '.$nomE.'_prestation ON presta = id_presta');
-$absences = $connexion->query('SELECT * FROM '.$nomE.'_absence JOIN '.$nomE.'_employe ON code_employe = id_employe');
-
+$absences = $connexion->query('SELECT * FROM '.$nomE.'_absence JOIN '.$nomE.'_employe ON code_employe = id_employe WHERE absenceFini = 0');
+if(isset($_POST['période']) && $_POST['période']==2){
+	$reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_employe ON employe = id_employe JOIN '.$nomE.'_client ON client = id_client JOIN '.$nomE.'_prestation ON presta = id_presta WHERE date = CURDATE()');
+}elseif(!isset($_POST['période']) || (isset($_POST['période']) && $_POST['période']==1)){
+	$tableau = tableauDate();
+	$reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_employe ON employe = id_employe JOIN '.$nomE.'_client ON client = id_client JOIN '.$nomE.'_prestation ON presta = id_presta WHERE date BETWEEN "'.$tableau[0][0].'" AND "'.$tableau[6][0].'"');
+}
 
 ?>
 
@@ -120,6 +124,15 @@ $absences = $connexion->query('SELECT * FROM '.$nomE.'_absence JOIN '.$nomE.'_em
 								
 								<h3>Liste des réservations : </h3>
 								<?php if($reserva->rowCount()==0){ echo "Pas de réservation en attente."; } else { ?>
+								<form class="formulaire" method="post" action="">
+								<div class="6u 12u$(mobile)">
+								<select name="période">
+									<option value=1 selected="selected">Prestation de la semaine</option>
+									<option value=2>Prestation de la journée</option>
+								</select>
+								<input class="periode" type="submit" value="Valider" >
+								</div>
+								</form>
 								<table>
 								<tr><td>Date </br>(année:mois:jour)</td><td>Heure</td><td>Employé</td><td>Client</td><td>Prestation</td><td>Déjà payé ?</td></tr>
 								<?php 

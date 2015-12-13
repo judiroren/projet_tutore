@@ -13,13 +13,25 @@ $i = $rqt->fetch(PDO::FETCH_OBJ);
 $nomE = $i->nomEntreprise;
 
 if(isset($_POST['verif'])){
-	if(!empty($_POST['mdp'])){
-		$mdp = md5($_POST['mdp']);
-		$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$_POST['logo']."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."', mdpAdmin = '".$mdp."' WHERE nomEntreprise = '".$nomE."'");
+	if(!empty($_POST['tel']) || !empty($_POST['mail']) || !empty($_POST['adresse'])){
+		if(!empty($_POST['tel']) && strlen($_POST['tel'])==10){
+			if(!empty($_POST['mail']) && filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
+				if(!empty($_POST['mdp'])){
+					$mdp = md5($_POST['mdp']);
+					$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$_POST['logo']."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."', mdpAdmin = '".$mdp."' WHERE nomEntreprise = '".$nomE."'");
+				}else{
+					$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$_POST['logo']."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."' WHERE nomEntreprise = '".$nomE."'");
+				}
+			}else{
+				$mailErr=0;
+			}
+		}else{
+			$telErr=0;
+		}
 	}else{
-		$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$_POST['logo']."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."' WHERE nomEntreprise = '".$nomE."'");
+		$champErr=0;
 	}
-	
+
 }
 ?>
 
@@ -69,7 +81,15 @@ if(isset($_POST['verif'])){
 							<h1>Modification des informations de l'entreprise</h1>
 							<?php 
 							if(isset($_POST['verif'])){
-								echo "<p> Changement effectué </p>";
+								if(isset($telErr)){
+									echo "<p> Changement impossible : Numéro de téléphone incorrect ! </p>";
+								}elseif(isset($mailErr)){
+									echo "<p> Changement impossible : Adresse mail invalide ! </p>";
+								}elseif(isset($champErr)){
+									echo "<p> Changement impossible : Au moins 1 des 3 champs suivant doit être renseigné : numéro de téléphone, adresse postale, adresse mail ! </p>";
+								}else{
+									echo "<p> Changement effectué ! </p>";
+								}
 							}
 							?>
 							<form method="post" action="">
@@ -77,7 +97,7 @@ if(isset($_POST['verif'])){
 									<h3>Compte administrateur :	</h3></br>
 									Login : <div class="6u 12u$(mobile)"><input type="text" name="login" value="<?php echo $i->loginAdmin?>"/></div>				
 									</br>
-									Mot de passe : <div class="6u 12u$(mobile)"><input type="text" name="mdp" /></div>								
+									Mot de passe (laissez vide pour garder le mot de passe courant): <div class="6u 12u$(mobile)"><input type="text" name="mdp" /></div>								
 									</br>
 									<h3>Informations générale : </h3></br>
 									E-mail : <div class="6u 12u$(mobile)"><input type="text" name="mail" value="<?php echo $i->mailEntreprise?>" /></div>			
@@ -86,7 +106,7 @@ if(isset($_POST['verif'])){
 									</br>
 									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" value="<?php echo $i->adresseEntreprise?>"/></div>	
 									</br>
-									URL du logo : <div class="6u 12u$(mobile)"><input type="text" name="logo" value="<?php echo $i->logoEntreprise?>"/></div>				
+									Logo (Lien si l'image vient d'Internet, ou son chemin d'accès si elle est dans le dossier www): <div class="6u 12u$(mobile)"><input type="text" name="logo" value="<?php echo $i->logoEntreprise?>"/></div>				
 									</br>
 									Description de l'entreprise : <div class="6u 12u$(mobile)"><textarea name="descrip" ><?php echo $i->descEntreprise?></textarea></div>				
 								

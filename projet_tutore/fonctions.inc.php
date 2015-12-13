@@ -100,4 +100,14 @@ function tableauDate(){
 	return $tab;
 }
 
+//Fonction qui va mettre à jour l'état des absences
+//c'est-à-dire si leur date de fin est passée
+function majAbsence($nomE){
+	$connexion = connect();
+	$rqt = $connexion->query('SELECT * FROM '.$nomE.'_absence WHERE dateFin < CURDATE() AND absenceFini = 0');
+	while($donnees=$rqt->fetch(PDO::FETCH_OBJ)){
+		$connexion->exec("UPDATE ".$nomE."_absence SET absenceFini = 1 WHERE id_absence = '".$donnees->id_absence."'");
+	}
+}
+
 ?>

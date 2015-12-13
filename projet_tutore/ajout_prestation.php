@@ -10,9 +10,18 @@ $i = $infoE->fetch(PDO::FETCH_OBJ);
 $emp = $connexion->query('SELECT * FROM '.$nomE.'_employe');
 
 if(isset($_POST['ajout'])){
+	$ajoutOk = 0;
+	
+	if(!filter_var($_POST['prix'],FILTER_VALIDATE_FLOAT)){
+		$ajoutOk=1;
+	}elseif(!filter_var($_POST['duree'],FILTER_VALIDATE_INT)){
+		$ajoutOk=2;
+	}elseif(empty($_POST['descrip'])){
+		$ajoutOk = 4;
+	}
+	
 	$cpt = 0;
 	$prefixe = 'PRES';
-	$ajout = "oui";
 	while($val=$listePresta->fetch(PDO::FETCH_OBJ)){
 		$cpt++;
 	}
@@ -26,28 +35,46 @@ if(isset($_POST['ajout'])){
 	}else if($cpt<9999){
 		$code = $prefixe.$cpt;
 	}else{
-		$ajout = "non";
+		$ajoutOk = 3;
 	}
 	
 	$paypal = (isset($_POST['paypal']) )? 1 : 0;
-	$connexion->exec("INSERT INTO ".$nomE."_prestation(id_presta, descriptif_presta, prix, paypal, duree) VALUES ('".$code."', '".$_POST['descrip']."', '".$_POST['prix']."', '".$paypal."', '".$_POST['duree']."')");
-	$modifEmploye = $connexion->query("SELECT * FROM ".$nomE."_employe WHERE id_employe = '".$_POST['employe']."'");
-	$val = $modifEmploye->fetch(PDO::FETCH_OBJ);
-	if($val->competenceA == ""){
-		$connexion->exec("UPDATE ".$nomE."_employe SET competenceA = '".$code."' WHERE id_employe = '".$_POST['employe']."'");
-	}elseif($val->competenceB ==""){
-		$connexion->exec("UPDATE ".$nomE."_employe SET competenceB = '".$code."' WHERE id_employe = '".$_POST['employe']."'");
-	}else{
-		$connexion->exec("UPDATE ".$nomE."_employe SET competenceC = '".$code."' WHERE id_employe = '".$_POST['employe']."'");
+	if($ajoutOk==0){
+		$connexion->exec("INSERT INTO ".$nomE."_prestation(id_presta, descriptif_presta, prix, paypal, duree) VALUES ('".$code."', '".$_POST['descrip']."', '".$_POST['prix']."', '".$paypal."', '".$_POST['duree']."')");
+		$modifEmploye = $connexion->query("SELECT * FROM ".$nomE."_employe WHERE id_employe = '".$_POST['employe']."'");
+		$val = $modifEmploye->fetch(PDO::FETCH_OBJ);
+		if($val->competenceA == ""){
+			$connexion->exec("UPDATE ".$nomE."_employe SET competenceA = '".$code."' WHERE id_employe = '".$_POST['employe']."'");
+		}elseif($val->competenceB ==""){
+			$connexion->exec("UPDATE ".$nomE."_employe SET competenceB = '".$code."' WHERE id_employe = '".$_POST['employe']."'");
+		}else{
+			$connexion->exec("UPDATE ".$nomE."_employe SET competenceC = '".$code."' WHERE id_employe = '".$_POST['employe']."'");
+		}
 	}
-	
 }
 
 if(isset($_POST['supprime'])){
-	$connexion->exec("DELETE FROM ".$nomE."_prestation WHERE id_presta='".$_POST['presta_modif']."'");
+	if($_POST['employe_modif']!=""){
+		$rqt = $connexion->query('SELECT * FROM '.$nomE.'_reserv WHERE presta = "'.$_POST['presta_modif'].'"');
+		if($rqt->rowCount()==0){
+			$connexion->exec("DELETE FROM ".$nomE."_prestation WHERE id_presta='".$_POST['presta_modif']."'");
+			$supprimeOk = 1;
+		}else{
+			$supprimeOk = 0;
+		}
+	}else{
+		$supprimeOk = 2;
+	}
 }
 if(isset($_POST['modifie'])){
-	header('Location: http://localhost/projet_tutore/projet_tutore/modif_prestation.php?nomEntreprise='.$nomE.'&id_presta='.$_POST['presta_modif']);
+	if($_POST['presta_modif']!=""){
+		$tabconfig = parse_ini_file("config.ini");
+		$chemin = $tabconfig["chemin"];
+		header('Location: http://'.$chemin.'/modif_prestation.php?nomEntreprise='.$nomE.'&id_presta='.$_POST['presta_modif']);
+	}else{
+		$modif=1;
+	}
+	
 }
 
 ?>
@@ -98,18 +125,34 @@ if(isset($_POST['modifie'])){
 							<h1>Gestion des prestations de l'entreprise</h1>
 							<?php 
 							if(isset($_POST['ajout'])){
-								if($ajout=="non"){
-									echo "<p> Ajout impossible : nombre maximum de prestation atteint";
+								if($ajoutOk==1){
+									echo "<p> Ajout impossible : Prix incorrect. Veuillez saisir un nombre décimal  !</p>";
+								}elseif($ajoutOk==2){
+									echo "<p> Ajout impossible : Durée incorrecte. Veuillez saisir un nombre de minutes (sans chiffre après la virgule) !</p>";
+								}elseif($ajoutOk==3){
+									echo "<p> Ajout impossible : nombre maximum de prestation atteint !</p>";
+								}elseif($ajoutOk==4){
+									echo "<p> Ajout impossible : Une description de la prestation est obligatoire !</p>";
 								}else{
-									echo "<p> Ajout de prestation effectué </p>";
+									echo "<p>Ajout effectué !</p>";
 								}
 							}
 							if(isset($_POST['supprime'])){
-								echo "<p> Suppression de prestation effectué </p>";
+								if($supprimeOk==1){
+									echo "<p> Suppression de prestation effectuée. </p>";
+								}else if($supprimeOk==2){
+									echo "<p> Suppression de prestation impossible : veuillez choisir une prestation à supprimer. </p>";	
+								}else{
+									echo "<p> Suppression de prestation impossible : cette prestation est encore associé à des rendez-vous de prévu. </p>";	
+								}
+							}
+							if(isset($_POST['modifie']) && $modif==1){
+								echo "<p> Modification de prestation impossible : veuillez choisir une prestation à modifier. </p>";
 							}
 							?>
 							<form method="post" action="">
 								<div class="6u 12u$(mobile)"><select name="presta_modif">
+								<option value=""></option>
 								<?php 
 								while($donnees=$listePresta->fetch(PDO::FETCH_OBJ)){
 								?>

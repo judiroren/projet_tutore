@@ -43,7 +43,7 @@
 									</br>
 									Mot de passe de l'administrateur : <div class="6u 12u$(mobile)"><input type="text" name="mdp" /></div>
 									</br>
-									Adresse mail de l'administrateur : <div class="6u 12u$(mobile)"><input type="text" name="mail" /></div>
+									Adresse mail de l'administrateur : <div class="6u 12u$(mobile)"><input type="email" name="mail" /></div>
 								</br>
 								<div align = "center" class="12u$">
 									<input type="submit" value="Valider" />
