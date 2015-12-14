@@ -154,7 +154,8 @@ if(isset($_POST['modifie'])){
 								<div class="6u 12u$(mobile)"><select name="presta_modif">
 								<option value=""></option>
 								<?php 
-								while($donnees=$listePresta->fetch(PDO::FETCH_OBJ)){
+								$Prestation = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
+								while($donnees=$Prestation->fetch(PDO::FETCH_OBJ)){
 								?>
 									<option value="<?php echo $donnees->id_presta ?>"><?php echo $donnees->descriptif_presta; ?></option>   
 								<?php

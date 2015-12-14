@@ -6,28 +6,18 @@ session_start();
 require "fonctions.inc.php";
 $connexion = connect();
 $nomE=$_GET['nomEntreprise'];
-$listePresta1 = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
-$listePresta2 = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
-$listePresta3 = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
-
-$rqtEmp = $connexion->query('SELECT * FROM '.$nomE.'_employe WHERE id_employe = "'.$_GET['id_employe'].'"');
-$valEmp = $rqtEmp->fetch(PDO::FETCH_OBJ);
-
-$rqtPlan = $connexion->query('SELECT * FROM '.$nomE.'_planning WHERE code_employe = "'.$_GET['id_employe'].'"');
-$valPlan = $rqtPlan->fetch(PDO::FETCH_OBJ);
-
-$infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
-$i = $infoE->fetch(PDO::FETCH_OBJ);
 
 $listeEmpVerif = $connexion->query("SELECT nom_employe, prenom_employe FROM ".$nomE."_employe");
 $modifOk = 0;
 
+$employe = $connexion->query('SELECT * FROM '.$nomE.'_employe WHERE id_employe = "'.$_GET['id_employe'].'"');
+$valeurEmploye = $employe->fetch(PDO::FETCH_OBJ);
 
 if(isset($_POST['modif'])){
 	
 	while($val=$listeEmpVerif->fetch(PDO::FETCH_OBJ)){
 		if($val->nom_employe==$_POST['nom'] && $val->prenom_employe==$_POST['prenom']){
-			if($valEmp->nom_employe!=$_POST['nom'] && $valEmp->prenom_employe!=$_POST['prenom']){
+			if($valeurEmploye->nom_employe!=$_POST['nom'] && $valeurEmploye->prenom_employe!=$_POST['prenom']){
 				$modifOk = 1;
 			}
 		}
@@ -58,6 +48,19 @@ if(isset($_POST['modif'])){
 		}
 	}
 }
+
+$listePresta1 = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
+$listePresta2 = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
+$listePresta3 = $connexion->query("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
+
+$rqtemp = $connexion->query('SELECT * FROM '.$nomE.'_employe WHERE id_employe = "'.$_GET['id_employe'].'"');
+$valEmp = $rqtemp->fetch(PDO::FETCH_OBJ);
+
+$rqtPlan = $connexion->query('SELECT * FROM '.$nomE.'_planning WHERE code_employe = "'.$_GET['id_employe'].'"');
+$valPlan = $rqtPlan->fetch(PDO::FETCH_OBJ);
+
+$infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
+$i = $infoE->fetch(PDO::FETCH_OBJ);
 
 ?>
 

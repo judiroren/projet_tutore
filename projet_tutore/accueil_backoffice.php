@@ -18,7 +18,11 @@ if(isset($_POST['login']) && isset($_POST['mdp']) && $_POST['login']==$i->loginA
 majAbsence($nomE);
 $planning = $connexion->query('SELECT * FROM '.$nomE.'_planning JOIN '.$nomE.'_employe ON code_employe = id_employe');
 $absences = $connexion->query('SELECT * FROM '.$nomE.'_absence JOIN '.$nomE.'_employe ON code_employe = id_employe WHERE absenceFini = 0');
-if(isset($_POST['période']) && $_POST['période']==2){
+if(isset($_POST['période']) && $_POST['période']==4){
+	$reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_employe ON employe = id_employe JOIN '.$nomE.'_client ON client = id_client JOIN '.$nomE.'_prestation ON presta = id_presta WHERE date < CURDATE()');
+}elseif(isset($_POST['période']) && $_POST['période']==3){
+	$reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_employe ON employe = id_employe JOIN '.$nomE.'_client ON client = id_client JOIN '.$nomE.'_prestation ON presta = id_presta WHERE date > CURDATE()');
+}elseif(isset($_POST['période']) && $_POST['période']==2){
 	$reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_employe ON employe = id_employe JOIN '.$nomE.'_client ON client = id_client JOIN '.$nomE.'_prestation ON presta = id_presta WHERE date = CURDATE()');
 }elseif(!isset($_POST['période']) || (isset($_POST['période']) && $_POST['période']==1)){
 	$tableau = tableauDate();
@@ -107,6 +111,7 @@ if(isset($_POST['période']) && $_POST['période']==2){
 											$id_employe = $valeur->code_employe;
 											$identite = $valeur->nom_employe ." ". $valeur->prenom_employe;
 											$tab = absence($nomE, $id_employe);
+											$num = 0;
 											if($tab==null){
 												?>
 												<tr><td><?php echo $identite?></td><td><?php if($valeur->LundiM==1){echo "X";}?></td><td><?php if($valeur->LundiA==1){echo "X";}?></td><td><?php if($valeur->MardiM==1){echo "X";}?></td><td><?php if($valeur->MardiA==1){echo "X";}?></td><td><?php if($valeur->MercrediM==1){echo "X";}?></td><td><?php if($valeur->MercrediA==1){echo "X";}?></td><td><?php if($valeur->JeudiM==1){echo "X";}?></td><td><?php if($valeur->JeudiA==1){echo "X";}?></td><td><?php if($valeur->VendrediM==1){echo "X";}?></td><td><?php if($valeur->VendrediA==1){echo "X";}?></td><td><?php if($valeur->SamediM==1){echo "X";}?></td><td><?php if($valeur->SamediA==1){echo "X";}?></td></tr>
@@ -123,16 +128,47 @@ if(isset($_POST['période']) && $_POST['période']==2){
 								</table>
 								
 								<h3>Liste des réservations : </h3>
-								<?php if($reserva->rowCount()==0){ echo "Pas de réservation en attente."; } else { ?>
 								<form class="formulaire" method="post" action="">
 								<div class="6u 12u$(mobile)">
 								<select name="période">
-									<option value=1 selected="selected">Prestation de la semaine</option>
-									<option value=2>Prestation de la journée</option>
+								<?php 
+								if(isset($_POST['période']) && $_POST['période']==4){
+								?>
+									<option value=1>Réservation de la semaine</option>
+									<option value=2>Réservation de la journée</option>
+									<option value=3> Toutes les réservations à venir</option>
+									<option value=4 selected="selected"> Réservations déjà passés</option>
+								<?php 
+								}elseif(isset($_POST['période']) && $_POST['période']==3){
+								?>
+									<option value=1>Réservation de la semaine</option>
+									<option value=2>Réservation de la journée</option>
+									<option value=3 selected="selected"> Toutes les réservations à venir</option>
+									<option value=4> Réservations déjà passés</option>
+								<?php 
+								}elseif(isset($_POST['période']) && $_POST['période']==2){
+								?>
+									<option value=1>Réservation de la semaine</option>
+									<option value=2 selected="selected">Réservation de la journée</option>
+									<option value=3> Toutes les réservations à venir</option>
+									<option value=4> Réservations déjà passés</option>
+								<?php 
+								}elseif(!isset($_POST['période']) || (isset($_POST['période']) && $_POST['période']==1)){
+								?>	
+									<option value=1 selected="selected">Réservation de la semaine</option>
+									<option value=2>Réservation de la journée</option>
+									<option value=3> Toutes les réservations à venir</option>
+									<option value=4> Réservations déjà passés</option>
+								<?php 
+								}
+								?>
+									
 								</select>
 								<input class="periode" type="submit" value="Valider" >
 								</div>
 								</form>
+								<?php if($reserva->rowCount()==0){ echo "Pas de réservation en attente."; } else { ?>
+								
 								<table>
 								<tr><td>Date </br>(année:mois:jour)</td><td>Heure</td><td>Employé</td><td>Client</td><td>Prestation</td><td>Déjà payé ?</td></tr>
 								<?php 

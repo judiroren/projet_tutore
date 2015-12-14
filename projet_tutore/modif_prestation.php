@@ -6,9 +6,8 @@ $connexion = connect();
 $nomE=$_GET['nomEntreprise'];
 $id=$_GET['id_presta'];
 $infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
-$listePresta = $connexion->query("SELECT * FROM ".$nomE."_prestation WHERE id_presta = '".$id."'");
 $i = $infoE->fetch(PDO::FETCH_OBJ);
-$presta = $listePresta->fetch(PDO::FETCH_OBJ);
+
 if(isset($_POST['modif'])){
 	$modifOk = 0;
 	
@@ -24,7 +23,8 @@ if(isset($_POST['modif'])){
 		$connexion->exec("UPDATE ".$nomE."_prestation SET descriptif_presta = '".$_POST['descrip']."', prix = '".$_POST['prix']."', duree = '".$_POST['duree']."', paypal = '".$paypal."' WHERE id_presta = '".$_GET['id_presta']."'");
 	}
 }
-
+$listePresta = $connexion->query("SELECT * FROM ".$nomE."_prestation WHERE id_presta = '".$id."'");
+$presta = $listePresta->fetch(PDO::FETCH_OBJ);
 ?>
 
 <html>

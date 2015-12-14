@@ -17,7 +17,7 @@ function absence($nomE, $id_employe){
 	
 	$rqt = $connexion->query('SELECT * FROM '.$nomE.'_planning WHERE code_employe = "'.$id_employe.'"');
 	$donnees=$rqt->fetch(PDO::FETCH_OBJ);
-	$rqtabs = $connexion->query('SELECT * FROM '.$nomE.'_absence WHERE code_employe = "'.$id_employe.'" AND dateDebut <= CURDATE() AND dateFin >= CURDATE()');
+	$rqtabs = $connexion->query('SELECT * FROM '.$nomE.'_absence WHERE code_employe = "'.$id_employe.'" AND (WEEK(CURDATE(),1) = WEEK(dateDebut,1) OR WEEK(CURDATE(),1) = WEEK(dateFin,1))');
 	$val = array(array());
 	if($rqtabs->rowCount()==0){
 		return null;
@@ -34,6 +34,7 @@ function absence($nomE, $id_employe){
 				}
 				$cpt++;
 			}
+			$cpt=0;
 		}
 		$absence = array(array());
 		$absence[0][0] = ($donnees->LundiM==1?'X':" "); $absence[0][1] = ($donnees->LundiA==1?'X':" ");

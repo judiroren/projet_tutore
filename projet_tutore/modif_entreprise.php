@@ -8,22 +8,20 @@ require "fonctions.inc.php";
 $connexion = connect();
 
 $nom=$_GET['nomEntreprise'];
-$rqt = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nom.'"');
-$i = $rqt->fetch(PDO::FETCH_OBJ);
-$nomE = $i->nomEntreprise;
+
 $logo = '';
 if(!empty($_POST['logo'])){
 	$logo = 'images/'.$_POST['logo'];
 }
 if(isset($_POST['verif'])){
 	if(isset($_POST['tel']) || !empty($_POST['mail']) || !empty($_POST['adresse'])){
-		if(!empty($_POST['tel']) && strlen($_POST['tel'])==10 && !is_numeric($_POST['tel'])){
+		if(!empty($_POST['tel']) && strlen($_POST['tel'])==10 && is_numeric($_POST['tel'])){
 			if(!empty($_POST['mail']) && filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 				if(!empty($_POST['mdp'])){
 					$mdp = md5($_POST['mdp']);
-					$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$logo."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."', mdpAdmin = '".$mdp."' WHERE nomEntreprise = '".$nomE."'");
+					$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$logo."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."', mdpAdmin = '".$mdp."' WHERE nomEntreprise = '".$nom."'");
 				}else{
-					$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$logo."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."' WHERE nomEntreprise = '".$nomE."'");
+					$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$logo."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."' WHERE nomEntreprise = '".$nom."'");
 				}
 			}else{
 				$mailErr=0;
@@ -36,6 +34,9 @@ if(isset($_POST['verif'])){
 	}
 
 }
+$rqt = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nom.'"');
+$i = $rqt->fetch(PDO::FETCH_OBJ);
+$nomE = $i->nomEntreprise;
 ?>
 
 <html>
