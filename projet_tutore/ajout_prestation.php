@@ -54,7 +54,7 @@ if(isset($_POST['ajout'])){
 }
 
 if(isset($_POST['supprime'])){
-	if($_POST['employe_modif']!=""){
+	if($_POST['presta_modif']!=""){
 		$rqt = $connexion->query('SELECT * FROM '.$nomE.'_reserv WHERE presta = "'.$_POST['presta_modif'].'"');
 		if($rqt->rowCount()==0){
 			$connexion->exec("DELETE FROM ".$nomE."_prestation WHERE id_presta='".$_POST['presta_modif']."'");

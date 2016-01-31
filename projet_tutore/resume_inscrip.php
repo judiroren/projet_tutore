@@ -5,7 +5,7 @@ $connexion = connect();
 
 $tabconfig = parse_ini_file("config.ini");
 $chemin = $tabconfig["chemin"];
-
+			
 			$temploye = $_POST['entreprise']."_employe";
 			$tprestation = $_POST['entreprise']."_prestation";
 			$tclient = $_POST['entreprise']."_client";
