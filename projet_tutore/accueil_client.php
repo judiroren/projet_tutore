@@ -1,16 +1,16 @@
 <!DOCTYPE HTML>
 <?php
-try {
-	$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "root", "" );
-	$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-	echo 'Connexion échouée : ' . $e->getMessage();
-}
+	//import des fichiers requis
+	require "fonctions.inc.php";
+	
+	//require "bd.inc.php";
+	//$connexion = connect();
+	//$nom=$_GET['nomEntreprise'];
 
-$nom=$_GET['nomEntreprise'];
-$rqt = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nom.'"');
-$i = $rqt->fetch(PDO::FETCH_OBJ);
-$nomE = $i->nomEntreprise;
+	//récupération des infos
+	$i = infosEntreprise();
+
+	$nomE = $i->nomEntreprise;
 ?>
 
 <html>
@@ -29,7 +29,11 @@ $nomE = $i->nomEntreprise;
 					<!-- Logo -->
 						<div id="logo">
 							
-							<h1><?php echo $nomE?></h1>
+							<h1>
+							<?php 
+								echo $nomE;
+							?>
+							</h1>
 							<p>Page d'accueil</p>
 						</div>
 						<form method="post" action="accueil_backoffice.php">

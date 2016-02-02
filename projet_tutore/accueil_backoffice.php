@@ -1,33 +1,71 @@
 <?php
-session_start();
-?>
-<!DOCTYPE HTML>
-<?php
-require "fonctions.inc.php";
-$connexion = connect();
 
-$nomE=$_GET['nomEntreprise'];
-$rqt = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
-$i = $rqt->fetch(PDO::FETCH_OBJ);
-if(isset($_POST['mdp'])){
-	$mdp =md5($_POST['mdp']);
-}
-if(isset($_POST['login']) && isset($_POST['mdp']) && $_POST['login']==$i->loginAdmin && $mdp == $i->mdpAdmin ){
-	$_SESSION["estConnecte"]=1;
-}
-majAbsence($nomE);
-$planning = $connexion->query('SELECT * FROM '.$nomE.'_planning JOIN '.$nomE.'_employe ON code_employe = id_employe');
-$absences = $connexion->query('SELECT * FROM '.$nomE.'_absence JOIN '.$nomE.'_employe ON code_employe = id_employe WHERE absenceFini = 0');
-if(isset($_POST['période']) && $_POST['période']==4){
-	$reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_employe ON employe = id_employe JOIN '.$nomE.'_client ON client = id_client JOIN '.$nomE.'_prestation ON presta = id_presta WHERE date < CURDATE()');
-}elseif(isset($_POST['période']) && $_POST['période']==3){
-	$reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_employe ON employe = id_employe JOIN '.$nomE.'_client ON client = id_client JOIN '.$nomE.'_prestation ON presta = id_presta WHERE date > CURDATE()');
-}elseif(isset($_POST['période']) && $_POST['période']==2){
-	$reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_employe ON employe = id_employe JOIN '.$nomE.'_client ON client = id_client JOIN '.$nomE.'_prestation ON presta = id_presta WHERE date = CURDATE()');
-}elseif(!isset($_POST['période']) || (isset($_POST['période']) && $_POST['période']==1)){
-	$tableau = tableauDate();
-	$reserva = $connexion->query('SELECT * FROM '.$nomE.'_reserv JOIN '.$nomE.'_employe ON employe = id_employe JOIN '.$nomE.'_client ON client = id_client JOIN '.$nomE.'_prestation ON presta = id_presta WHERE date BETWEEN "'.$tableau[0][0].'" AND "'.$tableau[6][0].'"');
-}
+	session_start();
+	//$_SESSION["nomE"] = $_GET['nomEntreprise'];
+	
+	try {
+		//$_SESSION["nomE"] = $_GET['nomEntreprise'];
+		if($_GET['nomEntreprise'] != null) {
+			$_SESSION["nomE"] = $_GET['nomEntreprise'];
+		} else {
+			throw new Exception("Notice: Undefined offset");
+		}
+	} catch(Exception $e){
+		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+	}
+	
+?>
+
+<!DOCTYPE HTML>
+
+<?php
+	require "fonctions.inc.php";
+	require "bd.inc.php";
+	
+	
+	/* if( $_SESSION["nomE"] == null ) {
+		
+		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+		
+	} else  */
+	if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+		
+	} else {
+		
+	$_SESSION["nomE"] = $_GET['nomEntreprise'];	
+	
+	$connexion = connect();
+	$nomE = $_GET['nomEntreprise'];
+	//$nomE = str_replace(' ', '_', $nomE);
+
+	//permet de récuperer les infos de connexion
+	$i = infosEntreprise();
+
+	//Le mot de passe doit être renseigner
+	if(isset($_POST['mdp'])) {
+		
+		//$mdp = md5($_POST['mdp']);
+		$mdp = $_POST['mdp'];
+	} 
+	
+	//Les informations doivent être correcte
+	if( isset($_POST['login']) && isset($_POST['mdp']) ) {
+		
+		if( $_POST['login'] == $i->loginAdmin && $mdp == $i->mdpAdmin ) {
+			
+			$_SESSION["estConnecte"] = 1;
+			$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+			
+		}
+	}
+
+	$planning = planningEnt();
+									
+	$reserva = reservationsEnt();
+									
+	$absences = abscencesEnt();
 
 ?>
 
@@ -46,13 +84,25 @@ if(isset($_POST['période']) && $_POST['période']==4){
 
 					<!-- Logo -->
 						<div id="logo">
-						<?php if($i->logoEntreprise !=""){
+						
+						<?php 
+						
+							if($i->logoEntreprise !="") {
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
-						} ?>
-							<h1><?php echo $nomE?></h1>
-							<p>Page de gestion de l'entreprise</p>
+							} 
+						?>
+							<h1>
 							<?php 
-							if(isset($_SESSION["estConnecte"])){
+							
+								echo $nomE;
+							?>
+							</h1>
+							<p>Page de gestion de l'entreprise</p>
+							
+							<?php 
+							
+							if(isset($_SESSION["estConnecte"])) {
+								
 							?>
 							
 								<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
@@ -62,8 +112,10 @@ if(isset($_POST['période']) && $_POST['période']==4){
 								<a href="gestion_absence.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des absences </a></br>
 								<a href="destruct_session.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
 							</div>
+							
 							<?php
-							}else{
+							
+								} else {
 							
 							?>
 						</div>
@@ -92,8 +144,22 @@ if(isset($_POST['période']) && $_POST['période']==4){
 					
 						<div class="container">
 							<h1>Page d'accueil back-office <br> Entreprise <?php echo $nomE;?></h1>
+							
+							<?php 
+							
+							if(isset($_SESSION["estConnecte"])) {
+								
+							?>
+							
 							<h3>Planning : </h3>
-							<?php if($planning->rowCount()==0){ echo "Pas de planning à afficher.";}else{?>
+							
+							<?php
+							
+								if($planning->rowCount()==0) { 
+									echo "Pas de planning à afficher.";
+								} else { 
+							?>
+							
 							<table>
 									<tr><td rowspan="2"></td><td colspan="2">Lundi</td><td colspan="2">Mardi</td><td colspan="2">Mercredi</td><td colspan="2">Jeudi</td><td colspan="2">Vendredi</td><td colspan="2">Samedi</td></tr>
 									<tr>
@@ -110,15 +176,140 @@ if(isset($_POST['période']) && $_POST['période']==4){
 										while($valeur = $planning->fetch(PDO::FETCH_OBJ)){
 											$id_employe = $valeur->code_employe;
 											$identite = $valeur->nom_employe ." ". $valeur->prenom_employe;
-											$tab = absence($nomE, $id_employe);
-											$num = 0;
+											$tab = absence($nomE, $id_employe, $connexion);
 											if($tab==null){
 												?>
-												<tr><td><?php echo $identite?></td><td><?php if($valeur->LundiM==1){echo "X";}?></td><td><?php if($valeur->LundiA==1){echo "X";}?></td><td><?php if($valeur->MardiM==1){echo "X";}?></td><td><?php if($valeur->MardiA==1){echo "X";}?></td><td><?php if($valeur->MercrediM==1){echo "X";}?></td><td><?php if($valeur->MercrediA==1){echo "X";}?></td><td><?php if($valeur->JeudiM==1){echo "X";}?></td><td><?php if($valeur->JeudiA==1){echo "X";}?></td><td><?php if($valeur->VendrediM==1){echo "X";}?></td><td><?php if($valeur->VendrediA==1){echo "X";}?></td><td><?php if($valeur->SamediM==1){echo "X";}?></td><td><?php if($valeur->SamediA==1){echo "X";}?></td></tr>
+												<tr><td>
+												<?php 
+													echo $identite
+												?>
+												</td><td>
+												<?php 
+													if($valeur->LundiM==1) {
+															echo "X";
+													}
+													?>
+													</td><td>
+													<?php 
+														if($valeur->LundiA==1)	{
+															echo "X";
+														}
+													?>
+													</td><td>
+													<?php 
+														if($valeur->MardiM==1) { 
+															echo "X";
+														}
+													?>
+													</td><td>
+													<?php 
+														if($valeur->MardiA==1) {
+															echo "X";
+													}
+													?>
+													</td><td>
+													<?php 
+														if($valeur->MercrediM==1) {
+															echo "X";
+															}
+													?>
+													</td><td>
+													<?php 
+														if($valeur->MercrediA==1) {
+															echo "X";
+														}
+													?>
+													</td><td>
+													<?php 
+														if($valeur->JeudiM==1) {
+															echo "X";
+														}
+													?>
+													</td><td>
+													<?php 
+														if($valeur->JeudiA==1) {
+															echo "X";
+														}
+													?>
+													</td><td>
+													<?php 
+														if($valeur->VendrediM==1) {
+															echo "X";
+														}
+													?>
+													</td><td>
+													<?php 
+													if($valeur->VendrediA==1) {
+														echo "X";
+														}
+													?>
+													</td><td>
+													<?php 
+														if($valeur->SamediM==1) {
+															echo "X";
+														}
+													?>
+													</td><td>
+													<?php 
+														if($valeur->SamediA==1) {
+															echo "X";
+														}
+													?>
+													</td></tr>
 												<?php
 											}else{
 												?>
-												<tr><td><?php echo $identite?></td><td><?php echo $tab[0][0];?></td><td><?php echo $tab[0][1];?></td><td><?php echo $tab[1][0];?></td><td><?php echo $tab[1][1];?></td><td><?php echo $tab[2][0];?></td><td><?php echo $tab[2][1];?></td><td><?php echo $tab[3][0];?></td><td><?php echo $tab[3][1];?></td><td><?php echo $tab[4][0];?></td><td><?php echo $tab[4][1];?></td><td><?php echo $tab[5][0];?></td><td><?php echo $tab[5][1];?></td></tr>
+												<tr><td>
+												<?php 
+													echo $identite
+												?>
+												</td><td>
+												<?php 
+													echo $tab[0][0];
+												?>
+												</td><td>
+												<?php 
+													echo $tab[0][1];
+												?>
+													</td><td>
+												<?php 
+													echo $tab[1][0];
+												?>
+												</td><td>
+												<?php 
+													echo $tab[1][1];
+												?>
+													</td><td>
+												<?php 
+													echo $tab[2][0];
+												?>
+												</td><td>
+												<?php 
+													echo $tab[2][1];
+												?>
+												</td><td>
+												<?php 
+													echo $tab[3][0];
+												?>
+												</td><td>
+												<?php 
+													echo $tab[3][1];
+												?>
+												</td><td>
+												<?php 
+													echo $tab[4][0];
+												?>
+												</td><td>
+												<?php 
+													echo $tab[4][1];
+												?>
+												</td><td>
+												<?php 
+													echo $tab[5][0];
+												?>
+												</td><td>
+												<?php 
+													echo $tab[5][1];?></td></tr>
 												<?php 											
 											}
 									
@@ -128,47 +319,7 @@ if(isset($_POST['période']) && $_POST['période']==4){
 								</table>
 								
 								<h3>Liste des réservations : </h3>
-								<form class="formulaire" method="post" action="">
-								<div class="6u 12u$(mobile)">
-								<select name="période">
-								<?php 
-								if(isset($_POST['période']) && $_POST['période']==4){
-								?>
-									<option value=1>Réservation de la semaine</option>
-									<option value=2>Réservation de la journée</option>
-									<option value=3> Toutes les réservations à venir</option>
-									<option value=4 selected="selected"> Réservations déjà passés</option>
-								<?php 
-								}elseif(isset($_POST['période']) && $_POST['période']==3){
-								?>
-									<option value=1>Réservation de la semaine</option>
-									<option value=2>Réservation de la journée</option>
-									<option value=3 selected="selected"> Toutes les réservations à venir</option>
-									<option value=4> Réservations déjà passés</option>
-								<?php 
-								}elseif(isset($_POST['période']) && $_POST['période']==2){
-								?>
-									<option value=1>Réservation de la semaine</option>
-									<option value=2 selected="selected">Réservation de la journée</option>
-									<option value=3> Toutes les réservations à venir</option>
-									<option value=4> Réservations déjà passés</option>
-								<?php 
-								}elseif(!isset($_POST['période']) || (isset($_POST['période']) && $_POST['période']==1)){
-								?>	
-									<option value=1 selected="selected">Réservation de la semaine</option>
-									<option value=2>Réservation de la journée</option>
-									<option value=3> Toutes les réservations à venir</option>
-									<option value=4> Réservations déjà passés</option>
-								<?php 
-								}
-								?>
-									
-								</select>
-								<input class="periode" type="submit" value="Valider" >
-								</div>
-								</form>
 								<?php if($reserva->rowCount()==0){ echo "Pas de réservation en attente."; } else { ?>
-								
 								<table>
 								<tr><td>Date </br>(année:mois:jour)</td><td>Heure</td><td>Employé</td><td>Client</td><td>Prestation</td><td>Déjà payé ?</td></tr>
 								<?php 
@@ -176,7 +327,35 @@ if(isset($_POST['période']) && $_POST['période']==4){
 										$idClient = $valeur2->nom_client ." ". $valeur2->prenom_client;
 										$idEmploye = $valeur2->nom_employe ." ". $valeur2->prenom_employe;
 								?>
-									<tr><td><?php echo $valeur2->date;?></td><td><?php echo $valeur2->heure;?></td><td><?php echo $idEmploye?></td><td><?php echo $idClient;?></td><td><?php echo $valeur2->descriptif_presta;?></td><td><?php if($valeur2->paye==1){echo "oui";}else{echo "non";}?></td></tr>
+									<tr><td>
+									<?php 
+										echo $valeur2->date;
+									?>
+										</td><td>
+									<?php 
+										echo $valeur2->heure;
+									?>
+										</td><td>
+									<?php 
+										echo $idEmploye
+									?>
+									</td><td>
+									<?php 
+										echo $idClient;
+									?>
+									</td><td>
+									<?php 
+										echo $valeur2->descriptif_presta;
+									?>
+									</td><td>
+									<?php 
+									if($valeur2->paye==1) {
+										echo "oui";
+									} else {
+										echo "non";
+									}
+									?>
+								</td></tr>
 								<?php 
 									}
 								?>
@@ -184,23 +363,46 @@ if(isset($_POST['période']) && $_POST['période']==4){
 								<?php } ?>
 								
 								<h3>Liste des absences : </h3>
-								<?php if($absences->rowCount()==0){ echo "Pas d'absences d'enregistrée."; } else { ?>
+								<?php 
+									if($absences->rowCount()==0) { 
+										echo "Pas d'absences d'enregistrée.";
+									} else { 
+								?>
 								<table>
 								<tr><td> Employé </td><td>Date de début du congé</td><td>Date de fin du congé</td><td> Motif </td></tr>
 								<?php 
-									while($valeur3 = $absences->fetch(PDO::FETCH_OBJ)){
+									while($valeur3 = $absences->fetch(PDO::FETCH_OBJ)) {
 										$idEmploye = $valeur3->nom_employe ." ". $valeur3->prenom_employe;
 								?>
-									<tr><td> <?php echo $idEmploye;?> </td><td><?php echo $valeur3->dateDebut;?></td><td><?php echo $valeur3->dateFin;?></td><td><?php echo $valeur3->motif;?></td></tr>
+									<tr><td> 
+									<?php 
+										echo $idEmploye;
+									?> 
+									</td><td>
+									<?php 
+										echo $valeur3->dateDebut;
+									?>
+									</td><td>
+									<?php 
+										echo $valeur3->dateFin;
+									?>
+									</td><td>
+									<?php 
+										echo $valeur3->motif;
+									?>
+									</td></tr>
 								<?php 
 									}
 								?>
 								</table>
-								<?php } ?>
-						</div>
-
-						
+								<?php 
+									} 
+									}
+									}	
+								?>
+								
+								
+						</div>	
 			</div>
-
 	</body>
 </html>

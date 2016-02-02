@@ -1,30 +1,52 @@
-<!DOCTYPE HTML>
 <?php
-require "fonctions.inc.php";
-$connexion = connect();
 
-$nomE=$_GET['nomEntreprise'];
-$id=$_GET['id_presta'];
-$infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
-$i = $infoE->fetch(PDO::FETCH_OBJ);
+	session_start();
 
-if(isset($_POST['modif'])){
-	$modifOk = 0;
+?>
+
+<!DOCTYPE HTML>
+
+<?php
+
+	require "fonctions.inc.php";
+	require "bd.inc.php";
+	require "ajout.inc.php";
 	
-	if(!filter_var($_POST['prix'],FILTER_VALIDATE_FLOAT)){
-		$modifOk=1;
-	}elseif(!filter_var($_POST['duree'],FILTER_VALIDATE_INT)){
-		$modifOk=2;
-	}elseif(empty($_POST['descrip'])){
-		$modifOk = 4;
+	if( $_SESSION["nomE"] == null ) {
+		
+		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+		
+	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+		
+	} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+		
+		echo "<p>Vous devez d'abord vous connectez sur l'accueil de l'entreprise </p>";
+		
+	} else {
+	
+	$connexion = connect();
+	$nomE = $_SESSION["nomSession"];
+	
+	$id = $_GET['id_presta'];
+	
+	$i = infosEntreprise();
+	
+	$listePresta = infosPrestation($id);
+	$presta = $listePresta->fetch(PDO::FETCH_OBJ);
+	
+	if (isset($_POST['modif'])) {
+		
+		$paypal = (isset($_POST['paypal']) )? 1 : 0;
+		
+		//Permet de modifier une prestation
+		majPresta($connexion, $_POST['descrip'], $_POST['prix'], $_POST['duree'], $paypal, $id);
+		
+		/* $connexion->exec("UPDATE ".$nomE."_prestation SET descriptif_presta = '".$_POST['descrip']."', prix = '".$_POST['prix']."', 
+							duree = '".$_POST['duree']."', paypal = '".$paypal."' WHERE id_presta = '".$_GET['id_presta']."'"); */
 	}
-	$paypal = (isset($_POST['paypal']) )? 1 : 0;
-	if($modifOk==0){
-		$connexion->exec("UPDATE ".$nomE."_prestation SET descriptif_presta = '".$_POST['descrip']."', prix = '".$_POST['prix']."', duree = '".$_POST['duree']."', paypal = '".$paypal."' WHERE id_presta = '".$_GET['id_presta']."'");
-	}
-}
-$listePresta = $connexion->query("SELECT * FROM ".$nomE."_prestation WHERE id_presta = '".$id."'");
-$presta = $listePresta->fetch(PDO::FETCH_OBJ);
+
 ?>
 
 <html>
@@ -73,23 +95,13 @@ $presta = $listePresta->fetch(PDO::FETCH_OBJ);
 							<h1>Gestion des prestations de l'entreprise</h1>
 							<?php 
 							if(isset($_POST['modif'])){
-								if($modifOk==1){
-									echo "<p> Modification impossible : Prix incorrect. Veuillez saisir un nombre décimal  !</p>";
-								}elseif($modifOk==2){
-									echo "<p> Modification impossible : Durée incorrecte. Veuillez saisir un nombre de minutes (sans chiffre après la virgule) !</p>";
-								}elseif($modifOk==3){
-									echo "<p> Modification impossible : nombre maximum de prestation atteint !</p>";
-								}elseif($modifOk==4){
-									echo "<p> Modification impossible : Une description de la prestation est obligatoire !</p>";
-								}else{
-									echo "<p>Modification effectué !</p>";
-								}
+								echo "<p> Modification de prestation effectué </p>";
 							}
 							?>
 							
 							
 							</br>
-							<h2>Modification d'une prestation</h2>
+							<h2>Ajout d'une prestation</h2>
 							<form method="post" action="">
 								
 								</br>
@@ -110,7 +122,12 @@ $presta = $listePresta->fetch(PDO::FETCH_OBJ);
 								</div>
 							</form>
 						</div>
-
+						
+						<?php
+						
+							}
+						
+						?>
 						
 			</div>
 

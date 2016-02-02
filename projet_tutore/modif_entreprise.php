@@ -1,42 +1,48 @@
 <?php
-session_start();
+
+	session_start();
+	
 ?>
+
 <!DOCTYPE HTML>
+	
 <?php
 
-require "fonctions.inc.php";
-$connexion = connect();
+	require "fonctions.inc.php";
+	require "ajout.inc.php";
+	require "bd.inc.php";
 
-$nom=$_GET['nomEntreprise'];
+	if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+		
+	} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+		
+		echo "<p>Vous devez d'abord vous connectez sur l'accueil de l'entreprise </p>";
+		
+	} else {
+		
+	$nomE = $_SESSION["nomSession"];
+	$connexion = connect();	
+	
+	$i = infosEntreprise();
 
-$logo = '';
-if(!empty($_POST['logo'])){
-	$logo = 'images/'.$_POST['logo'];
-}
-if(isset($_POST['verif'])){
-	if(isset($_POST['tel']) || !empty($_POST['mail']) || !empty($_POST['adresse'])){
-		if(!empty($_POST['tel']) && strlen($_POST['tel'])==10 && is_numeric($_POST['tel'])){
-			if(!empty($_POST['mail']) && filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
-				if(!empty($_POST['mdp'])){
-					$mdp = md5($_POST['mdp']);
-					$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$logo."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."', mdpAdmin = '".$mdp."' WHERE nomEntreprise = '".$nom."'");
-				}else{
-					$connexion->exec("UPDATE entreprise SET mailEntreprise = '".$_POST['mail']."', telEntreprise = '".$_POST['tel']."', adresseEntreprise = '".$_POST['adresse']."', logoEntreprise = '".$logo."', descEntreprise = '".$_POST['descrip']."', loginAdmin = '".$_POST['login']."' WHERE nomEntreprise = '".$nom."'");
-				}
-			}else{
-				$mailErr=0;
-			}
-		}else{
-			$telErr=0;
+	if( isset($_POST['verif']) ) {
+	
+		if( !empty($_POST['mdp']) ) {
+		
+			//$mdp = md5($_POST['mdp']);
+			$mdp = $_POST['mdp'];
+			modifEntreprise($connexion, $_POST['mail'], $_POST['tel'], $_POST['adresse'], $_POST['logo'], $_POST['descrip'], $_POST['login'], $mdp);
+		
+		} else {
+		
+			modifEnt($connexion, $_POST['mail'], $_POST['tel'], $_POST['adresse'], $_POST['logo'], $_POST['descrip'], $_POST['login']);		
+		
 		}
-	}else{
-		$champErr=0;
+	
 	}
 
-}
-$rqt = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nom.'"');
-$i = $rqt->fetch(PDO::FETCH_OBJ);
-$nomE = $i->nomEntreprise;
 ?>
 
 <html>
@@ -85,15 +91,8 @@ $nomE = $i->nomEntreprise;
 							<h1>Modification des informations de l'entreprise</h1>
 							<?php 
 							if(isset($_POST['verif'])){
-								if(isset($telErr)){
-									echo "<p> Changement impossible : Numéro de téléphone incorrect ! </p>";
-								}elseif(isset($mailErr)){
-									echo "<p> Changement impossible : Adresse mail invalide ! </p>";
-								}elseif(isset($champErr)){
-									echo "<p> Changement impossible : Au moins 1 des 3 champs suivant doit être renseigné : numéro de téléphone, adresse postale, adresse mail ! </p>";
-								}else{
-									echo "<p> Changement effectué ! </p>";
-								}
+								echo "<p> Changement effectué </p>";
+								//header('Location: accueil_backoffice.php?nomEntreprise='.$nomE.'');
 							}
 							?>
 							<form method="post" action="">
@@ -101,7 +100,7 @@ $nomE = $i->nomEntreprise;
 									<h3>Compte administrateur :	</h3></br>
 									Login : <div class="6u 12u$(mobile)"><input type="text" name="login" value="<?php echo $i->loginAdmin?>"/></div>				
 									</br>
-									Mot de passe (laissez vide pour garder le mot de passe courant): <div class="6u 12u$(mobile)"><input type="text" name="mdp" /></div>								
+									Mot de passe : <div class="6u 12u$(mobile)"><input type="text" name="mdp" /></div>								
 									</br>
 									<h3>Informations générale : </h3></br>
 									E-mail : <div class="6u 12u$(mobile)"><input type="text" name="mail" value="<?php echo $i->mailEntreprise?>" /></div>			
@@ -110,11 +109,7 @@ $nomE = $i->nomEntreprise;
 									</br>
 									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" value="<?php echo $i->adresseEntreprise?>"/></div>	
 									</br>
-									<?php 
-									$tailleLogo = strlen($i->logoEntreprise)-7;
-									$nomlogo = substr($i->logoEntreprise, -$tailleLogo);
-									?>
-									Logo (nom du logo. Ce dernier doit être dans le dossier images): <div class="6u 12u$(mobile)"><input type="text" name="logo" value="<?php echo $nomlogo ?>"/></div>				
+									URL du logo : <div class="6u 12u$(mobile)"><input type="text" name="logo" value="<?php echo $i->logoEntreprise?>"/></div>				
 									</br>
 									Description de l'entreprise : <div class="6u 12u$(mobile)"><textarea name="descrip" ><?php echo $i->descEntreprise?></textarea></div>				
 								
@@ -128,6 +123,11 @@ $nomE = $i->nomEntreprise;
 							</form>
 						</div>
 
+						<?php
+						
+							}
+						
+						?>
 						
 			</div>
 

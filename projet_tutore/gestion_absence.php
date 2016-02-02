@@ -1,56 +1,92 @@
+<?php
+
+	session_start();
+	
+?>
+
 <!DOCTYPE HTML>
-<?php 
-require "fonctions.inc.php";
-$connexion = connect();
 
-$nomE=$_GET['nomEntreprise'];
-$infoE = $connexion->query('SELECT * FROM entreprise WHERE nomEntreprise = "'.$nomE.'"');
-$i = $infoE->fetch(PDO::FETCH_OBJ);
-$employe = $connexion->query('SELECT id_employe, nom_employe, prenom_employe FROM '.$nomE.'_employe');
-$listeAbs = $connexion->query("SELECT id_absence FROM ".$nomE."_absence");
+<?php
+ 
+	require "fonctions.inc.php";
+	require "bd.inc.php";
+	require "ajout.inc.php";
+	
+	$nomE = $_SESSION["nomSession"];
+	$connexion = connect();
+	
+	if( $_SESSION["nomE"] == null ) {
+		
+		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+		
+	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+		
+	} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+		
+		echo "<p>Vous devez d'abord vous connectez sur l'accueil de l'entreprise </p>";
+		
+	} else {
+	
+	$i = infosEntreprise();
 
-if(isset($_POST['ajout'])){
-	$erreurNbAbs = 0;
-	$cpt = 0;
-	while($val=$listeAbs->fetch(PDO::FETCH_OBJ)){
+	$employe = infosEmploye();
+	
+	$listeAbs = listeAbscences();
+
+	if (isset($_POST['ajout'])) {
+		
+		$erreurNbAbs = 0;
+		$cpt = 0;
+		
+		while($val=$listeAbs->fetch(PDO::FETCH_OBJ)) {
+			
+			$cpt++;
+		}
+		
+		$prefixe = 'ABSC';
 		$cpt++;
-	}
-	$prefixe = 'ABSC';
-	$cpt++;
-	if($cpt<9){
-		$code = $prefixe.'000'.$cpt;
-	}else if($cpt<99){
-		$code = $prefixe.'00'.$cpt;
-	}else if($cpt<999){
-		$code = $prefixe.'0'.$cpt;
-	}else if($cpt<9999){
-		$code = $prefixe.$cpt;
-	}else{
-		$erreurNbAbs = 1;
-	}
-	$ok = 0;
-	$erreurDate = 0;
-	$erreurReserv = 0;
-	$erreurMotif = 0;
-	$erreurDateInconnu = 0;
-	if(empty($_POST['debut']) || empty($_POST['fin'])){
-		$erreurDateInconnu = 1;
-	}else{
-		$reserv = $connexion->query('SELECT date FROM '.$nomE.'_reserv WHERE employe = "'.$_POST['employe_absent'].'" AND date BETWEEN '.$_POST['debut'].' AND '.$_POST['fin']);
-		if($_POST['debut']>$_POST['fin']){
-			$erreurDate = 1;
-		}elseif ($reserv==NULL){
-			$erreurReserv = 1;
-		}elseif(empty($_POST['motif'])){
-			$erreurMotif = 1;
+		
+		if($cpt<9) {
+			
+			$code = $prefixe.'000'.$cpt;
+		}else if($cpt<99){
+			$code = $prefixe.'00'.$cpt;
+		}else if($cpt<999){
+			$code = $prefixe.'0'.$cpt;
+		}else if($cpt<9999){
+			$code = $prefixe.$cpt;
 		}else{
+			$erreurNbAbs = 1;
+			
+		}
+		
+		$ok = 0;
+		$erreurDate = 0;
+		$erreurReserv = 0;
+		
+		//Appel de la fonction pour savoir si l'employé possède une reséervation durant le temps de l'absence
+		$reserv = dateReservation($_POST['employe_absent'], $_POST['debut'], $_POST['fin']);
+		
+		if($_POST['debut']>$_POST['fin']) {
+			
+			$erreurDate = 1;
+			
+		} else if ($reserv == NULL) {
+			
+			$erreurReserv = 1;
+		
+		} else {
+			
 			$ok = 1;
 			$fin = 0;
-			$connexion->exec("INSERT INTO ".$nomE."_absence(id_absence, code_employe, motif, dateDebut, dateFin, absenceFini) VALUES ('".$code."', '".$_POST['employe_absent']."', '".$_POST['motif']."', '".$_POST['debut']."', '".$_POST['fin']."', '".$fin."')");
+			
+			//Appel de la fonction qui ajoute une réservation
+			ajoutReservation($connexion, $code, $_POST['employe_absent'], $_POST['motif'], $_POST['debut'], $_POST['fin'], $fin);
+			
 		}
 	}
-	
-}
 
 ?>
 
@@ -108,12 +144,6 @@ if(isset($_POST['ajout'])){
 								if($erreurNbAbs == 1){
 									echo "<p> Erreur : Nombre d'absence max atteint !</p>";
 								}
-								if($erreurDateInconnu==1){
-									echo "<p> Erreur : Toutes les dates ne sont pas renseigné !</p>";
-								}
-								if($erreurMotif==1){
-									echo "<p> Erreur : Le motif n'a pas été renseigné !</p>";
-								}
 								if($ok==1){
 									echo "<p> Ajout d'absence effectué </p>";
 								}
@@ -150,7 +180,12 @@ if(isset($_POST['ajout'])){
 								</div>
 							</form>
 						</div>
-
+						
+						<?php
+						
+							}
+						
+						?>
 						
 			</div>
 
