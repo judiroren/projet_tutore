@@ -4,7 +4,7 @@
 function connect() {
 	try {
 		
-		$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "geo_admin", "Admin%7" );
+		$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "root", "" );
 		$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	} catch (PDOException $e) {
 		
