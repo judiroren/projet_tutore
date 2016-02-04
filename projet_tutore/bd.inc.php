@@ -214,4 +214,14 @@ function dateReservation($employeAbsent, $debutReserv, $finReserv) {
 	return $reserv;	
 }
 
+//Récupére les informations de login d'un client 
+function logClient($log, $mdp){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$rqtLogClient = $connexion->prepare("SELECT login_client, mdp_client, id_client FROM ".$nomE."_client WHERE login_client = '".$log."' AND mdp_client = '".$mdp."'");
+	$rqtLogClient->execute();
+	$rqtLogClient->setFetchMode(PDO::FETCH_OBJ);
+	$i = $rqtLogClient->fetch();
+	return $i;
+}
 ?>

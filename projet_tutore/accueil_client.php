@@ -1,16 +1,62 @@
+<?php
+
+	session_start();
+	//$_SESSION["nomE"] = $_GET['nomEntreprise'];
+	
+	try {
+		//$_SESSION["nomE"] = $_GET['nomEntreprise'];
+		if($_GET['nomEntreprise'] != null) {
+			$_SESSION["nomE"] = $_GET['nomEntreprise'];
+		} else {
+			throw new Exception("Notice: Undefined offset");
+		}
+	} catch(Exception $e){
+		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+	}
+	
+?>
 <!DOCTYPE HTML>
 <?php
-	//import des fichiers requis
 	require "fonctions.inc.php";
-	
 	require "bd.inc.php";
-	//$connexion = connect();
-	//$nom=$_GET['nomEntreprise'];
+	
+	if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+		
+	} else {
+		
+	$_SESSION["nomE"] = $_GET['nomEntreprise'];	
+	
+	$connexion = connect();
+	$nomE = $_GET['nomEntreprise'];
+	//$nomE = str_replace(' ', '_', $nomE);
 
-	//récupération des infos
+	//permet de récuperer les infos de connexion
 	$i = infosEntreprise();
+	
+	
 
-	$nomE = $i->nomEntreprise;
+	//Le mot de passe doit être renseigner
+	if(isset($_POST['mdp'])) {
+		
+		//$mdp = md5($_POST['mdp']);
+		$mdp = $_POST['mdp'];
+	} 
+	
+	//Les informations doivent être correcte
+	if( isset($_POST['login']) && isset($_POST['mdp']) ) {
+		//récupération des infos de connexion des clients
+		$j = logClient($_POST['login'], $_POST['mdp']);
+		if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
+			$_SESSION["client"] = $j->id_client;
+			$_SESSION["estConnecte"] = 1;
+			$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+			
+		}
+	}
+
+
 ?>
 
 <html>
@@ -49,8 +95,9 @@
 								
 							?>
 							
-								<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
-								
+								<a href="profil.php?nomEntreprise=<?php echo $nomE ?>"> Accéder à son profil </a></br>
+								<a href="reservation.php?nomEntreprise=<?php echo $nomE ?>"> Réserver </a></br></br>
+								<a href="destruct_session.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
 							</div>
 							
 							<?php
@@ -59,6 +106,8 @@
 							
 							?>
 						</div>
+						<a href="inscription.php?nomEntreprise=<?php echo $nomE ?>"> S'inscrire </a></br>
+						<a href="reservation.php?nomEntreprise=<?php echo $nomE ?>"> Réserver </a></br></br>
 						<form method="post" action="">
 								<div class="row">
 									<div class="6u 12u$(mobile)"><input type="text" name="login" placeholder="Login" /></div>
@@ -70,25 +119,21 @@
 									<input type="submit" name ="connecte" value="Connection" />
 								</div>
 							</form>
+							
 							<?php } ?>
 
-				</div>
-
-
 			</div>
+		</div>
 
 		<!-- Main -->
-			<div id="main">
+		<div id="main">
 
 				<!-- Intro -->
 					
-						<div class="container">
+			<div class="container">
 
-							
-						</div>
-
-						
+							<?php } ?>
 			</div>
-
+		</div>
 	</body>
 </html>
