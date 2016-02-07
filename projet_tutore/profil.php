@@ -49,7 +49,9 @@
 	
 	//récupération des infos du client
 	$infoC = infosClients();
-
+	
+	//Récupération des réservations du client
+	$reserv = reservClient();
 
 ?>
 
@@ -127,6 +129,27 @@
 						<input type="submit" value="Modifier" />
 					</div>
 				</form>
+				</br>
+				Réservation effectuées : </br>
+				<table>
+				<tr><td>Réservation</td><td>Date</td><td>Heure</td><td>Employe</td><td>Prix</td><td>Payé</td></tr>
+				
+				<?php 
+					while($donnees = $reserv->fetch(PDO::FETCH_OBJ))
+					{	
+						$identite = $donnees->nom_employe." ".$donnees->prenom_employe;
+						$paye = $donnees->paye=='1'?'oui':'non';
+						echo "<tr>";
+						echo "<td>".$donnees->descriptif_presta."</td>";
+						echo "<td>".$donnees->date."</td>";
+						echo "<td>".$donnees->heure."</td>";
+						echo "<td>".$identite."</td>";
+						echo "<td>".$donnees->prix."</td>";
+						echo "<td>".$paye."</td>";
+						echo "</tr>";
+					}
+				?>
+				</table>
 				<?php } ?>
 			</div>
 		</div>

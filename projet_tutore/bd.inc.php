@@ -236,4 +236,15 @@ function infosClients(){
 	$i = $rqtClient->fetch();
 	return $i;
 }
+
+//Récupère les réservations d'un client
+function reservClient(){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$client = $_SESSION["client"];
+	$rqtReservCli = $connexion->prepare("SELECT descriptif_presta, prix, nom_employe, prenom_employe, paye, date, heure FROM ".$nomE."_reserv JOIN ".$nomE."_employe ON id_employe = employe JOIN ".$nomE."_prestation ON id_presta = presta WHERE client = '".$client."' ORDER BY date ASC");
+	$rqtReservCli->execute();
+	
+	return $rqtReservCli;
+}
 ?>
