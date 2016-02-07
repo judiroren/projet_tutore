@@ -224,4 +224,16 @@ function logClient($log, $mdp){
 	$i = $rqtLogClient->fetch();
 	return $i;
 }
+
+//Récupére les informations de login d'un client
+function infosClients(){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$client = $_SESSION["client"];
+	$rqtClient = $connexion->prepare("SELECT nom_client, prenom_client, mail, login_client FROM ".$nomE."_client WHERE id_client = '".$client."'");
+	$rqtClient->execute();
+	$rqtClient->setFetchMode(PDO::FETCH_OBJ);
+	$i = $rqtClient->fetch();
+	return $i;
+}
 ?>

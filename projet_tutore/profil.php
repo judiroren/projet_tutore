@@ -19,6 +19,7 @@
 <?php
 	require "fonctions.inc.php";
 	require "bd.inc.php";
+	require "ajout.inc.php";
 	
 	if( verifEntreprise($_SESSION['nomE']) == null ) {
 		
@@ -32,29 +33,22 @@
 	$nomE = $_GET['nomEntreprise'];
 	//$nomE = str_replace(' ', '_', $nomE);
 
+	if(isset($_POST['verif'])){
+		if(!empty($_POST['mdp'])){
+			if($_POST['mdp']==$_POST['mdp2']){
+				modifClientMdp($connexion, $_POST['nom'], $_POST['prenom'], $_POST['mail'], $_POST['login'], $_POST['mdp']);
+			}else{
+				$erreur = 1;
+			}
+		}else{
+			modifClient($connexion, $_POST['nom'], $_POST['prenom'], $_POST['mail'], $_POST['login']);
+		}
+	}
 	//permet de récuperer les infos de connexion
 	$i = infosEntreprise();
 	
-	
-
-	//Le mot de passe doit être renseigner
-	if(isset($_POST['mdp'])) {
-		
-		//$mdp = md5($_POST['mdp']);
-		$mdp = $_POST['mdp'];
-	} 
-	
-	//Les informations doivent être correcte
-	if( isset($_POST['login']) && isset($_POST['mdp']) ) {
-		//récupération des infos de connexion des clients
-		$j = logClient($_POST['login'], $_POST['mdp']);
-		if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
-			$_SESSION["client"] = $j->id_client;
-			$_SESSION["estConnecte"] = 1;
-			$_SESSION["nomSession"] = $_GET['nomEntreprise'];
-			
-		}
-	}
+	//récupération des infos du client
+	$infoC = infosClients();
 
 
 ?>
@@ -106,7 +100,34 @@
 					
 			<div class="container">
 
-							<?php } ?>
+				<?php 
+				if(isset($erreur)){
+					echo "Si vous changez de mot de passe, saisissez le nouveau dans les 2 champs !";	
+				}
+				?>
+				<form method="post" action="">
+				</br>
+					<h3>Compte :	</h3>
+					Login : <div class="6u 12u$(mobile)"><input type="text" name="login" value="<?php echo $infoC->login_client?>"/></div>				
+					</br>
+					Nouveau mot de passe (ne rien mettre pour garder l'ancien) : <div class="6u 12u$(mobile)"><input type="text" name="mdp" /></div>								
+					</br>
+					Confirmer nouveau mot de passe (remplir seulement si changement) : <div class="6u 12u$(mobile)"><input type="text" name="mdp2" /></div>								
+					</br>
+					<h3>Informations générale : </h3>
+					Nom : <div class="6u 12u$(mobile)"><input type="text" name="nom" value="<?php echo $infoC->nom_client?>"/></div>	
+					</br>
+					Prénom : <div class="6u 12u$(mobile)"><input type="text" name="prenom" value="<?php echo $infoC->prenom_client?>"/></div>				
+					</br>
+					E-mail : <div class="6u 12u$(mobile)"><input type="text" name="mail" value="<?php echo $infoC->mail?>" /></div>			
+
+					<input type="hidden" name="verif" value="ok"> 
+					</br>
+						<div align = "center" class="12u$">
+						<input type="submit" value="Modifier" />
+					</div>
+				</form>
+				<?php } ?>
 			</div>
 		</div>
 	</body>

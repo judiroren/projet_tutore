@@ -237,4 +237,19 @@ function ajoutReservation($connexion, $code, $employeAbsent, $motif, $debutReser
 		
 }
 
+//Modifie un client avec nouveau mot de passe
+function modifClientMdp($connexion, $nom, $prenom, $mail, $login, $mdp){
+	$nomE = $_SESSION["nomSession"];
+	$id = $_SESSION["client"];
+	$rqtMajClient = $connexion->prepare("UPDATE ".$nomE."_client SET nom_client = :nom_client, prenom_client = :prenom_client, mail = :mail, login_client = :login_client, mdp_client = :mdp_client WHERE id_client = :client");
+	$rqtMajClient->execute(array('nom_client' => $nom, 'prenom_client' => $prenom, 'mail' => $mail, 'login_client' => $login, 'mdp_client' => $mdp, 'client' => $id));
+}
+
+//Modifie un client sans nouveau mot de passe
+function modifClient($connexion, $nom, $prenom, $mail, $login){
+	$nomE = $_SESSION["nomSession"];
+	$id = $_SESSION["client"];
+	$rqtMajClient = $connexion->prepare("UPDATE ".$nomE."_client SET nom_client = :nom_client, prenom_client = :prenom_client, mail = :mail, login_client = :login_client WHERE id_client = :client");
+	$rqtMajClient->execute(array('nom_client' => $nom, 'prenom_client' => $prenom, 'mail' => $mail, 'login_client' => $login, 'client' => $id));
+}
 ?>
