@@ -90,6 +90,7 @@
 							<p>Page de gestion de l'entreprise</p>
 							
 						</div>
+						<a href="accueil_client.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
 						<a href="inscription.php?nomEntreprise=<?php echo $nomE ?>"> S'inscrire </a></br>
 						<a href="reservation.php?nomEntreprise=<?php echo $nomE ?>"> Réserver </a></br></br>
 						<form method="post" action="accueil_client.php?nomEntreprise=<?php echo $nomE;?>">
