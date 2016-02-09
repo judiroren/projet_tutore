@@ -35,7 +35,8 @@
 	//permet de récuperer les infos de connexion
 	$i = infosEntreprise();
 	
-	
+	//récupère la liste des prestations de l'entreprise
+	$prest = listePrestations();
 
 	//Le mot de passe doit être renseigner
 	if(isset($_POST['mdp'])) {
@@ -129,10 +130,34 @@
 		<div id="main">
 
 				<!-- Intro -->
-					
+					<h2><?php echo $i->nomEntreprise?></h2>
+					<p align="center"><?php echo $i->adresseEntreprise?><br/>
+					Tel :<?php echo $i->telEntreprise?></p>
 			<div class="container">
-
-							<?php } ?>
+				<p><?php echo $i->descEntreprise ?></p>
+				<h3 align="center">les prestations de <?php echo $i->nomEntreprise?> :</h3>
+							<table>
+							<tr><td>Description</td><td>Prix</td><td>Paiement Paypal</td><td>Durée</td></tr>
+							<?php 
+							if($prest != null){
+								while ($unePrest = $prest->fetch(PDO::FETCH_OBJ)){
+									$unePresta = infosPrestation($unePrest->id_presta);
+									$unePresta = $unePresta->fetch(PDO::FETCH_OBJ);
+									echo "<tr><td>$unePresta->descriptif_presta</td>
+											  <td>$unePresta->prix €</td>
+											  <td>";
+									if ($unePresta->paypal >= 1 ) {
+										echo "oui";
+									}else{
+										echo"non";
+									}
+									echo "</td>
+										  <td>$unePresta->duree h</td></tr>";
+								}
+							}
+						} 
+							?>
+							</table>
 			</div>
 		</div>
 	</body>
