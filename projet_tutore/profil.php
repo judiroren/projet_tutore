@@ -112,16 +112,16 @@
 					<h3>Compte :	</h3>
 					Login : <div class="6u 12u$(mobile)"><input type="text" name="login" value="<?php echo $infoC->login_client?>"/></div>				
 					</br>
-					Nouveau mot de passe (ne rien mettre pour garder l'ancien) : <div class="6u 12u$(mobile)"><input type="text" name="mdp" /></div>								
+					Nouveau mot de passe (ne rien mettre pour garder l'ancien) : <div class="6u 12u$(mobile)"><input type="password" name="mdp" /></div>								
 					</br>
-					Confirmer nouveau mot de passe (remplir seulement si changement) : <div class="6u 12u$(mobile)"><input type="text" name="mdp2" /></div>								
+					Confirmer nouveau mot de passe (remplir seulement si changement) : <div class="6u 12u$(mobile)"><input type="password" name="mdp2" /></div>								
 					</br>
 					<h3>Informations générale : </h3>
 					Nom : <div class="6u 12u$(mobile)"><input type="text" name="nom" value="<?php echo $infoC->nom_client?>"/></div>	
 					</br>
 					Prénom : <div class="6u 12u$(mobile)"><input type="text" name="prenom" value="<?php echo $infoC->prenom_client?>"/></div>				
 					</br>
-					E-mail : <div class="6u 12u$(mobile)"><input type="text" name="mail" value="<?php echo $infoC->mail?>" /></div>			
+					E-mail : <div class="6u 12u$(mobile)"><input type="email" name="mail" value="<?php echo $infoC->mail?>" /></div>			
 
 					<input type="hidden" name="verif" value="ok"> 
 					</br>

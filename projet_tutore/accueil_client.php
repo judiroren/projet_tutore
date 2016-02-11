@@ -138,7 +138,7 @@
 				<p><?php echo $i->descEntreprise ?></p>
 				<h3 align="center">les prestations de <?php echo $i->nomEntreprise?> :</h3>
 							<table>
-							<tr><td>Description</td><td>Prix</td><td>Paiement Paypal</td><td>Durée</td></tr>
+							<tr><td>Description</td><td>Prix</td><td>Payable Paypal</td><td>Durée</td></tr>
 							<?php 
 							if($prest != null){
 								while ($unePrest = $prest->fetch(PDO::FETCH_OBJ)){
@@ -153,7 +153,7 @@
 										echo"non";
 									}
 									echo "</td>
-										  <td>$unePresta->duree h</td></tr>";
+										  <td>$unePresta->duree min</td></tr>";
 								}
 							}
 						} 

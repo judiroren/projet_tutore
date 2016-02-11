@@ -134,7 +134,7 @@
 									<input type="text" name="adresse" value="<?php echo $valEmp->adresse_emp;?>"></div>	
 									</br>
 									Adresse mail : <div class="6u 12u$(mobile)">
-									<input type="text" name="mail" value="<?php echo $valEmp->mail_emp;?>"></div>				
+									<input type="email" name="mail" value="<?php echo $valEmp->mail_emp;?>"></div>				
 									</br>
 									Numéro de téléphone : <div class="6u 12u$(mobile)">
 									<input type="text" name="tel" value="<?php echo $valEmp->telephone_emp;?>"></div>				

@@ -259,7 +259,7 @@
 									</br>
 									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" /></div>		
 									</br>
-									Adresse mail : <div class="6u 12u$(mobile)"><input type="text" name="mail" /></div>			
+									Adresse mail : <div class="6u 12u$(mobile)"><input type="email" name="mail" /></div>			
 									</br>
 									Numéro de téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" /></div>					
 									</br>

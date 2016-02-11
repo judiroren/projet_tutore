@@ -247,4 +247,16 @@ function reservClient(){
 	
 	return $rqtReservCli;
 }
+
+//Permet d'obtenir les informations sur les clients d'une entreprise
+function listeClient() {
+
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$rqtClient = $connexion->prepare("SELECT * FROM ".$nomE."_client");
+	$rqtClient->execute();
+
+	return $rqtClient;
+
+}
 ?>

@@ -103,7 +103,7 @@
 									Mot de passe : <div class="6u 12u$(mobile)"><input type="text" name="mdp" /></div>								
 									</br>
 									<h3>Informations générale : </h3></br>
-									E-mail : <div class="6u 12u$(mobile)"><input type="text" name="mail" value="<?php echo $i->mailEntreprise?>" /></div>			
+									E-mail : <div class="6u 12u$(mobile)"><input type="email" name="mail" value="<?php echo $i->mailEntreprise?>" /></div>			
 									</br>
 									Téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" value="<?php echo $i->telEntreprise?>"/></div>				
 									</br>
