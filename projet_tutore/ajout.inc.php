@@ -25,16 +25,14 @@ function ajoutEmploye($connexion, $code, $nom, $prenom, $adresse, $mail, $tel, $
 }
 
 //Permet de modifier un employé
-function majEmploye($connexion, $nom, $prenom, $adresse, $mail, $tel, $presta1, $presta2, $presta3, $id_employe) {
+function majEmploye($connexion, $nom, $prenom, $adresse, $mail, $tel, $id_employe) {
 	
 	$nomE = $_SESSION["nomE"];
 	$modifInfosEmp = $connexion->prepare("UPDATE ".$nomE."_employe SET nom_employe = :nom, 
 								prenom_employe = :prenom, adresse_emp = :adresse, 
-								mail_emp = :mail, telephone_emp = :tel, competenceA = :presta1,
-								competenceB = :presta2, competenceC = :presta3 WHERE id_employe = :id_employe");
+								mail_emp = :mail, telephone_emp = :tel WHERE id_employe = :id_employe");
 								
-	$modifInfosEmp->execute(array('nom' => $nom, 'prenom' => $prenom, 'adresse' => $adresse, 'mail' => $mail, 'tel' => $tel, 'presta1' => $presta1,
-									'presta2' => $presta2, 'presta3' => $presta3, 'id_employe' => $id_employe));	
+	$modifInfosEmp->execute(array('nom' => $nom, 'prenom' => $prenom, 'adresse' => $adresse, 'mail' => $mail, 'tel' => $tel, 'id_employe' => $id_employe));	
 	
 }
 
@@ -275,5 +273,28 @@ function modifClient($connexion, $nom, $prenom, $mail, $login){
 	$id = $_SESSION["client"];
 	$rqtMajClient = $connexion->prepare("UPDATE ".$nomE."_client SET nom_client = :nom_client, prenom_client = :prenom_client, mail = :mail, login_client = :login_client WHERE id_client = :client");
 	$rqtMajClient->execute(array('nom_client' => $nom, 'prenom_client' => $prenom, 'mail' => $mail, 'login_client' => $login, 'client' => $id));
+}
+
+//Supprime les anciennes compétences
+function supprimeComp($connexion, $tabComp, $emp){
+	$nomE = $_SESSION["nomE"];
+	foreach ($tabComp as $val){
+		$rqtSuppr = $connexion->prepare("DELETE FROM ".$nomE."_competence WHERE employe = '".$emp."' AND prestation = '".$val."'");
+		$rqtSuppr->execute();
+	}
+}
+
+//Ajoute des nouvelles compétences
+function ajouteComp($connexion, $tabPrest, $emp){
+	$nomE = $_SESSION["nomE"];
+	$id = 100;
+	foreach ($tabPrest as $val){
+		
+		$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation) 
+					VALUES (:id, :emp, :prest)");
+
+		$rqtAjoutComp->execute(array('id' => $id, 'emp' => $emp, 'prest' => $val));
+		$id++;
+	}
 }
 ?>

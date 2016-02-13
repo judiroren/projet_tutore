@@ -259,4 +259,23 @@ function listeClient() {
 	return $rqtClient;
 
 }
+
+//Recupère la liste des compétences de l'employé
+function listeCompetence($emp){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$rqtComp = $connexion->prepare("SELECT prestation, descriptif_presta FROM ".$nomE."_competence JOIN ".$nomE."_prestation ON prestation = id_presta WHERE employe = '".$emp."'");
+	$rqtComp->execute();
+	return $rqtComp;
+}
+
+//Liste des prestations qui ne font pas partie des competences de l'employe
+function listePrestaNonComp($emp){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$rqtPrest = $connexion->prepare("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation LEFT OUTER JOIN ".$nomE."_competence ON id_presta = prestation WHERE prestation IS NULL");
+	$rqtPrest->execute();
+	
+	return $rqtPrest;
+}
 ?>

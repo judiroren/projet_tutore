@@ -29,24 +29,16 @@
 		
 	} else {
 	
-	$listePresta1 = listePrestations();
-	$listePresta2 = listePrestations();
-	$listePresta3 = listePrestations();
-	
-	$rqtEmp = InfosEmploye2($_GET['id_employe']);
-	$valEmp = $rqtEmp->fetch(PDO::FETCH_OBJ);
-	
-	$rqtPlan = planningEmp($_GET['id_employe']);
-	$valPlan = $rqtPlan->fetch(PDO::FETCH_OBJ);
-	
-	$i = infosEntreprise();
-
 	if(isset($_POST['modif'])){
 		
 		//Modification des informations de l'employé
-		majEmploye($connexion, $_POST['nom'], $_POST['prenom'], $_POST['adresse'], $_POST['mail'], $_POST['tel'], $_POST['presta_1'],
-						$_POST['presta_2'], $_POST['presta_3'], $_GET['id_employe']);
-						
+		majEmploye($connexion, $_POST['nom'], $_POST['prenom'], $_POST['adresse'], $_POST['mail'], $_POST['tel'], $_GET['id_employe']);
+		if(!empty($_POST['competence'])){
+			supprimeComp($connexion, $_POST['competence'], $_GET['id_employe']);
+		}
+		if(!empty($_POST['prestation'])){
+			ajouteComp($connexion, $_POST['prestation'], $_GET['id_employe']);
+		}
 		/* $connexion->exec("UPDATE ".$nomE."_employe SET nom_employe = '".$_POST['nom']."', prenom_employe = '".$_POST['prenom']."', 
 							adresse_emp = '".$_POST['adresse']."', mail_emp = '".$_POST['mail']."', telephone_emp = '".$_POST['tel']."', 
 							competenceA = '".$_POST['presta_1']."', competenceB = '".$_POST['presta_2']."', competenceC = '".$_POST['presta_3']."' 
@@ -67,6 +59,18 @@
 		MercrediM = ".$MercrediM.", MercrediA = ".$MercrediA.", JeudiM = ".$JeudiM.", JeudiA = ".$JeudiA.", VendrediM = ".$VendrediM.", 
 		VendrediA = ".$VendrediA.", SamediM = ".$SamediM.", SamediA = ".$SamediA." WHERE code_employe = '".$_GET['id_employe']."'");
 	}
+	
+	//$listePresta = listePrestations();
+	$presta = listePrestaNonComp($_GET['id_employe']);
+	$comp = listeCompetence($_GET['id_employe']);
+	
+	$rqtEmp = InfosEmploye2($_GET['id_employe']);
+	$valEmp = $rqtEmp->fetch(PDO::FETCH_OBJ);
+	
+	$rqtPlan = planningEmp($_GET['id_employe']);
+	$valPlan = $rqtPlan->fetch(PDO::FETCH_OBJ);
+	
+	$i = infosEntreprise();
 
 ?>
 
@@ -139,56 +143,30 @@
 									Numéro de téléphone : <div class="6u 12u$(mobile)">
 									<input type="text" name="tel" value="<?php echo $valEmp->telephone_emp;?>"></div>				
 									</br>
-									Compétence 1 : <div class="6u 12u$(mobile)"><select name="presta_1">
+									Compétences déjà acquise : <div class="6u 12u$(mobile)"><select name="competence[]" multiple>
 										<option value=""></option>
 									<?php 
-									while($rqtPresta1=$listePresta1->fetch(PDO::FETCH_OBJ)){
-										if($valEmp->competenceA==$rqtPresta1->id_presta){
-										?>
-											<option value="<?php echo $rqtPresta1->id_presta;?>" selected="selected"><?php echo $rqtPresta1->descriptif_presta;?></option>
-									<?php 
-										}else{
-									?>	
-											<option value="<?php echo $rqtPresta1->id_presta;?>"><?php echo $rqtPresta1->descriptif_presta;?></option>
+									while($rqtComp=$comp->fetch(PDO::FETCH_OBJ)){
+									?>
+										<option value="<?php echo $rqtComp->prestation;?>"><?php echo $rqtComp->descriptif_presta;?></option>
 									<?php 	
-										}
+									
 									}
 									?>
 									</select></div>	
 									</br>
-									Compétence 2 : <div class="6u 12u$(mobile)"><select name="presta_2">
+									Prestations : <div class="6u 12u$(mobile)"><select name="prestation[]" multiple>
 										<option value=""></option>
 									<?php 
-									while($rqtPresta2=$listePresta2->fetch(PDO::FETCH_OBJ)){
-										if($valEmp->competenceB==$rqtPresta2->id_presta){
-										?>
-											<option value="<?php echo $rqtPresta2->id_presta;?>" selected="selected"><?php echo $rqtPresta2->descriptif_presta;?></option>
-									<?php 
-										}else{
-									?>	
-											<option value="<?php echo $rqtPresta2->id_presta;?>"><?php echo $rqtPresta2->descriptif_presta;?></option>
+									$i=0;
+									while($rqtPrest = $presta->fetch(PDO::FETCH_OBJ)){
+									?>
+										<option value="<?php echo $rqtPrest->id_presta;?>"><?php echo $rqtPrest->descriptif_presta;?></option>
 									<?php 	
-										}
+									$i++;
 									}
 									?>
-									</select></div>
-									</br>
-									Compétence 3 : <div class="6u 12u$(mobile)"><select name="presta_3">
-										<option value=""></option>
-									<?php 
-									while($rqtPresta3=$listePresta3->fetch(PDO::FETCH_OBJ)){
-										if($valEmp->competenceC==$rqtPresta3->id_presta){
-										?>
-											<option value="<?php echo $rqtPresta3->id_presta;?>" selected="selected"><?php echo $rqtPresta3->descriptif_presta;?></option>
-									<?php 
-										}else{
-									?>	
-											<option value="<?php echo $rqtPresta3->id_presta;?>"><?php echo $rqtPresta3->descriptif_presta;?></option>
-									<?php 	
-										}
-									}
-									?>
-									</select></div>
+									</select></div>	
 									</br>
 								
 								<table>
