@@ -21,8 +21,9 @@
 			$login = $_POST['login'];
 			//$mdpHash = md5($_POST['mdp']);
 			$mdpHash = $_POST['mdp'];
+			$creneau = $_POST['creneau'];
 			
-			creerEntreprise($connexion, $entreprise, $mail, $login, $mdpHash);
+			creerEntreprise($connexion, $entreprise, $mail, $login, $mdpHash, $creneau);
 			
 			$temploye = $_POST['entreprise']."_employe";
 			$tableEmp = str_replace(' ', '_', $temploye);
@@ -36,11 +37,13 @@
 			$tablePlan = str_replace(' ', '_', $tplanning);
 			$tabsence = $_POST['entreprise']."_absence";
 			$tableAbs = str_replace(' ', '_', $tabsence);
+			$tcompetence = $_POST['entreprise']."_competence";
+			$tableComp = str_replace(' ', '_', $tcompetence);
 			
 			//try{
 			   
 				//ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv, $tplanning, $tabsence);
-				ajoutEntreprise($connexion, $tableEmp, $tablePrest, $tableClient, $tableReserv, $tablePlan, $tableAbs);
+				ajoutEntreprise($connexion, $tableEmp, $tablePrest, $tableClient, $tableReserv, $tablePlan, $tableAbs, $tableComp);
 	
 		  // } catch (Exception $e) {
 			   
@@ -103,6 +106,11 @@
 							<p>Adresse mail de l'entreprise : 
 							<?php 
 							echo $_POST['mail'];
+							?>
+							</p>
+							<p>Type de créneau de réservation : 
+							<?php 
+							echo $_POST['creneau']=1?"Libre":"Fixe";
 							?>
 							</p>
 							<p>Lien permettant l'accès à l'accueil côté entreprise :  </br>

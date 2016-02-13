@@ -63,26 +63,26 @@
 		$paypal = (isset($_POST['paypal']) )? 1 : 0;
 		
 		//Permet d'ajouter une prestation
-		ajoutPresta($connexion, $code, $_POST['descrip'], $_POST['prix'], $paypal, $_POST['duree']);
+		ajoutPresta($connexion, $code, $_POST['descrip'], $_POST['prix'], $paypal, $_POST['duree'], $_POST['employe']);
 		
-		$modifEmploye = InfosEmploye2($_POST['employe']);
+		//$modifEmploye = InfosEmploye2($_POST['employe']);
 		
-		$val = $modifEmploye->fetch(PDO::FETCH_OBJ);
+		//$val = $modifEmploye->fetch(PDO::FETCH_OBJ);
 		//$val = $modifEmploye;
 		
-		if($val->competenceA == ""){
+		//if($val->competenceA == ""){
 			
-			majCompA($connexion, $code, $_POST['employe']);
+		//	majCompA($connexion, $code, $_POST['employe']);
 			
-		}elseif($val->competenceB ==""){
+	//	}elseif($val->competenceB ==""){
 			
-			majCompB($connexion, $code, $_POST['employe']);
+	//		majCompB($connexion, $code, $_POST['employe']);
 			
-		}else{
+	//	}else{
 			
-			majCompC($connexion, $code, $_POST['employe']);
+	//		majCompC($connexion, $code, $_POST['employe']);
 			
-		}
+	//	}
 		
 	}
 
@@ -186,7 +186,7 @@
 								
 								</br></br>
 								<h3>Associer un employe à la nouvelle prestation</h3>
-								<select name="employe">
+								<select name="employe[]" multiple>
 									<?php 
 									while($valeur=$emp->fetch(PDO::FETCH_OBJ)){
 										if($valeur->competenceA == "" || $valeur->competenceB == "" || $valeur->competenceC == "" ){

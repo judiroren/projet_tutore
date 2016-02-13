@@ -1,16 +1,26 @@
 <?php
 
 //Permet d'ajouter un employé
-function ajoutEmploye($connexion, $code, $nom, $prenom, $adresse, $mail, $tel, $presta1, $presta2, $presta3) {
+function ajoutEmploye($connexion, $code, $nom, $prenom, $adresse, $mail, $tel, $presta) {
 	
 	$nomE = $_SESSION["nomSession"];
 
 	$rqtAjoutEmp = $connexion->prepare("INSERT INTO ".$nomE."_employe(id_employe, nom_employe, prenom_employe, adresse_emp, 
-						mail_emp, telephone_emp, competenceA, competenceB, competenceC) 
-						VALUES (:code, :nom, :prenom, :adresse, :mail, :tel, :presta1, :presta2, :presta3)");
+						mail_emp, telephone_emp) 
+						VALUES (:code, :nom, :prenom, :adresse, :mail, :tel)");
 						
 	$rqtAjoutEmp->execute(array("code" => $code, "nom" => $nom, "prenom" => $prenom, "adresse" => $adresse, 
-								"mail" => $mail, "tel" => $tel, "presta1" => $presta1, "presta2" => $presta2, "presta3" => $presta3));	
+								"mail" => $mail, "tel" => $tel));	
+	
+	$i = 0;
+	foreach($presta as $val){
+		if($val!=""){
+			$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation) 
+					VALUES (:id, :employe, :presta)");
+			$rqtAjoutComp->execute(array("id" => $i, "employe" => $code, "presta" => $val));
+			$i++;
+		}
+	}
 								
 }
 
@@ -80,21 +90,20 @@ function supprimerPlan($connexion, $IDemp) {
 }
 
 //Permet de créer une entreprise
-function creerEntreprise($connexion, $entreprise, $mail, $login, $mdpHash) {
+function creerEntreprise($connexion, $entreprise, $mail, $login, $mdpHash, $creneau) {
 	
-	$rqtCreerEnt = $connexion->prepare("INSERT INTO entreprise(nomEntreprise, mailEntreprise, loginAdmin, mdpAdmin) 
-						VALUES (:entreprise, :mail, :login, :mdpHash)");
+	$rqtCreerEnt = $connexion->prepare("INSERT INTO entreprise(nomEntreprise, mailEntreprise, loginAdmin, mdpAdmin, CreneauLibre) 
+						VALUES (:entreprise, :mail, :login, :mdpHash, :CreneauLibre)");
 						
-	$rqtCreerEnt->execute(array("entreprise" => $entreprise, "mail" => $mail, "login" => $login, "mdpHash" => $mdpHash));					
+	$rqtCreerEnt->execute(array("entreprise" => $entreprise, "mail" => $mail, "login" => $login, "mdpHash" => $mdpHash, "CreneauLibre" => $creneau));					
 		   
 }
 
 //Permet d'ajouter toutes les informations d'une entreprise
-function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv, $tplanning, $tabsence) {
+function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv, $tplanning, $tabsence, $tcompetence) {
 	
 	$rqtAjout1 = $connexion->prepare("CREATE TABLE ".$temploye." ( id_employe CHAR(8) PRIMARY KEY, nom_employe VARCHAR(40), 
-													prenom_employe VARCHAR(50), competenceA CHAR(8), competenceB CHAR(8), 
-													competenceC CHAR(8), telephone_emp CHAR(10), adresse_emp VARCHAR(200),
+													prenom_employe VARCHAR(50), telephone_emp CHAR(10), adresse_emp VARCHAR(200),
 													mail_emp VARCHAR(50))");
 	$rqtAjout1->execute();												
 													
@@ -128,7 +137,13 @@ function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv
   						`dateDebut` date,
   						`dateFin` date,
   						`absenceFini` BOOLEAN)");
-	$rqtAjout6->execute();					
+	$rqtAjout6->execute();		
+	
+	$rqtAjout7 = $connexion->prepare("CREATE TABLE ".$tcompetence." (
+  						`id_competence` char(8) PRIMARY KEY,
+						`employe` char(8) NOT NULL,
+  						`prestation` CHAR(8) NOT NULL)");
+	$rqtAjout7->execute();
 }
 
 //Permet de modifier toutes les informations d'une entreprise
@@ -167,13 +182,22 @@ function modifEnt($connexion, $mail, $tel, $adresse, $logo, $descrip, $login) {
 }
 
 //Permet d'ajouter une prestation
-function ajoutPresta($connexion, $code, $descrip, $prix, $paypal, $duree) {
+function ajoutPresta($connexion, $code, $descrip, $prix, $paypal, $duree, $employe) {
 	
 	$nomE = $_SESSION["nomE"];
 	$rqtAjoutPresta = $connexion->prepare("INSERT INTO ".$nomE."_prestation(id_presta, descriptif_presta, prix, paypal, duree) 
 										VALUES (:code, :descrip, :prix, :paypal, :duree)");
 	$rqtAjoutPresta->execute(array('code' => $code, 'descrip' => $descrip, 'prix' => $prix, 'paypal' => $paypal, 'duree' => $duree));									
 	
+	$i = 0;
+	foreach($employe as $val){
+		if($val!=""){
+			$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation)
+					VALUES (:id, :employe, :presta)");
+			$rqtAjoutComp->execute(array("id" => $i, "employe" => $val, "presta" => $code));
+			$i++;
+		}
+	}
 }
 
 //Permet de modifier une prestation

@@ -44,7 +44,10 @@
 									Mot de passe de l'administrateur : <div class="6u 12u$(mobile)"><input type="text" name="mdp" /></div>
 									</br>
 									Adresse mail de l'administrateur : <div class="6u 12u$(mobile)"><input type="text" name="mail" /></div>
-								</br>
+									</br>
+									Type de créneau : </br>
+									Libre : <input type="radio" name="creneau" value="1" checked="checked" /></br>
+									Fixe : <input type="radio" name="creneau" value="0" /></br>
 								<div align = "center" class="12u$">
 									<input type="submit" value="Valider" />
 								</div>
