@@ -36,29 +36,9 @@
 
 	if(isset($_POST['ajout'])){
 		
-		$cpt = 0;
-		$prefixe = 'PRES';
 		$ajout = "oui";
 		
-		while($val=$listePresta->fetch(PDO::FETCH_OBJ)){
-			
-			$cpt++;
-			
-		}
-		
-		$cpt++;
-		
-		if($cpt<9){
-			$code = $prefixe.'000'.$cpt;
-		}else if($cpt<99){
-			$code = $prefixe.'00'.$cpt;
-		}else if($cpt<999){
-			$code = $prefixe.'0'.$cpt;
-		}else if($cpt<9999){
-			$code = $prefixe.$cpt;
-		}else{
-			$ajout = "non";
-		}
+		$code = code($nomE."_prestation", 'id_presta');
 		
 		$paypal = (isset($_POST['paypal']) )? 1 : 0;
 		
@@ -185,7 +165,7 @@
 									Paiement PayPal : <input type="checkbox" name="paypal" value=1 />
 								
 								</br></br>
-								<h3>Associer un employe à la nouvelle prestation</h3>
+								<h3>Associer un ou plusieurs employés à la nouvelle prestation</h3>
 								<select name="employe[]" multiple>
 									<?php 
 									while($valeur=$emp->fetch(PDO::FETCH_OBJ)){

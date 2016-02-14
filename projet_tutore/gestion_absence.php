@@ -37,30 +37,7 @@
 
 	if (isset($_POST['ajout'])) {
 		
-		$erreurNbAbs = 0;
-		$cpt = 0;
-		
-		while($val=$listeAbs->fetch(PDO::FETCH_OBJ)) {
-			
-			$cpt++;
-		}
-		
-		$prefixe = 'ABSC';
-		$cpt++;
-		
-		if($cpt<9) {
-			
-			$code = $prefixe.'000'.$cpt;
-		}else if($cpt<99){
-			$code = $prefixe.'00'.$cpt;
-		}else if($cpt<999){
-			$code = $prefixe.'0'.$cpt;
-		}else if($cpt<9999){
-			$code = $prefixe.$cpt;
-		}else{
-			$erreurNbAbs = 1;
-			
-		}
+		$code = code($nomE."_absence", 'id_absence');
 		
 		$ok = 0;
 		$erreurDate = 0;

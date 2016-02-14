@@ -278,4 +278,55 @@ function listePrestaNonComp($emp){
 	
 	return $rqtPrest;
 }
+
+//Liste des employés qui peuvent faire la prestation
+function listeEmpCapable($presta){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$rqtListe = $connexion->prepare("SELECT employe, nom_employe, prenom_employe FROM ".$nomE."_competence JOIN ".$nomE."_employe ON employe = id_employe WHERE prestation = '".$presta."'");
+	$rqtListe->execute();
+	return $rqtListe;
+}
+//Liste des employés qui ne peuvent pas faire la prestation
+function listeEmpNonCapable($presta){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$rqtListe = $connexion->prepare("SELECT id_employe, nom_employe, prenom_employe FROM ".$nomE."_employe LEFT OUTER JOIN ".$nomE."_competence ON id_employe = employe WHERE employe IS NULL");
+	$rqtListe->execute();
+	
+	return $rqtListe;
+}
+
+//Créer l'identifiant en rapport avec le contexte
+function code($table, $id){
+	$nomE = $_SESSION["nomE"];
+	$connexion = connect();
+	$rqtpref = $connexion->prepare('SELECT SUBSTR('.$id.',1,4) AS pref FROM '.$table);
+	$rqtpref->execute();
+	$rqtpref->setFetchMode(PDO::FETCH_OBJ);
+	$k = $rqtpref->fetch();
+	if($k->pref == null){
+		switch($table){
+			case($nomE."_employe") : $prefixe = EMPL; break;
+			case($nomE."_prestation") : $prefixe = PRES; break;
+			case($nomE."_reserv") : $prefixe = RESV; break;
+			case($nomE."_planning") : $prefixe = PLAN; break;
+			case($nomE."_competence") : $prefixe = COMP; break;
+			case($nomE."_absence") : $prefixe = ABSC; break;
+			case($nomE."_client") : $prefixe = CLIE; break;
+		}
+	}else{
+		$prefixe = $k->pref;
+	}
+	$rqt = $connexion->prepare('SELECT MAX(SUBSTR('.$id.',5,4)+1) AS val FROM '.$table);
+	$rqt->execute();
+	$rqt->setFetchMode(PDO::FETCH_OBJ);
+	$i = $rqt->fetch();
+	if($i->val == null){
+		$valmax = 1;
+	}else{
+		$valmax = $i->val;
+	}
+	return $prefixe.$valmax;
+}
 ?>

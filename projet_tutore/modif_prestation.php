@@ -31,22 +31,29 @@
 	
 	$id = $_GET['id_presta'];
 	
-	$i = infosEntreprise();
-	
-	$listePresta = infosPrestation($id);
-	$presta = $listePresta->fetch(PDO::FETCH_OBJ);
-	
 	if (isset($_POST['modif'])) {
 		
 		$paypal = (isset($_POST['paypal']) )? 1 : 0;
 		
 		//Permet de modifier une prestation
 		majPresta($connexion, $_POST['descrip'], $_POST['prix'], $_POST['duree'], $paypal, $id);
-		
+		if(!empty($_POST['dejaCap'])){
+			supprimeComp2($connexion, $_POST['dejaCap'], $id);
+		}
+		if(!empty($_POST['nonCap'])){
+			ajouteComp2($connexion, $_POST['nonCap'], $id);
+		}
 		/* $connexion->exec("UPDATE ".$nomE."_prestation SET descriptif_presta = '".$_POST['descrip']."', prix = '".$_POST['prix']."', 
 							duree = '".$_POST['duree']."', paypal = '".$paypal."' WHERE id_presta = '".$_GET['id_presta']."'"); */
 	}
+	
+	$i = infosEntreprise();
+	
+	$listePresta = infosPrestation($id);
+	$presta = $listePresta->fetch(PDO::FETCH_OBJ);
 
+	$empComp = listeEmpCapable($id);
+	$empNonComp = listeEmpNonCapable($id);
 ?>
 
 <html>
@@ -114,8 +121,35 @@
 									</br>
 									Paiement PayPal : <input type="checkbox" name="paypal" value=1 <?php if($presta->paypal==1){echo "checked='checked'";}?>/>
 								
-								</br></br>
-								
+								</br>
+								Employés pouvant faire la prestation : <div class="6u 12u$(mobile)"><select name="dejaCap[]" multiple>
+									<option value=""></option>
+									<?php 
+									while($rqt=$empComp->fetch(PDO::FETCH_OBJ)){
+										$identite = $rqt->nom_employe." ".$rqt->prenom_employe;
+									?>
+										<option value="<?php echo $rqt->employe;?>"><?php echo $identite;?></option>
+									<?php 	
+									
+									}
+									?>
+								</select>
+								</div>
+								</br>
+								Autres employés : <div class="6u 12u$(mobile)"><select name="nonCap[]" multiple>
+									<option value=""></option>
+									<?php 
+									while($rqt=$empNonComp->fetch(PDO::FETCH_OBJ)){
+										$identite = $rqt->nom_employe." ".$rqt->prenom_employe;
+									?>
+										<option value="<?php echo $rqt->id_employe;?>"><?php echo $identite;?></option>
+									<?php 	
+									
+									}
+									?>
+								</select>
+								</div>
+								</br>
 								<input type="hidden" name="modif" value="ok"> 
 								<div align = "center" class="12u$">
 									<input type="submit" value="Modifier" />

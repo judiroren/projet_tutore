@@ -46,7 +46,7 @@
 	
 	$listePresta = listePrestations();
 		
-	$listeEmpCpt = infosEmploye();
+	//$listeEmpCpt = infosEmploye();
 	
 	$listeEmpVerif = verifEmploye();
 	
@@ -61,25 +61,8 @@
 			}
 		}
 		if($ajoutOk == 1){
-			$cpt = 0;
-			$prefixe = 'EMPL';
 			$ajoutE = "oui";
-			while($val=$listeEmpCpt->fetch(PDO::FETCH_OBJ)){
-				$cpt++;
-			}
-			$cpt++;
-			if($cpt<9){
-				$code = $prefixe.'000'.$cpt;
-			}else if($cpt<99){
-				$code = $prefixe.'00'.$cpt;
-			}else if($cpt<999){
-				$code = $prefixe.'0'.$cpt;
-			}else if($cpt<9999){
-				$code = $prefixe.$cpt;
-			}else{
-				$ajoutE = "non";
-			}
-			
+			$code = code($nomE."_employe", 'id_employe');
 			//Permet d'ajouter un employé
 			ajoutEmploye($connexion, $code, $_POST['nom'], $_POST['prenom'], $_POST['adresse'], $_POST['mail'], $_POST['tel'], $_POST['presta']);
 			/** $connexion->exec("INSERT INTO ".$nomE."_employe(id_employe, nom_employe, prenom_employe, adresse_emp, mail_emp, 
@@ -100,24 +83,8 @@
 			
 			$idemp = $rqt2->fetch(PDO::FETCH_OBJ);
 			
-			$cpt = 0;
-			$prefixe = 'PLAN';
 			$ajoutP = "oui";
-			while($val=$listePlan->fetch(PDO::FETCH_OBJ)){
-				$cpt++;
-			}
-			$cpt++;
-			if($cpt<9){
-				$code = $prefixe.'000'.$cpt;
-			}else if($cpt<99){
-				$code = $prefixe.'00'.$cpt;
-			}else if($cpt<999){
-				$code = $prefixe.'0'.$cpt;
-			}else if($cpt<9999){
-				$code = $prefixe.$cpt;
-			}else{
-				$ajoutP = "non";
-			}
+			$code = code($nomE."_planning", 'id_agenda');
 			
 			//Permet d'ajouter le planning d'un employé
 			/** ajoutPlanning($connexion, $code, $idemp, $LundiM, $LundiA, $MardiM, $MardiA, $MercrediM, $MercrediA, $JeudiM, $JeudiA, 
@@ -260,7 +227,7 @@
 									</br>
 									Numéro de téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" /></div>					
 									</br>
-									Compétence 1 : <div class="6u 12u$(mobile)"><select name="presta[]" multiple>
+									Compétence : <div class="6u 12u$(mobile)"><select name="presta[]" multiple>
 										<option value=""  selected="selected"></option>
 									<?php 
 									while($rqtPresta=$listePresta->fetch(PDO::FETCH_OBJ)){

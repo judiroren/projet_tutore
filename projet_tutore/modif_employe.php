@@ -33,10 +33,10 @@
 		
 		//Modification des informations de l'employé
 		majEmploye($connexion, $_POST['nom'], $_POST['prenom'], $_POST['adresse'], $_POST['mail'], $_POST['tel'], $_GET['id_employe']);
-		if(!empty($_POST['competence'])){
+		if(isset($_POST['competence']) && (!empty($_POST['competence']) || $_POST['competence']!=null)){
 			supprimeComp($connexion, $_POST['competence'], $_GET['id_employe']);
 		}
-		if(!empty($_POST['prestation'])){
+		if(isset($_POST['prestation']) && (!empty($_POST['prestation']) || $_POST['prestation']!="")){
 			ajouteComp($connexion, $_POST['prestation'], $_GET['id_employe']);
 		}
 		/* $connexion->exec("UPDATE ".$nomE."_employe SET nom_employe = '".$_POST['nom']."', prenom_employe = '".$_POST['prenom']."', 

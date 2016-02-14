@@ -10,27 +10,10 @@
 	
 	$listeCli = listeClient();
 	
-	$cpt = 0;
-	$prefixe = 'CLI';
+	
 	$ajoutClient = "oui";
 	
-	while($val=$listeCli->fetch(PDO::FETCH_OBJ)){
-		$cpt++;
-	}
-	$cpt++;
-	if($cpt<9){
-		$code = $prefixe.'0000'.$cpt;
-	}else if($cpt<99){
-		$code = $prefixe.'000'.$cpt;
-	}else if($cpt<999){
-		$code = $prefixe.'00'.$cpt;
-	}else if($cpt<9999){
-		$code = $prefixe.'0'.$cpt;
-	}else if($cpt<99999){
-		$code = $prefixe.$cpt;
-	}else{
-		$ajoutCli = "non";
-	}
+	$code = code($nomE."_client", 'id_client');
 	
 	$id = $code;	
 	$nomClient = $_POST['nomClient'];

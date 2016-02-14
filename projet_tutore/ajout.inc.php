@@ -287,7 +287,7 @@ function supprimeComp($connexion, $tabComp, $emp){
 //Ajoute des nouvelles compétences
 function ajouteComp($connexion, $tabPrest, $emp){
 	$nomE = $_SESSION["nomE"];
-	$id = 100;
+	$id = code($nomE."_competence", 'id_competence');
 	foreach ($tabPrest as $val){
 		
 		$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation) 
@@ -297,4 +297,29 @@ function ajouteComp($connexion, $tabPrest, $emp){
 		$id++;
 	}
 }
+
+//Supprime les anciennes compétences
+function supprimeComp2($connexion, $tabAncienEmp, $presta){
+	$nomE = $_SESSION["nomE"];
+	foreach ($tabAncienEmp as $val){
+		$rqtSuppr = $connexion->prepare("DELETE FROM ".$nomE."_competence WHERE employe = '".$val."' AND prestation = '".$presta."'");
+		$rqtSuppr->execute();
+	}
+}
+
+//Ajoute des nouvelles compétences
+function ajouteComp2($connexion, $tabNouveauEmp, $presta){
+	$nomE = $_SESSION["nomE"];
+	$id = code($nomE."_competence", 'id_competence');
+	foreach ($tabNouveauEmp as $val){
+
+		$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation)
+					VALUES (:id, :emp, :prest)");
+
+		$rqtAjoutComp->execute(array('id' => $id, 'emp' => $val, 'prest' => $presta));
+		$id++;
+	}
+}
+
+
 ?>
