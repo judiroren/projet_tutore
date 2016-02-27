@@ -55,9 +55,15 @@
 		}
 	}
 
-	if(isset($_POST['submit'])){
+	if(isset($_POST['sanspaiement'])){
 		if(isset($_SESSION['client'])){
 			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 0, $_SESSION['duree'], $_SESSION['prix']);
+		}
+	}
+	
+	if(isset($_POST['avecpaiement'])){
+		if(isset($_SESSION['client'])){
+			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 1, $_SESSION['duree'], $_SESSION['prix']);
 		}
 	}
 	
@@ -162,7 +168,8 @@
 							<p> Durée de la réservation : <?php echo $dureetotale; $_SESSION['duree']=$dureetotale;?> minutes</p>
 							<p> Prix total : <?php echo $prixtotal; $_SESSION['prix']=$prixtotal;?> €</p>
 							<form method="post" action="">
-							<input type="submit" name="submit" value="Confirmation" />
+							<input type="submit" name="sanspaiement" value="Confirmation" />
+							<input type="submit" name="avecpaiement" value="Confirmation" />
 							</form>
 							
 							<?php } ?>
