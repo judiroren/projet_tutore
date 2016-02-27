@@ -60,8 +60,7 @@ function reservationsEnt() {
 	$nomE = $_SESSION["nomE"];
 	$reserva = $connexion->prepare('SELECT * FROM '.$nomE.'_reserv 
 									JOIN '.$nomE.'_employe ON employe = id_employe 
-									JOIN '.$nomE.'_client ON client = id_client 
-									JOIN '.$nomE.'_prestation ON presta = id_presta');
+									JOIN '.$nomE.'_client ON client = id_client ');
 	$reserva->execute();
 	return $reserva;	
 									
@@ -242,7 +241,7 @@ function reservClient(){
 	$connexion = connect();
 	$nomE = $_SESSION["nomE"];
 	$client = $_SESSION["client"];
-	$rqtReservCli = $connexion->prepare("SELECT descriptif_presta, prix, nom_employe, prenom_employe, paye, date, heure FROM ".$nomE."_reserv JOIN ".$nomE."_employe ON id_employe = employe JOIN ".$nomE."_prestation ON id_presta = presta WHERE client = '".$client."' ORDER BY date ASC");
+	$rqtReservCli = $connexion->prepare("SELECT id_reserv, prix, duree, nom_employe, prenom_employe, paye, date, heure FROM ".$nomE."_reserv JOIN ".$nomE."_employe ON id_employe = employe WHERE client = '".$client."' ORDER BY date ASC");
 	$rqtReservCli->execute();
 	
 	return $rqtReservCli;
@@ -303,17 +302,18 @@ function code($table, $id){
 	$connexion = connect();
 	$rqtpref = $connexion->prepare('SELECT SUBSTR('.$id.',1,4) AS pref FROM '.$table);
 	$rqtpref->execute();
-	$rqtpref->setFetchMode(PDO::FETCH_OBJ);
-	$k = $rqtpref->fetch();
+	//$rqtpref->setFetchMode(PDO::FETCH_OBJ);
+	$k = $rqtpref->fetch(PDO::FETCH_OBJ);
 	if($k->pref == null){
 		switch($table){
-			case($nomE."_employe") : $prefixe = EMPL; break;
-			case($nomE."_prestation") : $prefixe = PRES; break;
-			case($nomE."_reserv") : $prefixe = RESV; break;
-			case($nomE."_planning") : $prefixe = PLAN; break;
-			case($nomE."_competence") : $prefixe = COMP; break;
-			case($nomE."_absence") : $prefixe = ABSC; break;
-			case($nomE."_client") : $prefixe = CLIE; break;
+			case($nomE."_employe") : $prefixe = 'EMPL'; break;
+			case($nomE."_prestation") : $prefixe = 'PRES'; break;
+			case($nomE."_reserv") : $prefixe = 'RESV'; break;
+			case($nomE."_planning") : $prefixe = 'PLAN'; break;
+			case($nomE."_competence") : $prefixe = 'COMP'; break;
+			case($nomE."_absence") : $prefixe = 'ABSC'; break;
+			case($nomE."_client") : $prefixe = 'CLIE'; break;
+			case($nomE."_prestresv") : $prefixe = 'PREV'; break;
 		}
 	}else{
 		$prefixe = $k->pref;
@@ -328,5 +328,37 @@ function code($table, $id){
 		$valmax = $i->val;
 	}
 	return $prefixe.$valmax;
+}
+
+//Récupère les employés pouvant faire les prestations voulues
+function employeOk($tab){
+	$nomE = $_SESSION["nomE"];
+	$connexion = connect();
+	$rqt = "";
+	$i = 0;
+	foreach($tab as $key => $value){
+		$rqt = $rqt.'SELECT DISTINCT employe FROM '.$nomE.'_competence WHERE prestation = "'.$value.'"';
+		if($i == count($tab)-1){
+			for($j = 0 ; $j < count($tab)-1 ; $j++){
+				$rqt = $rqt.')';
+			}
+		}else{
+			$rqt = $rqt.' AND employe IN (';
+		}
+		$i++;
+	}
+	$rqtListe = $connexion->prepare($rqt);
+	$rqtListe->execute();
+	return $rqtListe;
+}
+
+//Récupère les prestations d'une réservation
+function prestaReserv($idRes){
+	$nomE = $_SESSION["nomE"];
+	$connexion = connect();
+	$rqt = $connexion->prepare("SELECT DISTINCT descriptif_presta, prix FROM ".$nomE."_prestation JOIN ".$nomE."_prestresv ON prestation = id_presta JOIN ".$nomE."_reserv ON id_reserv = reservation WHERE reservation = '".$idRes."'");
+	$rqt->execute();
+	
+	return $rqt;
 }
 ?>

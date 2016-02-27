@@ -19,6 +19,7 @@
 <?php
 	require "fonctions.inc.php";
 	require "bd.inc.php";
+	require "ajout.inc.php";
 	
 	if( verifEntreprise($_SESSION['nomE']) == null ) {
 		
@@ -34,9 +35,6 @@
 
 	//permet de récuperer les infos de connexion
 	$i = infosEntreprise();
-	
-	//récupère la liste des prestations de l'entreprise
-	$prest = listePrestations();
 
 	//Le mot de passe doit être renseigner
 	if(isset($_POST['mdp'])) {
@@ -56,22 +54,10 @@
 			
 		}
 	}
-	$erreur = 0;
-	if(isset($_POST['ajout'])){
-		if(!empty($_POST['choix'])){
-			$liste = employeok($_POST['choix']);
-			if($liste != null){
-				$_SESSION["employeRes"] = $liste->employe;
-				$_SESSION["date"] = $_POST['daterdv'];
-				$_SESSION["heure"] = $_POST['heurerdv'];
-				$_SESSION["prestListe"] = $_POST['choix'];
-				header('Location: resume_reserv.php?nomEntreprise='.$nomE);
-			}else{
-				$erreur = 2;
-			}
-				
-		}else{
-			$erreur = 1;
+
+	if(isset($_POST['submit'])){
+		if(isset($_SESSION['client'])){
+			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 0, $_SESSION['duree'], $_SESSION['prix']);
 		}
 	}
 	
@@ -151,51 +137,34 @@
 					
 			<div class="container">
 	
-					<center><h1>Réservation</h1></center>
-					<?php 
-						if($erreur==1){
-							echo "Vous devez sélectionnez au moins une prestation pour faire une réservation !</br>";	
-						}else if($erreur == 2){
-							echo "Aucun employé ne peut faire ces prestations en simultané ! Veuillez changer votre choix !";
-						}	
-					?>
-					<form method="post" action="">
-					Jour de la réservation : </br>
-						<input type="date" name="daterdv" />
-					</br></br>
-					Heure de la réservation : </br>
-						<input type="time" name="heurerdv" />
-					</br></br>	
-					Liste des prestations possibles : </br>
-					<table>
-							<tr><td>Choix</td><td>Description</td><td>Prix</td><td>Payable Paypal</td><td>Durée</td></tr>
-							<?php 
-							if($prest != null){
-								while ($unePrest = $prest->fetch(PDO::FETCH_OBJ)){
-									echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta'</td>";
-									$unePresta = infosPrestation($unePrest->id_presta);
-									$unePresta = $unePresta->fetch(PDO::FETCH_OBJ);
-									echo "<td>$unePresta->descriptif_presta</td>
-											  <td>$unePresta->prix €</td>
-											  <td>";
-									if ($unePresta->paypal >= 1 ) {
-										echo "oui";
-									}else{
-										echo"non";
-									}
-									echo "</td>
-										  <td>$unePresta->duree min</td></tr>";
+							<h1>Résumé de la réservation : </h1>
+							<p>
+								Jour de la réservation : <?php echo $_SESSION['date'];?>
+							</p>
+							<p>
+								Heure de la réservation : <?php echo $_SESSION['heure'];?>
+							</p>
+
+							<p>
+								Prestations choisies : </br>
+								<?php 
+								$prixtotal = 0;
+								$dureetotale = 0;
+								foreach ($_SESSION['prestListe'] as $val){
+									$info = infosPrestation($val);
+									$info = $info->fetch(PDO::FETCH_OBJ);
+									echo $info->descriptif_presta." ( ".$info->duree." minutes, ".$info->prix." € ).</br>";
+									$prixtotal = $prixtotal + $info->prix;
+									$dureetotale = $dureetotale + $info->duree;
 								}
-							}
-
-							?>
-							</table>
-							<input type="hidden" name="ajout" value="ok"> 
-							<div align = "center" class="12u$">
-								<input type="submit" value="Réserver" />
-							</div>
-					</form>
-
+								?>
+							</p>
+							<p> Durée de la réservation : <?php echo $dureetotale; $_SESSION['duree']=$dureetotale;?> minutes</p>
+							<p> Prix total : <?php echo $prixtotal; $_SESSION['prix']=$prixtotal;?> €</p>
+							<form method="post" action="">
+							<input type="submit" name="submit" value="Confirmation" />
+							</form>
+							
 							<?php } ?>
 			</div>
 		</div>

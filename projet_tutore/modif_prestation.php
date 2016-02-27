@@ -36,7 +36,7 @@
 		$paypal = (isset($_POST['paypal']) )? 1 : 0;
 		
 		//Permet de modifier une prestation
-		majPresta($connexion, $_POST['descrip'], $_POST['prix'], $_POST['duree'], $paypal, $id);
+		majPresta($connexion, $_POST['descrip'], $_POST['cout'], $_POST['duree'], $paypal, $id);
 		if(!empty($_POST['dejaCap'])){
 			supprimeComp2($connexion, $_POST['dejaCap'], $id);
 		}
@@ -115,7 +115,7 @@
 									Descriptif de la prestation : </br>
 									<div class="6u 12u$(mobile)"><textarea name="descrip" ><?php echo $presta->descriptif_presta; ?></textarea></div>			
 									</br>
-									Prix de la prestation (en €): <div class="6u 12u$(mobile)"><input type="text" name="prix" value=<?php echo $presta->prix;?>></div>				
+									Prix de la prestation (en €): <div class="6u 12u$(mobile)"><input type="text" name="cout" value=<?php echo $presta->cout;?>></div>				
 									</br>
 									Durée de la prestation (en minutes) : <div class="6u 12u$(mobile)"><input type="text" name="duree" value=<?php echo $presta->duree;?>></div>	
 									</br>

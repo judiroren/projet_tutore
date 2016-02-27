@@ -39,11 +39,12 @@
 			$tableAbs = str_replace(' ', '_', $tabsence);
 			$tcompetence = $_POST['entreprise']."_competence";
 			$tableComp = str_replace(' ', '_', $tcompetence);
-			
+			$tprestresv = $_POST['entreprise']."_prestresv";
+			$tablePresRes = str_replace(' ', '_', $tprestresv);
 			//try{
 			   
 				//ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv, $tplanning, $tabsence);
-				ajoutEntreprise($connexion, $tableEmp, $tablePrest, $tableClient, $tableReserv, $tablePlan, $tableAbs, $tableComp);
+				ajoutEntreprise($connexion, $tableEmp, $tablePrest, $tableClient, $tableReserv, $tablePlan, $tableAbs, $tableComp, $tablePresRes);
 	
 		  // } catch (Exception $e) {
 			   

@@ -43,7 +43,7 @@
 		$paypal = (isset($_POST['paypal']) )? 1 : 0;
 		
 		//Permet d'ajouter une prestation
-		ajoutPresta($connexion, $code, $_POST['descrip'], $_POST['prix'], $paypal, $_POST['duree'], $_POST['employe']);
+		ajoutPresta($connexion, $code, $_POST['descrip'], $_POST['cout'], $paypal, $_POST['duree'], $_POST['employe']);
 		
 		//$modifEmploye = InfosEmploye2($_POST['employe']);
 		
@@ -158,7 +158,7 @@
 									Descriptif de la prestation : </br>
 									<div class="6u 12u$(mobile)"><textarea name="descrip" ></textarea></div>			
 									</br>
-									Prix de la prestation (en €): <div class="6u 12u$(mobile)"><input type="text" name="prix" /></div>				
+									Prix de la prestation (en €): <div class="6u 12u$(mobile)"><input type="text" name="cout" /></div>				
 									</br>
 									Durée de la prestation (en minutes) : <div class="6u 12u$(mobile)"><input type="text" name="duree" /></div>	
 									</br>

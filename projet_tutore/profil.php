@@ -130,26 +130,24 @@
 					</div>
 				</form>
 				</br>
-				Réservation effectuées : </br>
-				<table>
-				<tr><td>Réservation</td><td>Date</td><td>Heure</td><td>Employe</td><td>Prix</td><td>Payé</td></tr>
-				
+				<h3>Réservation effectuées : </h3>
+							
 				<?php 
 					while($donnees = $reserv->fetch(PDO::FETCH_OBJ))
 					{	
 						$identite = $donnees->nom_employe." ".$donnees->prenom_employe;
-						$paye = $donnees->paye=='1'?'oui':'non';
-						echo "<tr>";
-						echo "<td>".$donnees->descriptif_presta."</td>";
-						echo "<td>".$donnees->date."</td>";
-						echo "<td>".$donnees->heure."</td>";
-						echo "<td>".$identite."</td>";
-						echo "<td>".$donnees->prix."</td>";
-						echo "<td>".$paye."</td>";
-						echo "</tr>";
+						$paye = $donnees->paye=='1'?'Paiement déjà effectué':'Paiement non effectué';
+						echo "<strong><h4>Réservation du ".$donnees->date." a ".$donnees->heure." : </strong></h4>";
+						echo "Employé : ".$identite."</br>";
+						echo "Prix : ".$donnees->prix." ( ".$paye." )</br>";
+						echo "Prestations : </br>";
+						$prest = prestaReserv($donnees->id_reserv);
+						while($donnees2 = $prest->fetch(PDO::FETCH_OBJ)){
+							echo $donnees2->descriptif_presta." ( ".$donnees2->prix." € )";
+						}
 					}
 				?>
-				</table>
+				
 				<?php } ?>
 			</div>
 		</div>

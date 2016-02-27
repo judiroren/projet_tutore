@@ -321,7 +321,7 @@
 								<h3>Liste des réservations : </h3>
 								<?php if($reserva->rowCount()==0){ echo "Pas de réservation en attente."; } else { ?>
 								<table>
-								<tr><td>Date </br>(année:mois:jour)</td><td>Heure</td><td>Employé</td><td>Client</td><td>Prestation</td><td>Déjà payé ?</td></tr>
+								<tr><td>Date </br>(année:mois:jour)</td><td>Heure</td><td>Employé</td><td>Client</td><td>Déjà payé ?</td></tr>
 								<?php 
 									while($valeur2 = $reserva->fetch(PDO::FETCH_OBJ)){
 										$idClient = $valeur2->nom_client ." ". $valeur2->prenom_client;
@@ -342,10 +342,6 @@
 									</td><td>
 									<?php 
 										echo $idClient;
-									?>
-									</td><td>
-									<?php 
-										echo $valeur2->descriptif_presta;
 									?>
 									</td><td>
 									<?php 

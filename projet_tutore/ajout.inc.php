@@ -98,14 +98,14 @@ function creerEntreprise($connexion, $entreprise, $mail, $login, $mdpHash, $cren
 }
 
 //Permet d'ajouter toutes les informations d'une entreprise
-function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv, $tplanning, $tabsence, $tcompetence) {
+function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv, $tplanning, $tabsence, $tcompetence, $tprestresv) {
 	
 	$rqtAjout1 = $connexion->prepare("CREATE TABLE ".$temploye." ( id_employe CHAR(8) PRIMARY KEY, nom_employe VARCHAR(40), 
 													prenom_employe VARCHAR(50), telephone_emp CHAR(10), adresse_emp VARCHAR(200),
 													mail_emp VARCHAR(50))");
 	$rqtAjout1->execute();												
 													
-	$rqtAjout2 = $connexion->prepare("CREATE TABLE ".$tprestation." ( id_presta CHAR(8) PRIMARY KEY, descriptif_presta TEXT, prix DECIMAL(5,2), 
+	$rqtAjout2 = $connexion->prepare("CREATE TABLE ".$tprestation." ( id_presta CHAR(8) PRIMARY KEY, descriptif_presta TEXT, cout DECIMAL(5,2), 
 														paypal BOOLEAN, duree INT)");
 	$rqtAjout2->execute();													
 														
@@ -113,8 +113,8 @@ function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv
 													mail VARCHAR(50), login_client VARCHAR(30), mdp_client VARCHAR(30))");
 	$rqtAjout3->execute();												
 													
-	$rqtAjout4 = $connexion->prepare("CREATE TABLE ".$treserv." ( id_reserv CHAR(8) PRIMARY KEY, client CHAR(8), employe CHAR(8), presta CHAR(8), 
-													paye BOOLEAN, date DATE, heure TIME)");
+	$rqtAjout4 = $connexion->prepare("CREATE TABLE ".$treserv." ( id_reserv CHAR(8) PRIMARY KEY, client CHAR(8), employe CHAR(8), 
+													paye BOOLEAN, date DATE, heure TIME, prix DECIMAL(5,2), duree INT");
 	$rqtAjout4->execute();												
 													
 	$rqtAjout5 = $connexion->prepare("CREATE TABLE ".$tplanning." (
@@ -142,6 +142,12 @@ function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv
 						`employe` char(8) NOT NULL,
   						`prestation` CHAR(8) NOT NULL)");
 	$rqtAjout7->execute();
+	
+	$rqtAjout8 = $connexion->prepare("CREATE TABLE ".$tprestresv." (
+  						`id_prestresv` char(8) PRIMARY KEY,
+						`reservation` char(8) NOT NULL,
+  						`prestation` CHAR(8) NOT NULL)");
+	$rqtAjout8->execute();
 }
 
 //Permet de modifier toutes les informations d'une entreprise
@@ -180,12 +186,12 @@ function modifEnt($connexion, $mail, $tel, $adresse, $logo, $descrip, $login) {
 }
 
 //Permet d'ajouter une prestation
-function ajoutPresta($connexion, $code, $descrip, $prix, $paypal, $duree, $employe) {
+function ajoutPresta($connexion, $code, $descrip, $cout, $paypal, $duree, $employe) {
 	
 	$nomE = $_SESSION["nomE"];
-	$rqtAjoutPresta = $connexion->prepare("INSERT INTO ".$nomE."_prestation(id_presta, descriptif_presta, prix, paypal, duree) 
-										VALUES (:code, :descrip, :prix, :paypal, :duree)");
-	$rqtAjoutPresta->execute(array('code' => $code, 'descrip' => $descrip, 'prix' => $prix, 'paypal' => $paypal, 'duree' => $duree));									
+	$rqtAjoutPresta = $connexion->prepare("INSERT INTO ".$nomE."_prestation(id_presta, descriptif_presta, cout, paypal, duree) 
+										VALUES (:code, :descrip, :cout, :paypal, :duree)");
+	$rqtAjoutPresta->execute(array('code' => $code, 'descrip' => $descrip, 'cout' => $cout, 'paypal' => $paypal, 'duree' => $duree));									
 	
 	$i = 0;
 	foreach($employe as $val){
@@ -199,13 +205,13 @@ function ajoutPresta($connexion, $code, $descrip, $prix, $paypal, $duree, $emplo
 }
 
 //Permet de modifier une prestation
-function majPresta($connexion, $descrip, $prix, $paypal, $duree, $id_presta) {
+function majPresta($connexion, $descrip, $cout, $paypal, $duree, $id_presta) {
 	
 	$nomE = $_SESSION["nomE"];
 	$modifPresta = $connexion->prepare("UPDATE ".$nomE."_prestation SET descriptif_presta = :descrip, 
-								prix = :prix, paypal = :paypal, duree = :duree WHERE id_presta = :id_presta");
+								cout = :cout, paypal = :paypal, duree = :duree WHERE id_presta = :id_presta");
 								
-	$modifPresta->execute(array('descrip' => $descrip, 'prix' => $prix, 'paypal' => $paypal, 'duree' => $duree, 'id_presta' => $id_presta));
+	$modifPresta->execute(array('descrip' => $descrip, 'cout' => $cout, 'paypal' => $paypal, 'duree' => $duree, 'id_presta' => $id_presta));
 	
 }
 
@@ -321,5 +327,23 @@ function ajouteComp2($connexion, $tabNouveauEmp, $presta){
 	}
 }
 
-
+//Ajout d'une réservation et des liens avec prestations
+function enregistreReserv($connexion, $listePrest, $client, $date, $heure, $paye, $duree, $prix){
+	$nomE = $_SESSION["nomE"];
+	$id = code($nomE."_reserv", 'id_reserv');
+	$emp = employeOk($listePrest);
+	$emp = $emp->fetch(PDO::FETCH_OBJ);
+	$rqtAjoutRes = $connexion->prepare("INSERT INTO ".$nomE."_reserv(id_reserv, client, employe, paye, date, heure, prix, duree)
+					VALUES (:id, :cli, :emp, :payer, :d, :h, :p, :du)");
+	$rqtAjoutRes->execute(array('id' => $id, 'cli' =>$client, 'emp' => $emp->employe, 'payer' => $paye, 'd' => $date, 'h' => $heure, 'p' => $prix, 'du' => $duree));
+	$id2 = code($nomE."_prestresv", 'id_prestresv');
+	foreach ($listePrest as $val){
+	
+		$rqtAjoutPresRes = $connexion->prepare("INSERT INTO ".$nomE."_prestresv(id_prestresv, reservation, prestation)
+					VALUES (:id, :res, :prest)");
+	
+		$rqtAjoutPresRes->execute(array('id' => $id2, 'res' => $id, 'prest' => $val));
+		$id2++;
+	}
+}
 ?>
