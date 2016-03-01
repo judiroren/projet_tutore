@@ -1,10 +1,16 @@
 <?php
 
+require "config.ini.php";
+
 //Permet la connection à la base de données
 function connect() {
+	$DBNAME = getDBNAME();
+	$DBHOST = getDBHOST();
+	$DBUSER = getDBUSER();
+	$DBPASSWD = getDBPASSWD();
 	try {
 		
-		$connexion = new PDO("mysql:dbname=portail_reserv;host=localhost", "root", "" );
+		$connexion = new PDO("mysql:dbname=".$DBNAME.";host=".$DBHOST."", "".$DBUSER."", "".$DBPASSWD."" );
 		$connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	} catch (PDOException $e) {
 		
@@ -290,7 +296,8 @@ function listeEmpCapable($presta){
 function listeEmpNonCapable($presta){
 	$connexion = connect();
 	$nomE = $_SESSION["nomE"];
-	$rqtListe = $connexion->prepare("SELECT id_employe, nom_employe, prenom_employe FROM ".$nomE."_employe LEFT OUTER JOIN ".$nomE."_competence ON id_employe = employe WHERE employe IS NULL");
+	//$rqtListe = $connexion->prepare("SELECT id_employe, nom_employe, prenom_employe FROM ".$nomE."_employe LEFT OUTER JOIN ".$nomE."_competence ON id_employe = employe WHERE employe IS NULL");
+	$rqtListe = $connexion->prepare("SELECT id_employe, nom_employe, prenom_employe FROM ".$nomE."_employe WHERE id_employe NOT IN (SELECT employe FROM ".$nomE."_competence WHERE prestation = '".$presta."')");
 	$rqtListe->execute();
 	
 	return $rqtListe;
@@ -300,11 +307,7 @@ function listeEmpNonCapable($presta){
 function code($table, $id){
 	$nomE = $_SESSION["nomE"];
 	$connexion = connect();
-	$rqtpref = $connexion->prepare('SELECT SUBSTR('.$id.',1,4) AS pref FROM '.$table);
-	$rqtpref->execute();
-	//$rqtpref->setFetchMode(PDO::FETCH_OBJ);
-	$k = $rqtpref->fetch(PDO::FETCH_OBJ);
-	if($k->pref == null){
+
 		switch($table){
 			case($nomE."_employe") : $prefixe = 'EMPL'; break;
 			case($nomE."_prestation") : $prefixe = 'PRES'; break;
@@ -315,9 +318,7 @@ function code($table, $id){
 			case($nomE."_client") : $prefixe = 'CLIE'; break;
 			case($nomE."_prestresv") : $prefixe = 'PREV'; break;
 		}
-	}else{
-		$prefixe = $k->pref;
-	}
+
 	$rqt = $connexion->prepare('SELECT MAX(SUBSTR('.$id.',5,4)+1) AS val FROM '.$table);
 	$rqt->execute();
 	$rqt->setFetchMode(PDO::FETCH_OBJ);
@@ -336,7 +337,7 @@ function employeOk($tab){
 	$connexion = connect();
 	$rqt = "";
 	$i = 0;
-	foreach($tab as $key => $value){
+	foreach($tab as $value){
 		$rqt = $rqt.'SELECT DISTINCT employe FROM '.$nomE.'_competence WHERE prestation = "'.$value.'"';
 		if($i == count($tab)-1){
 			for($j = 0 ; $j < count($tab)-1 ; $j++){
@@ -360,5 +361,14 @@ function prestaReserv($idRes){
 	$rqt->execute();
 	
 	return $rqt;
+}
+
+//Recupère la liste des categories
+function listeCategorie(){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$rqtcategorie = $connexion->prepare("SELECT * FROM ".$nomE."_categorie");
+	$rqtcategorie->execute();
+	return $rqtcategorie;
 }
 ?>

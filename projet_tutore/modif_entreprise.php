@@ -1,43 +1,56 @@
+<!DOCTYPE HTML>
 <?php
 
 	session_start();
 	
-?>
-
-<!DOCTYPE HTML>
-	
-<?php
+	try {
+		
+		if(isset($_GET['nomEntreprise'])) {
+			$_SESSION["nomE"] = $_GET['nomEntreprise'];
+		} else {
+			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
+		}
+	} catch(Exception $e){
+		
+	}
 
 	require "fonctions.inc.php";
 	require "ajout.inc.php";
 	require "bd.inc.php";
 
-	if( verifEntreprise($_SESSION['nomE']) == null ) {
+	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
 		
-		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
 		
 	} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 		
-		echo "<p>Vous devez d'abord vous connectez sur l'accueil de l'entreprise </p>";
-		
 	} else {
 		
-	$nomE = $_SESSION["nomSession"];
-	$connexion = connect();	
-	
-	$i = infosEntreprise();
+		$nomE = $_SESSION["nomSession"];
+		$connexion = connect();	
+		
+		$i = infosEntreprise();
 
-	if( isset($_POST['verif']) ) {
-	
-		if( !empty($_POST['mdp']) ) {
+		if( isset($_POST['verif']) ) {
 		
-			//$mdp = md5($_POST['mdp']);
-			$mdp = $_POST['mdp'];
-			modifEntreprise($connexion, $_POST['mail'], $_POST['tel'], $_POST['adresse'], $_POST['logo'], $_POST['descrip'], $_POST['login'], $mdp);
-		
-		} else {
-		
-			modifEnt($connexion, $_POST['mail'], $_POST['tel'], $_POST['adresse'], $_POST['logo'], $_POST['descrip'], $_POST['login']);		
+			if( !empty($_POST['mdp']) && !empty($_POST['mdp2'])) {
+			
+				//$mdp = md5($_POST['mdp']);
+				if($_POST['mdp']==$_POST['mdp2']){
+					$mdp = $_POST['mdp'];
+					modifEntreprise($connexion, $_POST['mail'], $_POST['tel'], $_POST['adresse'], $_POST['logo'], $_POST['descrip'], $_POST['login'], $mdp);
+					$i = infosEntreprise();
+				}else{
+					$erreur=2;
+				}
+				
+			
+			} else if((empty($_POST['mdp']) && !empty($_POST['mdp2']))||(!empty($_POST['mdp']) && empty($_POST['mdp2']))){
+				$erreur = 1;
+			} else {
+				modifEnt($connexion, $_POST['mail'], $_POST['tel'], $_POST['adresse'], $_POST['logo'], $_POST['descrip'], $_POST['login']);		
+				$i = infosEntreprise();
+			}
 		
 		}
 	
@@ -60,9 +73,21 @@
 
 					<!-- Logo -->
 						<div id="logo">
-							<?php if($i->logoEntreprise !=""){
+							<?php 
+							
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+		
+							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+								
+							} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								
+							} else {
+							
+							if($i->logoEntreprise !=""){
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
-							} ?>
+							} 
+							
+							?>
 							<h1><?php echo $nomE?></h1>
 							<p>Modification des informations de l'entreprise</p>
 							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
@@ -71,6 +96,10 @@
 							<a href="ajout_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
 							<a href="gestion_absence.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des absences </a></br>
 							<a href="destruct_session.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
+							
+							<?php
+							}
+							?>
 
 						</div>
 						
@@ -89,11 +118,33 @@
 						<div class="container">
 						
 							<h1>Modification des informations de l'entreprise</h1>
+							
 							<?php 
+							
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+								
+								echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+								
+							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+								
+								echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+								
+							} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								
+								echo "<p>Vous devez d'abord vous connectez sur l'accueil de l'entreprise </p>";
+								
+							} else {
 							if(isset($_POST['verif'])){
+								if(isset($erreur) && $erreur==1 ){
+								echo "<p>Pour changer de mot de passe, il faut remplir les 2 champs prévu à cet effet</p>";
+								} else if(isset($erreur) && $erreur==2 ){
+								echo "<p>Pour changer de mot de passe, il faut renseigner 2 fois le nouveau mot de passe</p>";
+								}else{
 								echo "<p> Changement effectué </p>";
 								//header('Location: accueil_backoffice.php?nomEntreprise='.$nomE.'');
+								}
 							}
+				
 							?>
 							<form method="post" action="">
 								</br>
@@ -101,6 +152,8 @@
 									Login : <div class="6u 12u$(mobile)"><input type="text" name="login" value="<?php echo $i->loginAdmin?>"/></div>				
 									</br>
 									Mot de passe : <div class="6u 12u$(mobile)"><input type="text" name="mdp" /></div>								
+									</br>
+									Confirmer le mot de passe : <div class="6u 12u$(mobile)"><input type="text" name="mdp2" /></div>								
 									</br>
 									<h3>Informations générale : </h3></br>
 									E-mail : <div class="6u 12u$(mobile)"><input type="email" name="mail" value="<?php echo $i->mailEntreprise?>" /></div>			

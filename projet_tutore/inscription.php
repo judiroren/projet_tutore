@@ -118,15 +118,15 @@
 				<h1>Inscription d'un client :</h1>
 				<form method="post" action="inscriptionClient_valide.php?nomEntreprise=<?php echo $nomE ?>" class="formulaire">
 					</br>
-					Nom du client :<div class="6u 12u$(mobile)"><input type="text" name="nomClient" /></div>
+					Nom du client :<div class="6u 12u$(mobile)"><input type="text" name="nomClient" required/></div>
 					</br>
-					Prénom du client :<div class="6u 12u$(mobile)"><input type="text" name="prenomClient" /></div>
+					Prénom du client :<div class="6u 12u$(mobile)"><input type="text" name="prenomClient" required/></div>
 					</br>
-					Adresse mail : <div class="6u 12u$(mobile)"><input type="email" name="mailClient" /></div>
+					Adresse mail : <div class="6u 12u$(mobile)"><input type="email" name="mailClient" required/></div>
 					</br>
-					Login :<div class="6u 12u$(mobile)"><input type="text" name="loginClient" /></div>
+					Login :<div class="6u 12u$(mobile)"><input type="text" name="loginClient" required/></div>
 					</br>
-					Mot de passe : <div class="6u 12u$(mobile)"><input type="password" name="mdpClient" /></div>
+					Mot de passe : <div class="6u 12u$(mobile)"><input type="password" name="mdpClient" required/></div>
 				</br>
 				<div align = "center" class="12u$">
 				<input type="submit" value="Valider" />

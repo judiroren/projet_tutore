@@ -37,13 +37,13 @@
 							<h1>Inscription d'une entreprise sur le portail</h1>
 							<form method="post" action="resume_inscrip.php" class="formulaire">
 									</br>
-									Nom de l'entreprise :<div class="6u 12u$(mobile)"><input type="text" name="entreprise" /></div>
+									Nom de l'entreprise :<div class="6u 12u$(mobile)"><input type="text" name="entreprise" required/></div>
 									</br>
-									Login de l'administrateur :<div class="6u 12u$(mobile)"><input type="text" name="login" /></div>
+									Login de l'administrateur :<div class="6u 12u$(mobile)"><input type="text" name="login" required/></div>
 									</br>
-									Mot de passe de l'administrateur : <div class="6u 12u$(mobile)"><input type="text" name="mdp" /></div>
+									Mot de passe de l'administrateur : <div class="6u 12u$(mobile)"><input type="text" name="mdp" required/></div>
 									</br>
-									Adresse mail de l'administrateur : <div class="6u 12u$(mobile)"><input type="text" name="mail" /></div>
+									Adresse mail de l'administrateur : <div class="6u 12u$(mobile)"><input type="email" name="mail" required/></div>
 									</br>
 									Type de créneau : </br>
 									Libre : <input type="radio" name="creneau" value="1" checked="checked" /></br>

@@ -1,71 +1,63 @@
+<!DOCTYPE HTML>
 <?php
 
 	session_start();
-	//$_SESSION["nomE"] = $_GET['nomEntreprise'];
 	
 	try {
-		//$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		if($_GET['nomEntreprise'] != null) {
+		
+		if(isset($_GET['nomEntreprise'])) {
 			$_SESSION["nomE"] = $_GET['nomEntreprise'];
 		} else {
-			throw new Exception("Notice: Undefined offset");
+			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
 		}
 	} catch(Exception $e){
-		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+		
 	}
-	
-?>
 
-<!DOCTYPE HTML>
-
-<?php
 	require "fonctions.inc.php";
 	require "bd.inc.php";
 	
 	
-	/* if( $_SESSION["nomE"] == null ) {
+	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
 		
-		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
-		
-	} else  */
-	if( verifEntreprise($_SESSION['nomE']) == null ) {
-		
-		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
 		
 	} else {
 		
-	$_SESSION["nomE"] = $_GET['nomEntreprise'];	
-	
-	$connexion = connect();
-	$nomE = $_GET['nomEntreprise'];
-	//$nomE = str_replace(' ', '_', $nomE);
-
-	//permet de récuperer les infos de connexion
-	$i = infosEntreprise();
-
-	//Le mot de passe doit être renseigner
-	if(isset($_POST['mdp'])) {
+		$_SESSION["nomE"] = $_GET['nomEntreprise'];	
 		
-		//$mdp = md5($_POST['mdp']);
-		$mdp = $_POST['mdp'];
-	} 
-	
-	//Les informations doivent être correcte
-	if( isset($_POST['login']) && isset($_POST['mdp']) ) {
+		$connexion = connect();
+		$nomE = $_GET['nomEntreprise'];
+		//$nomE = str_replace(' ', '_', $nomE);
+
+		//permet de récuperer les infos de connexion
+		$i = infosEntreprise();
+
+		//Le mot de passe doit être renseigner
+		if(isset($_POST['mdp'])) {
+			
+			//$mdp = md5($_POST['mdp']);
+			$mdp = $_POST['mdp'];
+		} 
 		
-		if( $_POST['login'] == $i->loginAdmin && $mdp == $i->mdpAdmin ) {
+		//Les informations doivent être correcte
+		if( isset($_POST['login']) && isset($_POST['mdp']) ) {
 			
-			$_SESSION["estConnecte"] = 1;
-			$_SESSION["nomSession"] = $_GET['nomEntreprise'];
-			
+			if( $_POST['login'] == $i->loginAdmin && $mdp == $i->mdpAdmin ) {
+				
+				$_SESSION["estConnecte"] = 1;
+				$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+				
+			}
 		}
-	}
 
-	$planning = planningEnt();
-									
-	$reserva = reservationsEnt();
-									
-	$absences = abscencesEnt();
+		$planning = planningEnt();
+										
+		$reserva = reservationsEnt();
+										
+		$absences = abscencesEnt();
+		
+	}
 
 ?>
 
@@ -86,15 +78,23 @@
 						<div id="logo">
 						
 						<?php 
-						
-							if($i->logoEntreprise !="") {
-							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
-							} 
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+								
+								} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+								} else {
+									
+									if($i->logoEntreprise !="") {
+									
+										echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
+									} 
 						?>
 							<h1>
 							<?php 
 							
-								echo $nomE;
+									echo $nomE;
+								
+								
 							?>
 							</h1>
 							<p>Page de gestion de l'entreprise</p>
@@ -109,6 +109,7 @@
 								<a href="modif_entreprise.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des informations de l'entreprise </a></br>
 								<a href="ajout_employe.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des employés </a></br>
 								<a href="ajout_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
+								<a href="modif_categorie.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des catégories </a></br>
 								<a href="gestion_absence.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des absences </a></br>
 								<a href="destruct_session.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
 							</div>
@@ -130,7 +131,11 @@
 									<input type="submit" name ="connecte" value="Connection" />
 								</div>
 							</form>
-							<?php } ?>
+							<?php 
+							
+								}
+								}
+							?>
 
 				</div>
 
@@ -143,11 +148,36 @@
 				<!-- Intro -->
 					
 						<div class="container">
-							<h1>Page d'accueil back-office <br> Entreprise <?php echo $nomE;?></h1>
+							<h1>Page d'accueil back-office <br> Entreprise 
+							<?php 
+								
+								
+								if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+									
+									echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+								
+								} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+									echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+		
+								} else {
+									
+									echo $nomE;
+								}	
+									
+							?></h1>
 							
 							<?php 
 							
-							if(isset($_SESSION["estConnecte"])) {
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+		
+								
+							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+		
+							} else {
+							
+								if(isset($_SESSION["estConnecte"])) {
 								
 							?>
 							
@@ -376,11 +406,19 @@
 									?> 
 									</td><td>
 									<?php 
-										echo $valeur3->dateDebut;
+										if($valeur3->demiJourDebut==0) {
+											echo $valeur3->dateDebut ." : matin";
+										} else {
+											echo $valeur3->dateDebut ." : après-midi";
+										}
 									?>
 									</td><td>
 									<?php 
-										echo $valeur3->dateFin;
+										if($valeur3->demiJourFin==0) {
+											echo $valeur3->dateFin ." : matin";
+										} else {
+											echo $valeur3->dateFin ." : après-midi";
+										}
 									?>
 									</td><td>
 									<?php 
@@ -394,7 +432,8 @@
 								<?php 
 									} 
 									}
-									}	
+								}
+									
 								?>
 								
 								

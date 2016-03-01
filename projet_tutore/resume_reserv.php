@@ -58,15 +58,19 @@
 	if(isset($_POST['sanspaiement'])){
 		if(isset($_SESSION['client'])){
 			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 0, $_SESSION['duree'], $_SESSION['prix']);
+			$ok = 1;
 		}
 	}
 	
 	if(isset($_POST['avecpaiement'])){
 		if(isset($_SESSION['client'])){
 			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 1, $_SESSION['duree'], $_SESSION['prix']);
+			$ok = 2;
 		}
 	}
-	
+	if(isset($_POST['annule'])){
+		header('Location: accueil_client.php?nomEntreprise='.$nomE);
+	}
 ?>
 
 <html>
@@ -144,6 +148,16 @@
 			<div class="container">
 	
 							<h1>Résumé de la réservation : </h1>
+							<?php 
+							if(isset($ok)){
+								if($ok == 1){
+									echo "Reservation sans paiement effectuée";
+								}
+								if($ok == 2){
+									echo "Reservation avec paiement effectuée";
+								}
+							}
+							?>
 							<p>
 								Jour de la réservation : <?php echo $_SESSION['date'];?>
 							</p>
@@ -159,8 +173,8 @@
 								foreach ($_SESSION['prestListe'] as $val){
 									$info = infosPrestation($val);
 									$info = $info->fetch(PDO::FETCH_OBJ);
-									echo $info->descriptif_presta." ( ".$info->duree." minutes, ".$info->prix." € ).</br>";
-									$prixtotal = $prixtotal + $info->prix;
+									echo $info->descriptif_presta." ( ".$info->duree." minutes, ".$info->cout." € ).</br>";
+									$prixtotal = $prixtotal + $info->cout;
 									$dureetotale = $dureetotale + $info->duree;
 								}
 								?>
@@ -169,7 +183,8 @@
 							<p> Prix total : <?php echo $prixtotal; $_SESSION['prix']=$prixtotal;?> €</p>
 							<form method="post" action="">
 							<input type="submit" name="sanspaiement" value="Confirmation" />
-							<input type="submit" name="avecpaiement" value="Confirmation" />
+							<input type="submit" name="avecpaiement" value="Paiment" />
+							<input type="submit" name="annule" value="Annulation" />
 							</form>
 							
 							<?php } ?>

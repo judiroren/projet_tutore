@@ -1,39 +1,30 @@
+<!DOCTYPE HTML>
 <?php
 
 	session_start();
 	
-	/** try {
-		$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		if(isset($_SESSION["nomE"])) {
+	try {
+		
+		if(isset($_GET['nomEntreprise'])) {
 			$_SESSION["nomE"] = $_GET['nomEntreprise'];
 		} else {
-			throw new Exception("Notice: Undefined offset");
+			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
 		}
 	} catch(Exception $e){
-		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
-	} */
-
-?>
-
-<!DOCTYPE HTML>
-
-<?php
+		
+	}
 
 	require "fonctions.inc.php";
 	require "ajout.inc.php";
 	require "bd.inc.php";
 	
-	if( $_SESSION["nomE"] == null ) {
-		
-		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
 		
 	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
 		
-		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+	} else if (!isset($_SESSION["nomSession"])) {
 		
 	} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
-		
-		echo "<p>Vous devez d'abord vous connectez sur l'accueil de l'entreprise </p>";
 		
 	} else {
 		
@@ -45,8 +36,6 @@
 	$i = infosEntreprise();
 	
 	$listePresta = listePrestations();
-		
-	//$listeEmpCpt = infosEmploye();
 	
 	$listeEmpVerif = verifEmploye();
 	
@@ -61,38 +50,62 @@
 			}
 		}
 		if($ajoutOk == 1){
-			$ajoutE = "oui";
 			$code = code($nomE."_employe", 'id_employe');
-			//Permet d'ajouter un employé
-			ajoutEmploye($connexion, $code, $_POST['nom'], $_POST['prenom'], $_POST['adresse'], $_POST['mail'], $_POST['tel'], $_POST['presta']);
-			/** $connexion->exec("INSERT INTO ".$nomE."_employe(id_employe, nom_employe, prenom_employe, adresse_emp, mail_emp, 
-			telephone_emp, competenceA, competenceB, competenceC) VALUES ('".$code."', '".$_POST['nom']."', '".$_POST['prenom']."', 
-			'".$_POST['adresse']."', '".$_POST['mail']."', '".$_POST['tel']."', '".$_POST['presta_1']."', '".$_POST['presta_2']."',
-			'".$_POST['presta_3']."')"); */
 			
-			$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
-			$MardiM = (isset($_POST['MarM']) )? 1 : 0;		$MardiA = (isset($_POST['MarA']) )? 1 : 0;
-			$MercrediM = (isset($_POST['MerM']) )? 1 : 0;	$MercrediA = (isset($_POST['MerA']) )? 1 : 0;
-			$JeudiM = (isset($_POST['JeuM']) )? 1 : 0;		$JeudiA = (isset($_POST['JeuA']) )? 1 : 0;
-			$VendrediM = (isset($_POST['VenM']) )? 1 : 0;	$VendrediA = (isset($_POST['VenA']) )? 1 : 0;
-			$SamediM = (isset($_POST['SamM']) )? 1 : 0;		$SamediA = (isset($_POST['SamA']) )? 1 : 0;
-			
-			//Permet de selectionner un employé précis
-			$rqt2 = IdentEmploye($_POST['nom']);
-			//$rqt2 = $connexion->query("SELECT id_employe FROM ".$nomE."_employe WHERE nom_employe = '".$_POST['nom']."'");
-			
-			$idemp = $rqt2->fetch(PDO::FETCH_OBJ);
-			
-			$ajoutP = "oui";
-			$code = code($nomE."_planning", 'id_agenda');
+			//Vérification des champs
+			if($_POST['nom'] == null || $_POST['prenom'] == null || $_POST['adresse'] == null || $_POST['mail'] == null || $_POST['tel'] == null ) {
+				$erreur1 = 1;
+			} else {
+				
+					$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
+					$MardiM = (isset($_POST['MarM']) )? 1 : 0;		$MardiA = (isset($_POST['MarA']) )? 1 : 0;
+					$MercrediM = (isset($_POST['MerM']) )? 1 : 0;	$MercrediA = (isset($_POST['MerA']) )? 1 : 0;
+					$JeudiM = (isset($_POST['JeuM']) )? 1 : 0;		$JeudiA = (isset($_POST['JeuA']) )? 1 : 0;
+					$VendrediM = (isset($_POST['VenM']) )? 1 : 0;	$VendrediA = (isset($_POST['VenA']) )? 1 : 0;
+					$SamediM = (isset($_POST['SamM']) )? 1 : 0;		$SamediA = (isset($_POST['SamA']) )? 1 : 0;
+					
+				if($LundiM == 0 && $LundiA == 0 && $MardiM == 0 && $MardiA == 0 && $MercrediM == 0 && $MercrediA == 0 && 
+						$JeudiM == 0 && $JeudiA == 0 && $VendrediM == 0 && $VendrediA == 0 && $SamediM == 0 && $SamediA == 0) {
+					$erreur2 = 1;
+				} else {
+					//Permet d'ajouter un employé
+					ajoutEmploye($connexion, $code, $_POST['nom'], $_POST['prenom'], $_POST['adresse'], $_POST['mail'], $_POST['tel'], $_POST['presta']);
+					$ajoutE = "oui";
+					
+					//Permet de selectionner un employé précis
+					$rqt2 = IdentEmploye($_POST['nom']);
+					
+					$idemp = $rqt2->fetch(PDO::FETCH_OBJ);
+					$IDemp = $idemp->id_employe;
+					
+					$ajoutP = "oui";
+					$code = code($nomE."_planning", 'id_agenda');
+				}
+				
+			}
 			
 			//Permet d'ajouter le planning d'un employé
-			/** ajoutPlanning($connexion, $code, $idemp, $LundiM, $LundiA, $MardiM, $MardiA, $MercrediM, $MercrediA, $JeudiM, $JeudiA, 
-							$VendrediM, $VendrediA, $SamediM, $SamediA); */
-			$connexion->exec("INSERT INTO ".$nomE."_planning(id_agenda, code_employe, LundiM, LundiA, MardiM, MardiA, MercrediM, 
-							MercrediA, JeudiM, JeudiA, VendrediM, VendrediA, SamediM, SamediA) VALUES ('".$code."', '".$idemp->id_employe."', 
-							".$LundiM.", ".$LundiA.", ".$MardiM.", ".$MardiA.", ".$MercrediM.", ".$MercrediA.", ".$JeudiM.", ".$JeudiA.", 
-							".$VendrediM.", ".$VendrediA.", ".$SamediM.", ".$SamediA.")");
+			if($_POST['nom'] == null || $_POST['prenom'] == null || $_POST['adresse'] == null || $_POST['mail'] == null || $_POST['tel'] == null ) {
+				$erreur1 = 1;
+			} else {
+				
+					$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
+					$MardiM = (isset($_POST['MarM']) )? 1 : 0;		$MardiA = (isset($_POST['MarA']) )? 1 : 0;
+					$MercrediM = (isset($_POST['MerM']) )? 1 : 0;	$MercrediA = (isset($_POST['MerA']) )? 1 : 0;
+					$JeudiM = (isset($_POST['JeuM']) )? 1 : 0;		$JeudiA = (isset($_POST['JeuA']) )? 1 : 0;
+					$VendrediM = (isset($_POST['VenM']) )? 1 : 0;	$VendrediA = (isset($_POST['VenA']) )? 1 : 0;
+					$SamediM = (isset($_POST['SamM']) )? 1 : 0;		$SamediA = (isset($_POST['SamA']) )? 1 : 0;
+				
+				if($LundiM == 0 && $LundiA == 0 && $MardiM == 0 && $MardiA == 0 && $MercrediM == 0 && $MercrediA == 0 && 
+						$JeudiM == 0 && $JeudiA == 0 && $VendrediM == 0 && $VendrediA == 0 && $SamediM == 0 && $SamediA == 0) {
+					$erreur2 = 1;
+				} else {
+					ajoutPlanning($connexion, $code, $IDemp, $LundiM, $LundiA, $MardiM, $MardiA, $MercrediM, $MercrediA, $JeudiM, $JeudiA, 
+							$VendrediM, $VendrediA, $SamediM, $SamediA);
+				}
+				
+			}
+			
 			
 		}
 		
@@ -101,18 +114,17 @@
 	if (isset($_POST['supprime'])) {
 		
 		//Permet de selectionner toutes les réservations de l'employé
-		//$rqt = reservationsEmp($connexion, $_POST['employe_modif']);
-		//$rqt = reservationsEmp($connexion, $idemp);
-		$rqt = $connexion->query('SELECT * FROM '.$nomE.'_reserv WHERE employe = "'.$_POST['employe_modif'].'"');
+		$employe_modif = $_POST['employe_modif'];
+		$rqt = reservationsEmp($employe_modif);
 		
 		if($rqt->rowCount()==0){
 			
 			//Permet de supprimer un employé
 			supprimerEmp($connexion, $_POST['employe_modif']);
-			//$connexion->exec("DELETE FROM ".$nomE."_planning WHERE code_employe='".$_POST['employe_modif']."'");
+			
 			//Permet de supprimer le planning d'un employé
 			supprimerPlan($connexion, $_POST['employe_modif']);
-			//$connexion->exec("DELETE FROM ".$nomE."_employe WHERE id_employe='".$_POST['employe_modif']."'");
+			
 			$supprimeOk = 1;
 			
 		}else{
@@ -122,6 +134,8 @@
 	}
 	if(isset($_POST['modifie'])){
 		header('Location: modif_employe.php?nomEntreprise='.$nomE.'&id_employe='.$_POST['employe_modif']);
+	}
+	
 	}
 
 ?>
@@ -141,9 +155,21 @@
 
 					<!-- Logo -->
 						<div id="logo">
-							<?php if($i->logoEntreprise !=""){
-							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
-							} ?>
+							<?php 
+							
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+		
+							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+								
+							} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								
+							} else {
+							
+								if($i->logoEntreprise !=""){
+									echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
+								} 
+							
+							?>
 							<h1><?php echo $nomE?></h1>
 							<p>Gestion des employés</p>
 							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
@@ -152,6 +178,10 @@
 							<a href="ajout_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
 							<a href="gestion_absence.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des absences </a></br>
 							<a href="destruct_session.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
+							
+							<?php
+							}
+							?>
 
 						</div>
 						
@@ -170,20 +200,45 @@
 						<div class="container">
 							<h1>Gestion des employés de l'entreprise</h1>
 							<?php 
+		
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+								
+								echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+								
+							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+								
+								echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+								
+							} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								
+								echo "<p>Vous devez d'abord vous connectez sur l'accueil de l'entreprise </p>";
+								
+							} else {	
+							
 							if(isset($_POST['ajout'])){
 								if($ajoutOk==0){
 									echo "<p> Cet employé existe déjà !</p>";
 								}else{
-									if($ajoutE=="oui"){
-										echo "<p> Ajout d'employé effectué. </p>";
-									}else{
-										echo "<p> Nombre maximum d'employé atteint. </p>";
+									if(isset($ajoutE)) {
+										if($ajoutE=="oui"){
+											echo "<p> Ajout d'employé effectué. </p>";
+										}
 									}
-									if($ajoutP=="oui"){
-										echo "<p> Ajout de planning effectué. </p>";
-									}else{
-										echo "<p> Nombre maximum de planning atteint. </p>";
+									if(isset($ajoutP)) {
+										if($ajoutP=="oui"){
+											echo "<p> Ajout de planning effectué. </p>";
+										}
 									}
+								}
+							}
+							if(isset($erreur1)) {
+								if($erreur1 == 1) {
+									echo "Tous les champs doivent être remplis. </br>";
+								}
+							}
+							if(isset($erreur2)) {
+								if($erreur2 == 1) {
+									echo "Un employé doit travailler au moins une demie-journée.";
 								}
 							}
 							if(isset($_POST['supprime'])){
@@ -217,15 +272,15 @@
 							<form method="post" action="" class="formulaire">
 								
 								</br>
-									Nom de l'employé : <div class="6u 12u$(mobile)"><input type="text" name="nom"  /></div>	
+									Nom de l'employé : <div class="6u 12u$(mobile)"><input type="text" name="nom"  required/></div>	
 									</br>
-									Prénom de l'employé: <div class="6u 12u$(mobile)"><input type="text" name="prenom" /></div>				
+									Prénom de l'employé: <div class="6u 12u$(mobile)"><input type="text" name="prenom" required/></div>				
 									</br>
-									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" /></div>		
+									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" required/></div>		
 									</br>
-									Adresse mail : <div class="6u 12u$(mobile)"><input type="email" name="mail" /></div>			
+									Adresse mail : <div class="6u 12u$(mobile)"><input type="email" name="mail" required/></div>			
 									</br>
-									Numéro de téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" /></div>					
+									Numéro de téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" required/></div>					
 									</br>
 									Compétence : <div class="6u 12u$(mobile)"><select name="presta[]" multiple>
 										<option value=""  selected="selected"></option>

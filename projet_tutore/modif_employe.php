@@ -1,31 +1,33 @@
+<!DOCTYPE HTML>
 <?php
 
 	session_start();
-
-?>
-
-<!DOCTYPE HTML>
-
-<?php
+	
+	try {
+		
+		if(isset($_GET['nomEntreprise'])) {
+			$_SESSION["nomE"] = $_GET['nomEntreprise'];
+		} else {
+			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
+		}
+	} catch(Exception $e){
+		
+	}
 
 	require "fonctions.inc.php";
 	require "bd.inc.php";
 	require "ajout.inc.php";
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomSession"];
+	$nomE = $_SESSION["nomE"];
 	
-	if( $_SESSION["nomE"] == null ) {
+	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
 		
-		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
-		
+	} else if (!isset($_GET['id_employe'])) {
+	
 	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
 		
-		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
-		
 	} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
-		
-		echo "<p>Vous devez d'abord vous connectez sur l'accueil de l'entreprise </p>";
 		
 	} else {
 	
@@ -39,10 +41,6 @@
 		if(isset($_POST['prestation']) && (!empty($_POST['prestation']) || $_POST['prestation']!="")){
 			ajouteComp($connexion, $_POST['prestation'], $_GET['id_employe']);
 		}
-		/* $connexion->exec("UPDATE ".$nomE."_employe SET nom_employe = '".$_POST['nom']."', prenom_employe = '".$_POST['prenom']."', 
-							adresse_emp = '".$_POST['adresse']."', mail_emp = '".$_POST['mail']."', telephone_emp = '".$_POST['tel']."', 
-							competenceA = '".$_POST['presta_1']."', competenceB = '".$_POST['presta_2']."', competenceC = '".$_POST['presta_3']."' 
-							WHERE id_employe = '".$_GET['id_employe']."'"); */
 		
 		$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
 		$MardiM = (isset($_POST['MarM']) )? 1 : 0;		$MardiA = (isset($_POST['MarA']) )? 1 : 0;
@@ -60,7 +58,6 @@
 		VendrediA = ".$VendrediA.", SamediM = ".$SamediM.", SamediA = ".$SamediA." WHERE code_employe = '".$_GET['id_employe']."'");
 	}
 	
-	//$listePresta = listePrestations();
 	$presta = listePrestaNonComp($_GET['id_employe']);
 	$comp = listeCompetence($_GET['id_employe']);
 	
@@ -71,6 +68,8 @@
 	$valPlan = $rqtPlan->fetch(PDO::FETCH_OBJ);
 	
 	$i = infosEntreprise();
+	
+	}
 
 ?>
 
@@ -89,9 +88,23 @@
 
 					<!-- Logo -->
 						<div id="logo">
-							<?php if($i->logoEntreprise !=""){
+							<?php 
+							
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+		
+							} else if (!isset($_GET['id_employe'])) {
+							
+							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+								
+							} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								
+							} else {
+							
+							if($i->logoEntreprise !=""){
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
-							} ?>
+							} 
+							
+							?>
 							<h1><?php echo $nomE?></h1>
 							<p>Gestion des employés</p>
 							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
@@ -100,6 +113,10 @@
 							<a href="ajout_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
 							<a href="gestion_absence.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des absences </a></br>
 							<a href="destruct_session.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
+							
+							<?php
+							}
+							?>
 
 						</div>
 						
@@ -118,7 +135,27 @@
 				
 						<div class="container">
 							<h1>Gestion des employés de l'entreprise</h1>
+							
 							<?php 
+							
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+								
+								echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+		
+							} else if (!isset($_GET['id_employe'])) {
+								
+								echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme &id_employe=id.</p>";
+							
+							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+								
+								echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+								
+							} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								
+								echo "<p>Vous devez d'abord vous connectez sur l'accueil de l'entreprise </p>";
+								
+							} else {
+							
 							if(isset($_POST['modif'])){
 								echo "<p> Modification d'employé effectué </p>";
 							}

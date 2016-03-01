@@ -59,8 +59,8 @@
 	$erreur = 0;
 	if(isset($_POST['ajout'])){
 		if(!empty($_POST['choix'])){
-			$liste = employeok($_POST['choix']);
-			if($liste != null){
+			$liste = employeOk($_POST['choix']);
+			if($liste->rowCount()!=0){
 				$_SESSION["employeRes"] = $liste->employe;
 				$_SESSION["date"] = $_POST['daterdv'];
 				$_SESSION["heure"] = $_POST['heurerdv'];
@@ -156,7 +156,7 @@
 						if($erreur==1){
 							echo "Vous devez sélectionnez au moins une prestation pour faire une réservation !</br>";	
 						}else if($erreur == 2){
-							echo "Aucun employé ne peut faire ces prestations en simultané ! Veuillez changer votre choix !";
+							echo "Aucun employé ne peut satisfaire votre demande ! Veuillez changer vos prestations !";
 						}	
 					?>
 					<form method="post" action="">
@@ -176,7 +176,7 @@
 									$unePresta = infosPrestation($unePrest->id_presta);
 									$unePresta = $unePresta->fetch(PDO::FETCH_OBJ);
 									echo "<td>$unePresta->descriptif_presta</td>
-											  <td>$unePresta->prix €</td>
+											  <td>$unePresta->cout €</td>
 											  <td>";
 									if ($unePresta->paypal >= 1 ) {
 										echo "oui";

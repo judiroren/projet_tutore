@@ -12,13 +12,14 @@ function ajoutEmploye($connexion, $code, $nom, $prenom, $adresse, $mail, $tel, $
 	$rqtAjoutEmp->execute(array("code" => $code, "nom" => $nom, "prenom" => $prenom, "adresse" => $adresse, 
 								"mail" => $mail, "tel" => $tel));	
 	
-	$i = 0;
 	foreach($presta as $val){
 		if($val!=""){
+			$nomTable = $nomE."_competence";
+			$i = code($nomTable,'id_competence');
 			$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation) 
 					VALUES (:id, :employe, :presta)");
 			$rqtAjoutComp->execute(array("id" => $i, "employe" => $code, "presta" => $val));
-			$i++;
+			//$i++;
 		}
 	}
 								
@@ -44,7 +45,7 @@ function ajoutPlanning($connexion, $code, $IDemp, $LundiM, $LundiA, $MardiM, $Ma
 	$rqtAjoutPlan = $connexion->prepare("INSERT INTO ".$nomE."_planning(id_agenda, code_employe, LundiM, LundiA, MardiM, 
 													MardiA, MercrediM, MercrediA, JeudiM, JeudiA, VendrediM, VendrediA, SamediM, SamediA) 
 													VALUES (:code, :IDemp, :LundiM, :LundiA, :MardiM, 
-													:MardiA, :MercrediM, :$MercrediA, :JeudiM, :JeudiA, :VendrediM, 
+													:MardiA, :MercrediM, :MercrediA, :JeudiM, :JeudiA, :VendrediM, 
 													:VendrediA, :SamediM, :SamediA)");
 													
 	$rqtAjoutPlan->execute(array("code" => $code, "IDemp" => $IDemp, "LundiM" => $LundiM, "LundiA" => $LundiA, "MardiM" => $MardiM, "MardiA" => $MardiA,
@@ -98,15 +99,18 @@ function creerEntreprise($connexion, $entreprise, $mail, $login, $mdpHash, $cren
 }
 
 //Permet d'ajouter toutes les informations d'une entreprise
-function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv, $tplanning, $tabsence, $tcompetence, $tprestresv) {
+function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv, $tplanning, $tabsence, $tcompetence, $tprestresv, $tcategorie) {
 	
-	$rqtAjout1 = $connexion->prepare("CREATE TABLE ".$temploye." ( id_employe CHAR(8) PRIMARY KEY, nom_employe VARCHAR(40), 
-													prenom_employe VARCHAR(50), telephone_emp CHAR(10), adresse_emp VARCHAR(200),
-													mail_emp VARCHAR(50))");
+	$rqtAjout1 = $connexion->prepare("CREATE TABLE ".$temploye." ( id_employe CHAR(8) PRIMARY KEY, 
+																	nom_employe VARCHAR(40), 
+																	prenom_employe VARCHAR(50), 
+																	telephone_emp CHAR(10), 
+																	adresse_emp VARCHAR(200),
+																	mail_emp VARCHAR(50))");
 	$rqtAjout1->execute();												
 													
 	$rqtAjout2 = $connexion->prepare("CREATE TABLE ".$tprestation." ( id_presta CHAR(8) PRIMARY KEY, descriptif_presta TEXT, cout DECIMAL(5,2), 
-														paypal BOOLEAN, duree INT)");
+														paypal BOOLEAN, duree INT, categorie VARCHAR(20))");
 	$rqtAjout2->execute();													
 														
 	$rqtAjout3 = $connexion->prepare("CREATE TABLE ".$tclient." ( id_client CHAR(8) PRIMARY KEY, nom_client VARCHAR(40), prenom_client VARCHAR(50), 
@@ -114,7 +118,7 @@ function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv
 	$rqtAjout3->execute();												
 													
 	$rqtAjout4 = $connexion->prepare("CREATE TABLE ".$treserv." ( id_reserv CHAR(8) PRIMARY KEY, client CHAR(8), employe CHAR(8), 
-													paye BOOLEAN, date DATE, heure TIME, prix DECIMAL(5,2), duree INT");
+													paye BOOLEAN, date DATE, heure TIME, prix DECIMAL(5,2), duree INT)");
 	$rqtAjout4->execute();												
 													
 	$rqtAjout5 = $connexion->prepare("CREATE TABLE ".$tplanning." (
@@ -134,6 +138,8 @@ function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv
  						`motif` varchar(100),
   						`dateDebut` date,
   						`dateFin` date,
+						`demiJourDebut` BOOLEAN,
+						`demiJourFin` BOOLEAN,
   						`absenceFini` BOOLEAN)");
 	$rqtAjout6->execute();		
 	
@@ -148,6 +154,10 @@ function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv
 						`reservation` char(8) NOT NULL,
   						`prestation` CHAR(8) NOT NULL)");
 	$rqtAjout8->execute();
+	
+	$rqtAjout9 = $connexion->prepare("CREATE TABLE ".$tcategorie." (
+						`categorie` varchar(20) PRIMARY KEY)");
+	$rqtAjout9->execute();
 }
 
 //Permet de modifier toutes les informations d'une entreprise
@@ -186,16 +196,17 @@ function modifEnt($connexion, $mail, $tel, $adresse, $logo, $descrip, $login) {
 }
 
 //Permet d'ajouter une prestation
-function ajoutPresta($connexion, $code, $descrip, $cout, $paypal, $duree, $employe) {
+function ajoutPresta($connexion, $code, $descrip, $cout, $paypal, $duree, $employe, $categorie) {
 	
 	$nomE = $_SESSION["nomE"];
-	$rqtAjoutPresta = $connexion->prepare("INSERT INTO ".$nomE."_prestation(id_presta, descriptif_presta, cout, paypal, duree) 
-										VALUES (:code, :descrip, :cout, :paypal, :duree)");
-	$rqtAjoutPresta->execute(array('code' => $code, 'descrip' => $descrip, 'cout' => $cout, 'paypal' => $paypal, 'duree' => $duree));									
+	$rqtAjoutPresta = $connexion->prepare("INSERT INTO ".$nomE."_prestation(id_presta, descriptif_presta, cout, paypal, duree, categorie) 
+										VALUES (:code, :descrip, :cout, :paypal, :duree, :categorie)");
+	$rqtAjoutPresta->execute(array('code' => $code, 'descrip' => $descrip, 'cout' => $cout, 'paypal' => $paypal, 'duree' => $duree, 'categorie' => $categorie));									
 	
-	$i = 0;
 	foreach($employe as $val){
 		if($val!=""){
+			$nomTable = $nomE."_competence";
+			$i = code($nomTable,'id_competence');
 			$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation)
 					VALUES (:id, :employe, :presta)");
 			$rqtAjoutComp->execute(array("id" => $i, "employe" => $val, "presta" => $code));
@@ -205,13 +216,13 @@ function ajoutPresta($connexion, $code, $descrip, $cout, $paypal, $duree, $emplo
 }
 
 //Permet de modifier une prestation
-function majPresta($connexion, $descrip, $cout, $paypal, $duree, $id_presta) {
+function majPresta($connexion, $descrip, $cout, $duree, $categorie, $paypal, $id_presta) {
 	
 	$nomE = $_SESSION["nomE"];
 	$modifPresta = $connexion->prepare("UPDATE ".$nomE."_prestation SET descriptif_presta = :descrip, 
-								cout = :cout, paypal = :paypal, duree = :duree WHERE id_presta = :id_presta");
+								cout = :cout, paypal = :paypal, duree = :duree, categorie = :categorie WHERE id_presta = :id_presta");
 								
-	$modifPresta->execute(array('descrip' => $descrip, 'cout' => $cout, 'paypal' => $paypal, 'duree' => $duree, 'id_presta' => $id_presta));
+	$modifPresta->execute(array('descrip' => $descrip, 'cout' => $cout, 'paypal' => $paypal, 'duree' => $duree, 'categorie' => $categorie, 'id_presta' => $id_presta));
 	
 }
 
@@ -249,19 +260,19 @@ function supprimerPresta($connexion, $presta) {
 	
 }
 
-//Permet d'ajouter une réservation
-function ajoutReservation($connexion, $code, $employeAbsent, $motif, $debutReserv, $finReserv, $fin) {
+//Permet d'ajouter une absence
+function ajoutAbscence($connexion, $code, $employeAbsent, $motif, $debutReserv, $finReserv, $demiDebut, $demiFin, $fin) {
 	
 	$nomE = $_SESSION["nomSession"];
 	
 	/**$connexion->exec("INSERT INTO ".$nomE."_absence(id_absence, code_employe, motif, dateDebut, dateFin, absenceFini) 
 					VALUES ('".$code."', '".$_POST['employe_absent']."', '".$_POST['motif']."', '".$_POST['debut']."', '".$_POST['fin']."', '".$fin."')"); */
 					
-	$rqtAjoutReserv = $connexion->prepare("INSERT INTO ".$nomE."_absence(id_absence, code_employe, motif, dateDebut, dateFin, absenceFini) 
-					VALUES (:code, :employeAbsent, :motif, :debutReserv, :finReserv, :fin)");
+	$rqtAjoutAbs = $connexion->prepare("INSERT INTO ".$nomE."_absence(id_absence, code_employe, motif, dateDebut, dateFin, demiJourDebut, demiJourFin, absenceFini) 
+					VALUES (:code, :employeAbsent, :motif, :debutReserv, :finReserv, :demiDebut, :demiFin, :fin)");
 
-	$rqtAjoutReserv->execute(array('code' => $code, 'employeAbsent' => $employeAbsent, 'motif' => $motif, 'debutReserv' => $debutReserv, 
-									'finReserv' => $finReserv, 'fin' => $fin));
+	$rqtAjoutAbs->execute(array('code' => $code, 'employeAbsent' => $employeAbsent, 'motif' => $motif, 'debutReserv' => $debutReserv, 
+									'finReserv' => $finReserv, 'demiDebut' => $demiDebut, 'demiFin' => $demiFin, 'fin' => $fin));
 		
 }
 
@@ -346,4 +357,25 @@ function enregistreReserv($connexion, $listePrest, $client, $date, $heure, $paye
 		$id2++;
 	}
 }
+
+//Ajoute une catégorie
+function ajoutCategorie($connexion, $categorie){
+
+	$nomE = $_SESSION["nomSession"];
+
+	$rqtAjoutCat = $connexion->prepare("INSERT INTO ".$nomE."_categorie(categorie) VALUES (:categorie)");
+
+	$rqtAjoutCat->execute(array('categorie' => $categorie));
+}
+
+//Supprime une catégorie
+function supprimeCategorie($connexion, $categorie){
+	$nomE = $_SESSION["nomSession"];
+	$rqtSupprCat = $connexion->prepare("DELETE FROM ".$nomE."_categorie Where categorie = '".$categorie."'");
+	$rqtSupprCat->execute();
+
+	$rqtModifPrest = $connexion->prepare("UPDATE ".$nomE."_prestation SET categorie = '' WHERE categorie = '".$categorie."'");
+	$rqtModifPrest->execute();
+}
+
 ?>

@@ -37,12 +37,14 @@
 		if(!empty($_POST['mdp'])){
 			if($_POST['mdp']==$_POST['mdp2']){
 				modifClientMdp($connexion, $_POST['nom'], $_POST['prenom'], $_POST['mail'], $_POST['login'], $_POST['mdp']);
+				$ok = 1;
 			}else{
 				$erreur = 1;
 			}
 		}else{
 			modifClient($connexion, $_POST['nom'], $_POST['prenom'], $_POST['mail'], $_POST['login']);
 		}
+		$ok = 1;
 	}
 	//permet de récuperer les infos de connexion
 	$i = infosEntreprise();
@@ -106,6 +108,10 @@
 				if(isset($erreur)){
 					echo "Si vous changez de mot de passe, saisissez le nouveau dans les 2 champs !";	
 				}
+				if(isset($ok)){
+					echo "Changement réussi";	
+				}
+					
 				?>
 				<form method="post" action="">
 				</br>

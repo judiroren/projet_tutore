@@ -145,7 +145,7 @@
 									$unePresta = infosPrestation($unePrest->id_presta);
 									$unePresta = $unePresta->fetch(PDO::FETCH_OBJ);
 									echo "<tr><td>$unePresta->descriptif_presta</td>
-											  <td>$unePresta->prix €</td>
+											  <td>$unePresta->cout €</td>
 											  <td>";
 									if ($unePresta->paypal >= 1 ) {
 										echo "oui";

@@ -1,19 +1,20 @@
 <!DOCTYPE HTML>
 <?php
-	session_start();
 	
 	require "fonctions.inc.php";
 	require "ajout.inc.php";
 	require "bd.inc.php";
 	
 	$connexion = connect();
-		
-			/** $temploye = $_POST['entreprise']."_employe";
-			$tprestation = $_POST['entreprise']."_prestation";
-			$tclient = $_POST['entreprise']."_client";
-			$treserv = $_POST['entreprise']."_reserv";
-			$tplanning = $_POST['entreprise']."_planning";
-			$tabsence = $_POST['entreprise']."_absence"; */
+			
+			if( $_POST['entreprise'] == null || $_POST['mail'] == null || $_POST['login'] == null || $_POST['mdp'] == null ) {
+				
+				echo "<div class='alert alert-dismissable alert-danger'>
+				<p>Tous les champs doivent être remplis. Vous allez être redirigé vers la page propriétaire.</p>
+				<meta http-equiv='refresh' content='5; URL=page_proprietaire.php'>
+				</div>";
+				
+			} else {
 			
 			$entreprise = $_POST['entreprise'];
 			$entreprise = str_replace(' ', '_', $entreprise);
@@ -41,15 +42,14 @@
 			$tableComp = str_replace(' ', '_', $tcompetence);
 			$tprestresv = $_POST['entreprise']."_prestresv";
 			$tablePresRes = str_replace(' ', '_', $tprestresv);
-			//try{
-			   
-				//ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv, $tplanning, $tabsence);
-				ajoutEntreprise($connexion, $tableEmp, $tablePrest, $tableClient, $tableReserv, $tablePlan, $tableAbs, $tableComp, $tablePresRes);
+			$tcategorie = $_POST['entreprise']."_categorie";
+			$tableCat = str_replace(' ', '_', $tcategorie);
+			
+				ajoutEntreprise($connexion, $tableEmp, $tablePrest, $tableClient, $tableReserv, $tablePlan, $tableAbs, $tableComp, $tablePresRes, $tableCat);
+				$nom = $_POST['entreprise'];
+				$nomE = str_replace(' ', '_', $nom);
+					
 	
-		  // } catch (Exception $e) {
-			   
-			//echo $e->getMessage();
-		  // }
 
 ?>
 <html>
@@ -93,7 +93,7 @@
 							<?php 
 								echo $_POST['entreprise'];
 							?>
-							créés : employés, client, absences, prestations, réservations et planning</p>
+							créés : employés, client, absences, prestations, réservations, planning, compétences, liens prestation-réservation</p>
 							<p>Login administrateur : 
 							<?php 
 								echo $_POST['login'];
@@ -117,9 +117,10 @@
 							<p>Lien permettant l'accès à l'accueil côté entreprise :  </br>
 							<a href="accueil_backoffice.php?nomEntreprise=
 							<?php 
-								echo $_POST['entreprise']; 
+							
+								echo $nomE; 
 							?> 
-							"> "http://localhost/projet_tutore/projet_tutore/accueil_backoffice.php?nomEntreprise=
+							"> "accueil_backoffice.php?nomEntreprise=
 							<?php 
 								echo $_POST['entreprise']; 
 							?>
@@ -127,15 +128,19 @@
 							<p>Lien permettant l'accès à l'accueil côté client :  </br>
 							<a href="accueil_client.php?nomEntreprise=
 							<?php 
-								echo $_POST['entreprise']; 
+								
+								echo $nomE; 
 							?>
-							"> "http://localhost/projet_tutore/projet_tutore/accueil_client.php?nomEntreprise=
+							"> "accueil_client.php?nomEntreprise=
 							<?php 
 								echo $_POST['entreprise']; 
 							?>
 							" </a></p></br>
 						</div>
 			</div>
+			<?php
+			}
+			?>
 
 	</body>
 </html>	
