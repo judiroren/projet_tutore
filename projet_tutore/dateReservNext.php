@@ -57,20 +57,21 @@
 		}
 	}
 	$erreur = 0;
-	if(isset($_POST['ajout'])){
-		if(!empty($_POST['choix'])){
-			$liste = employeOk($_POST['choix']);
-			if($liste->rowCount()!=0){
-				$_SESSION["employeRes"] = $liste->employe;
-				$_SESSION["prestListe"] = $_POST['choix'];
-				header('Location: dateReserv.php?nomEntreprise='.$nomE);
+	if(isset($_POST['continue'])){
+		if(!empty($_POST['daterdv']) && !empty($_POST['heurerdv'])){
+				$_SESSION["date"] = $_POST['daterdv'];
+				$_SESSION["heure"] = $_POST['heurerdv'];
+				header('Location: resume_reserv.php?nomEntreprise='.$nomE);
 			}else{
 				$erreur = 2;
 			}
 				
-		}else{
-			$erreur = 1;
-		}
+	}else{
+		$erreur = 1;
+	}
+	
+	if(isset($_POST['annule'])){
+		header('Location: accueil_client.php?nomEntreprise='.$nomE);
 	}
 	
 ?>
@@ -79,7 +80,27 @@
 	<head>
 		<title>Portail de réservation : Accueil BackOffice</title>
 		<link rel="stylesheet" href="assets/css/main.css" />
-
+		<script type="text/javascript" src="jquery-1.12.1.min.js"></script>
+		<script type="text/javascript">
+			jQuery(function($){ 
+			var date = new Date(); 
+			var current = date.getMonth()+1; 
+			$('.month').hide(); 
+			$('#month'+current).show(); 
+			$('.months a#linkMonth'+current).addClass('active'); 
+			$('.months a').click(function(){ 
+			var month = $(this).attr('id').replace('linkMonth',''); 
+			if(month != current){ 
+			$('#month'+current).slideUp(); 
+			$('#month'+month).slideDown(); 
+			$('.months a').removeClass('active'); 
+			$('.months a#linkMonth'+month).addClass('active'); 
+			current = month; 
+			} 
+			return false; 
+			}); 
+			});
+		</script>
 	</head>
 	<body>
 
@@ -148,46 +169,80 @@
 				<!-- Intro -->
 					
 			<div class="container">
-	
-					<center><h1>Réservation</h1></center>
-					<?php 
-						if($erreur==1){
-							echo "Vous devez sélectionnez au moins une prestation pour faire une réservation !</br>";	
-						}else if($erreur == 2){
-							echo "Aucun employé ne peut satisfaire votre demande ! Veuillez changer vos prestations !";
-						}	
-					?>
-					<form method="post" action="">
-					Liste des prestations possibles : </br>
-					<table>
-							<tr><td>Choix</td><td>Description</td><td>Prix</td><td>Payable Paypal</td><td>Durée</td></tr>
-							<?php 
-							if($prest != null){
-								while ($unePrest = $prest->fetch(PDO::FETCH_OBJ)){
-									echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta'</td>";
-									$unePresta = infosPrestation($unePrest->id_presta);
-									$unePresta = $unePresta->fetch(PDO::FETCH_OBJ);
-									echo "<td>$unePresta->descriptif_presta</td>
-											  <td>$unePresta->cout €</td>
-											  <td>";
-									if ($unePresta->paypal >= 1 ) {
-										echo "oui";
-									}else{
-										echo"non";
-									}
-									echo "</td>
-										  <td>$unePresta->duree min</td></tr>";
-								}
-							}
-
-							?>
-							</table>
-							<input type="hidden" name="ajout" value="ok"> 
-							<div align = "center" class="12u$">
-								<input type="submit" value="Réserver" />
-							</div>
-					</form>
-
+			<h1>Réservation : choix de la date et de l'heure</h1>
+					<?php
+			require('date.php');
+			$date = new Date();
+			$year = date('Y')+1;
+			$dates = $date->getAll($year);
+		?>
+		<div class="periods">
+			<div class="year"><a href="dateReserv.php?nomEntreprise=<?php echo $nomE;?>"><?php echo $year-1; ?></a></div>
+			<div class="year"><a href=""><?php echo $year; ?></a> </div>
+			</br>
+			<div class="months">
+				<ul>
+					<?php foreach ($date->months as $id=>$m): ?>
+						<li><a href="" id="linkMonth<?php echo $id+1; ?>"><?php echo substr($m,0,3); ?></a></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+			<div class="clear"></div>
+			<?php $dates = current($dates); ?>
+			<?php foreach ($dates as $m => $days):?>
+			<?php if($m < 10): $m = substr($m,1,1); endif;?>
+				<div class="month relative" id="month<?php echo $m; ?>">
+				<table class="cal">
+					<thead>
+						<tr>
+							<?php foreach ($date->days as $d): ?>
+								<th><?php echo substr($d,0,3); ?></th>
+							<?php endforeach; ?>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+						<?php $end = end($days); foreach ($days as $d=>$w):?>
+							<?php if($d == 1 && $d != $w): ?>
+								<td colspan="<?php echo $w-1; ?>" class="padding"></td>
+							<?php endif; ?>
+							<td>
+								<div class="relative">
+									<div class="day"><?php echo $d; ?></div>
+								</div>
+								<div class="daytitle">
+									<?php echo $date->days[$w-1]." "; ?><?php echo $d." ";?><?php echo $date->months[$m-1]; ?>
+								</div>
+								<!-- Evenement : affiché sur le coté -->
+								<ul class="events">
+									<li>créneaux</li>
+								</ul>
+							</td>
+							<?php if($w == 7):?>
+								<tr></tr>
+							<?php endif;?>
+						<?php endforeach; ?>
+						<?php if($end != 7): ?>
+							<td colspan="<?php echo 7-$end; ?>" class="padding"></td>
+						<?php endif; ?>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<form method="post" action="">
+			Jour de la réservation : </br>
+				<input type="date" name="daterdv" />
+			</br></br>
+			Heure de la réservation : </br>
+				<input type="time" name="heurerdv" />
+			</br></br>	
+			<div align = "center" class="12u$">
+			<input type="submit" name="continue" value="Réserver" />
+			<input type="submit" name="annule" value="Annuler" />
+			</div>
+		</form>
 							<?php } ?>
 			</div>
 		</div>

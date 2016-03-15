@@ -110,6 +110,7 @@
 							<a href="modif_entreprise.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des informations de l'entreprise </a></br>
 							<a href="ajout_employe.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des employés </a></br>
 							<a href="ajout_prestation.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des prestations </a></br>
+							<a href="modif_categorie.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des catégories </a></br>
 							<a href="gestion_absence.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des absences </a></br>
 							<a href="destruct_session.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
 							
@@ -194,7 +195,7 @@
 								
 								</br></br>
 								<h3>Associer un ou plusieurs employés à la nouvelle prestation</h3>
-								<select name="employe[]" multiple>
+								<div class="6u 12u$(mobile)"><select name="employe[]" multiple>
 									<?php 
 									while($valeur=$emp->fetch(PDO::FETCH_OBJ)){
 										//if($valeur->competenceA == "" || $valeur->competenceB == "" || $valeur->competenceC == "" ){
@@ -205,10 +206,10 @@
 										//}
 									}
 									?>
-								</select>
+								</select></div>
 								</br>
 								<h3>Categorie de la prestation</h3>
-								<select name="categorie_ajout">
+								<div class="6u 12u$(mobile)"><select name="categorie_ajout">
 								<option value=""></option>   
 								<?php 
 								$listecat = $connexion->query("SELECT * FROM ".$nomE."_categorie");
@@ -219,7 +220,7 @@
 								<?php
 								}
 								?>
-								</select>
+								</select></div>
 								</br>
 								<input type="hidden" name="ajout" value="ok"> 
 								<div align = "center" class="12u$">

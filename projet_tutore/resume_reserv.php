@@ -111,7 +111,7 @@
 								<a href="accueil_client.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
 								<a href="profil.php?nomEntreprise=<?php echo $nomE ?>"> Accéder à son profil </a></br>
 								<a href="reservation.php?nomEntreprise=<?php echo $nomE ?>"> Réserver </a></br></br>
-								<a href="destruct_session.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
+								<a href="destruct_session_client.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
 							</div>
 							
 							<?php
@@ -182,8 +182,23 @@
 							<p> Durée de la réservation : <?php echo $dureetotale; $_SESSION['duree']=$dureetotale;?> minutes</p>
 							<p> Prix total : <?php echo $prixtotal; $_SESSION['prix']=$prixtotal;?> €</p>
 							<form method="post" action="">
-							<input type="submit" name="sanspaiement" value="Confirmation" />
-							<input type="submit" name="avecpaiement" value="Paiment" />
+							<?php
+							if(isset($_SESSION["nomSession"])) {
+								?>
+								<input type="submit" name="sanspaiement" value="Confirmation" />
+								<input type="submit" name="avecpaiement" value="Paiment" />
+								<?php
+							} else {
+								?>
+								<A href="javascript:ouvre_popup('popupConnection.php?nomEntreprise=test')">Veuillez vous connecter pour confirmer ou payer.</A><br/><br/>
+								<SCRIPT language="javascript">
+								function ouvre_popup(page) {
+								window.open(page,"nom_popup","menubar=no, status=no, scrollbars=no, menubar=no, width=600, height=400");
+								}
+								</SCRIPT>
+								<?php
+							}
+							?>
 							<input type="submit" name="annule" value="Annulation" />
 							</form>
 							
