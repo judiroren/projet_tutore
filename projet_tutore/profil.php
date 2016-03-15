@@ -151,6 +151,7 @@
 						while($donnees2 = $prest->fetch(PDO::FETCH_OBJ)){
 							echo $donnees2->descriptif_presta." ( ".$donnees2->prix." € )";
 						}
+						echo "</br></br>";
 					}
 				?>
 				

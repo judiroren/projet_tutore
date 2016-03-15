@@ -77,6 +77,9 @@ function supprimerEmp($connexion, $IDemp) {
 	$rqtSupEmp = $connexion->prepare("DELETE FROM ".$nomE."_planning WHERE code_employe='".$IDemp."'");
 	$rqtSupEmp->execute();
 	
+	$rqtSupComp = $connexion->prepare("DELETE FROM ".$nomE."_competence WHERE employe='".$IDemp."'");
+	$rqtSupComp->execute();
+	
 }
 
 //Supprime le planning d'un employé
@@ -199,20 +202,34 @@ function modifEnt($connexion, $mail, $tel, $adresse, $logo, $descrip, $login) {
 function ajoutPresta($connexion, $code, $descrip, $cout, $paypal, $duree, $employe, $categorie) {
 	
 	$nomE = $_SESSION["nomE"];
+	
 	$rqtAjoutPresta = $connexion->prepare("INSERT INTO ".$nomE."_prestation(id_presta, descriptif_presta, cout, paypal, duree, categorie) 
 										VALUES (:code, :descrip, :cout, :paypal, :duree, :categorie)");
 	$rqtAjoutPresta->execute(array('code' => $code, 'descrip' => $descrip, 'cout' => $cout, 'paypal' => $paypal, 'duree' => $duree, 'categorie' => $categorie));									
 	
-	foreach($employe as $val){
-		if($val!=""){
-			$nomTable = $nomE."_competence";
-			$i = code($nomTable,'id_competence');
-			$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation)
-					VALUES (:id, :employe, :presta)");
-			$rqtAjoutComp->execute(array("id" => $i, "employe" => $val, "presta" => $code));
-			$i++;
+	if($employe != null){
+		foreach($employe as $val){
+			if($val!=""){
+				$nomTable = $nomE."_competence";
+				$i = code($nomTable,'id_competence');
+				$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation)
+						VALUES (:id, :employe, :presta)");
+				$rqtAjoutComp->execute(array("id" => $i, "employe" => $val, "presta" => $code));
+				$i++;
+			}
 		}
 	}
+}
+
+//Permet d'ajouter une prestation sans les compétences
+function ajoutPrestaSansEmp($connexion, $code, $descrip, $cout, $paypal, $duree, $categorie) {
+
+	$nomE = $_SESSION["nomE"];
+
+	$rqtAjoutPresta = $connexion->prepare("INSERT INTO ".$nomE."_prestation(id_presta, descriptif_presta, cout, paypal, duree, categorie)
+										VALUES (:code, :descrip, :cout, :paypal, :duree, :categorie)");
+	$rqtAjoutPresta->execute(array('code' => $code, 'descrip' => $descrip, 'cout' => $cout, 'paypal' => $paypal, 'duree' => $duree, 'categorie' => $categorie));
+
 }
 
 //Permet de modifier une prestation
@@ -258,6 +275,8 @@ function supprimerPresta($connexion, $presta) {
 	$rqtSupPresta = $connexion->prepare("DELETE FROM ".$nomE."_prestation WHERE id_presta='".$presta."'");
 	$rqtSupPresta->execute();
 	
+	$rqtSupComp = $connexion->prepare("DELETE FROM ".$nomE."_competence WHERE prestation='".$presta."'");
+	$rqtSupComp->execute();
 }
 
 //Permet d'ajouter une absence

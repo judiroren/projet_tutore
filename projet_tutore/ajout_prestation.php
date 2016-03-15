@@ -44,10 +44,15 @@
 		$paypal = (isset($_POST['paypal']) )? 1 : 0;
 		
 		//Permet d'ajouter une prestation
-		if($_POST['descrip'] == null || $_POST['cout'] == 0 || $_POST['duree'] == 0 || $_POST['employe'] == null ) {
+		if($_POST['descrip'] == null || $_POST['cout'] == 0 || $_POST['duree'] == 0 ) {
 				$ajout = "non";
 		} else {
-			ajoutPresta($connexion, $code, $_POST['descrip'], $_POST['cout'], $paypal, $_POST['duree'], $_POST['employe'],$_POST['categorie_ajout']);
+			if(isset($_POST['employe'])){
+				ajoutPresta($connexion, $code, $_POST['descrip'], $_POST['cout'], $paypal, $_POST['duree'], $_POST['employe'],$_POST['categorie_ajout']);
+				
+			}else{
+				ajoutPrestaSansEmp($connexion, $code, $_POST['descrip'], $_POST['cout'], $paypal, $_POST['duree'], $_POST['categorie_ajout']);
+			}
 			$i = infosEntreprise();
 		}
 		

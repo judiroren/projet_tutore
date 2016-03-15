@@ -183,14 +183,14 @@
 							<p> Prix total : <?php echo $prixtotal; $_SESSION['prix']=$prixtotal;?> €</p>
 							<form method="post" action="">
 							<?php
-							if(isset($_SESSION["nomSession"])) {
+							if(isset($_SESSION["estConnecte "])) {
 								?>
 								<input type="submit" name="sanspaiement" value="Confirmation" />
 								<input type="submit" name="avecpaiement" value="Paiment" />
 								<?php
 							} else {
 								?>
-								<A href="javascript:ouvre_popup('popupConnection.php?nomEntreprise=test')">Veuillez vous connecter pour confirmer ou payer.</A><br/><br/>
+								<A href="javascript:ouvre_popup('popupConnection.php?nomEntreprise=test')">Attention : Veuillez vous connecter pour confirmer ou payer ! </A><br/><br/>
 								<SCRIPT language="javascript">
 								function ouvre_popup(page) {
 								window.open(page,"nom_popup","menubar=no, status=no, scrollbars=no, menubar=no, width=600, height=400");

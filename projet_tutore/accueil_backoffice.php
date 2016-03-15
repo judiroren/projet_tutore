@@ -45,7 +45,7 @@
 			
 			if( $_POST['login'] == $i->loginAdmin && $mdp == $i->mdpAdmin ) {
 				
-				$_SESSION["estConnecte"] = 1;
+				$_SESSION["estConnecteAdmin"] = 1;
 				$_SESSION["nomSession"] = $_GET['nomEntreprise'];
 				
 			}
@@ -101,7 +101,7 @@
 							
 							<?php 
 							
-							if(isset($_SESSION["estConnecte"])) {
+							if(isset($_SESSION["estConnecteAdmin"])) {
 								
 							?>
 							
@@ -177,7 +177,7 @@
 		
 							} else {
 							
-								if(isset($_SESSION["estConnecte"])) {
+								if(isset($_SESSION["estConnecteAdmin"])) {
 								
 							?>
 							
