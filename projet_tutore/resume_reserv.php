@@ -183,7 +183,7 @@
 							<p> Prix total : <?php echo $prixtotal; $_SESSION['prix']=$prixtotal;?> €</p>
 							<form method="post" action="">
 							<?php
-							if(isset($_SESSION["estConnecte "])) {
+							if(isset($_SESSION["estConnecte"])) {
 								?>
 								<input type="submit" name="sanspaiement" value="Confirmation" />
 								<input type="submit" name="avecpaiement" value="Paiment" />
