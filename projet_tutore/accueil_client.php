@@ -1,60 +1,63 @@
 <?php
 
 	session_start();
-	//$_SESSION["nomE"] = $_GET['nomEntreprise'];
 	
 	try {
-		//$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		if($_GET['nomEntreprise'] != null) {
+		
+		if(isset($_GET['nomEntreprise'])) {
 			$_SESSION["nomE"] = $_GET['nomEntreprise'];
 		} else {
-			throw new Exception("Notice: Undefined offset");
+			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
 		}
 	} catch(Exception $e){
-		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+		
 	}
 	
 ?>
 <!DOCTYPE HTML>
 <?php
+
 	require "fonctions.inc.php";
 	require "bd.inc.php";
 	
-	if( verifEntreprise($_SESSION['nomE']) == null ) {
+	
+	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
 		
-		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
 		
 	} else {
 		
-	$_SESSION["nomE"] = $_GET['nomEntreprise'];	
-	
-	$connexion = connect();
-	$nomE = $_GET['nomEntreprise'];
-	//$nomE = str_replace(' ', '_', $nomE);
-
-	//permet de récuperer les infos de connexion
-	$i = infosEntreprise();
-	
-	//récupère la liste des prestations de l'entreprise
-	$prest = listePrestations();
-
-	//Le mot de passe doit être renseigner
-	if(isset($_POST['mdp'])) {
+		$_SESSION["nomE"] = $_GET['nomEntreprise'];	
 		
-		//$mdp = md5($_POST['mdp']);
-		$mdp = $_POST['mdp'];
-	} 
-	
-	//Les informations doivent être correcte
-	if( isset($_POST['login']) && isset($_POST['mdp']) ) {
-		//récupération des infos de connexion des clients
-		$j = logClient($_POST['login'], $_POST['mdp']);
-		if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
-			$_SESSION["client"] = $j->id_client;
-			$_SESSION["estConnecte"] = 1;
-			$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+		$connexion = connect();
+		$nomE = $_GET['nomEntreprise'];
+		//$nomE = str_replace(' ', '_', $nomE);
+
+		//permet de récuperer les infos de connexion
+		$i = infosEntreprise();
+		
+		//récupère la liste des prestations de l'entreprise
+		$prest = listePrestations();
+
+		//Le mot de passe doit être renseigner
+		if(isset($_POST['mdp'])) {
 			
+			//$mdp = md5($_POST['mdp']);
+			$mdp = $_POST['mdp'];
+		} 
+		
+		//Les informations doivent être correcte
+		if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
+			//récupération des infos de connexion des clients
+			$j = logClient($_POST['login'], $_POST['mdp']);
+			if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
+				$_SESSION["client"] = $j->id_client;
+				$_SESSION["estConnecte"] = 1;
+				$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+				
+			}
 		}
+	
 	}
 
 
@@ -78,19 +81,34 @@
 						
 						<?php 
 						
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+								
+								} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+								} else {
+						
 							if($i->logoEntreprise !="") {
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
 							} 
+								
 						?>
 							<h1>
 							<?php 
 							
 								echo $nomE;
+								
 							?>
 							</h1>
 							<p>Page de gestion de l'entreprise</p>
 							
 							<?php 
+							}
+							
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+								
+								} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+								} else {
 							
 							if(isset($_SESSION["estConnecte"])) {
 								
@@ -122,7 +140,12 @@
 								</div>
 							</form>
 							
-							<?php } ?>
+							<?php 
+							
+								}
+								}	
+								
+							?>
 
 			</div>
 		</div>
@@ -130,11 +153,27 @@
 		<!-- Main -->
 		<div id="main">
 
+				<div class="container">
 				<!-- Intro -->
-					<h2><?php echo $i->nomEntreprise?></h2>
+					<h1>Page d'accueil front-office <br>Client
+					<?php 
+					
+					if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+									
+						echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+								
+					} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+						echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+		
+					} else {
+					
+					?>
+					<h2><?php
+					echo $i->nomEntreprise?></h2>
 					<p align="center"><?php echo $i->adresseEntreprise?><br/>
 					Tel :<?php echo $i->telEntreprise?></p>
-			<div class="container">
+			
 				<p><?php echo $i->descEntreprise ?></p>
 				<h3 align="center">les prestations de <?php echo $i->nomEntreprise?> :</h3>
 							<table>

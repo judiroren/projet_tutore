@@ -179,7 +179,7 @@
 									<input type="email" name="mail" value="<?php echo $valEmp->mail_emp;?>"></div>				
 									</br>
 									Numéro de téléphone : <div class="6u 12u$(mobile)">
-									<input type="text" name="tel" value="<?php echo $valEmp->telephone_emp;?>"></div>				
+									<input type="text" pattern="^0[1-9][0-9]{8}" name="tel" value="<?php echo $valEmp->telephone_emp;?>"></div>				
 									</br>
 									Compétences déjà acquise : <div class="6u 12u$(mobile)"><select name="competence[]" multiple>
 										<option value=""></option>

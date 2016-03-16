@@ -159,7 +159,7 @@
 									<h3>Informations générale : </h3></br>
 									E-mail : <div class="6u 12u$(mobile)"><input type="email" name="mail" value="<?php echo $i->mailEntreprise?>" /></div>			
 									</br>
-									Téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" value="<?php echo $i->telEntreprise?>"/></div>				
+									Téléphone : <div class="6u 12u$(mobile)"><input type="text" pattern="^0[1-9][0-9]{8}" name="tel" value="<?php echo $i->telEntreprise?>"/></div>				
 									</br>
 									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" value="<?php echo $i->adresseEntreprise?>"/></div>	
 									</br>

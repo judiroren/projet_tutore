@@ -37,7 +37,7 @@
 							<h1>Inscription d'une entreprise sur le portail</h1>
 							<form method="post" action="resume_inscrip.php" class="formulaire">
 									</br>
-									Nom de l'entreprise :<div class="6u 12u$(mobile)"><input type="text" name="entreprise" required/></div>
+									Nom de l'entreprise :<div class="6u 12u$(mobile)"><input type="text" pattern="[\w\s-]+" name="entreprise" required/></div>
 									</br>
 									Login de l'administrateur :<div class="6u 12u$(mobile)"><input type="text" name="login" required/></div>
 									</br>

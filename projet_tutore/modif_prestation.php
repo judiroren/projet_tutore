@@ -157,9 +157,9 @@
 									Descriptif de la prestation : </br>
 									<div class="6u 12u$(mobile)"><textarea name="descrip" ><?php echo $presta->descriptif_presta; ?></textarea></div>			
 									</br>
-									Prix de la prestation (en €): <div class="6u 12u$(mobile)"><input type="text" name="cout" value="<?php echo $presta->cout;?>"></div>				
+									Prix de la prestation (en €): <div class="6u 12u$(mobile)"><input type="text" pattern="[0-9]{1,}[.,]{0,1}[0-9]{0,2}" name="cout" value="<?php echo $presta->cout;?>"></div>				
 									</br>
-									Durée de la prestation (en minutes) : <div class="6u 12u$(mobile)"><input type="text" name="duree" value="<?php echo $presta->duree;?>"></div>	
+									Durée de la prestation (en minutes) : <div class="6u 12u$(mobile)"><input type="text" pattern="[0-9]+" name="duree" value="<?php echo $presta->duree;?>"></div>	
 									</br>
 									Paiement PayPal : <input type="checkbox" name="paypal" value="1" <?php if($presta->paypal==1){echo "checked='checked'";}?>/>
 								

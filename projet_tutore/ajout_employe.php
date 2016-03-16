@@ -281,7 +281,7 @@
 									</br>
 									Adresse mail : <div class="6u 12u$(mobile)"><input type="email" name="mail" required/></div>			
 									</br>
-									Numéro de téléphone : <div class="6u 12u$(mobile)"><input type="text" name="tel" required/></div>					
+									Numéro de téléphone : <div class="6u 12u$(mobile)"><input type="text" pattern="^0[1-9][0-9]{8}" name="tel" required/></div>					
 									</br>
 									Compétence : <div class="6u 12u$(mobile)"><select name="presta[]" multiple>
 										<option value=""  selected="selected"></option>

@@ -192,9 +192,9 @@
 									Descriptif de la prestation : </br>
 									<div class="6u 12u$(mobile)"><textarea name="descrip" required></textarea></div>			
 									</br>
-									Prix de la prestation (en €): <div class="6u 12u$(mobile)"><input type="text" name="cout" required/></div>				
+									Prix de la prestation (en €): <div class="6u 12u$(mobile)"><input type="text" pattern="[0-9]{1,}[.,]{0,1}[0-9]{0,2}" name="cout" required/></div>				
 									</br>
-									Durée de la prestation (en minutes) : <div class="6u 12u$(mobile)"><input type="text" name="duree" required/></div>	
+									Durée de la prestation (en minutes) : <div class="6u 12u$(mobile)"><input type="text" pattern="[0-9]+" name="duree" required/></div>	
 									</br>
 									Paiement PayPal : <input type="checkbox" name="paypal" value=1 />
 								

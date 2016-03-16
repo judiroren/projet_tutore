@@ -1,18 +1,18 @@
 <?php
 
 	session_start();
-	//$_SESSION["nomE"] = $_GET['nomEntreprise'];
 	
 	try {
-		//$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		if($_GET['nomEntreprise'] != null) {
+		
+		if(isset($_GET['nomEntreprise'])) {
 			$_SESSION["nomE"] = $_GET['nomEntreprise'];
 		} else {
-			throw new Exception("Notice: Undefined offset");
+			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
 		}
 	} catch(Exception $e){
-		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+		
 	}
+
 	
 ?>
 
@@ -24,72 +24,73 @@
 	require "ajout.inc.php";
 	
 	
-	/* if( $_SESSION["nomE"] == null ) {
+	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
 		
-		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+	/*} else if (!isset($_GET['id_presta'])) {*/
+	
+	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
 		
-	} else  */
-	if( verifEntreprise($_SESSION['nomE']) == null ) {
-		
-		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+	} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 		
 	} else {
 		
-	$_SESSION["nomE"] = $_GET['nomEntreprise'];	
-	
-	$connexion = connect();
-	$nomE = $_GET['nomEntreprise'];
-	//$nomE = str_replace(' ', '_', $nomE);
-
-	//permet de récuperer les infos de connexion
-	$i = infosEntreprise();
-
-	//Le mot de passe doit être renseigner
-	if(isset($_POST['mdp'])) {
+		$_SESSION["nomE"] = $_GET['nomEntreprise'];	
 		
-		//$mdp = md5($_POST['mdp']);
-		$mdp = $_POST['mdp'];
-	} 
-	
-	//Les informations doivent être correcte
-	if( isset($_POST['login']) && isset($_POST['mdp']) ) {
-		
-		if( $_POST['login'] == $i->loginAdmin && $mdp == $i->mdpAdmin ) {
-			
-			$_SESSION["estConnecte"] = 1;
-			$_SESSION["nomSession"] = $_GET['nomEntreprise'];
-			
-		}
-	}
+		$connexion = connect();
+		$nomE = $_GET['nomEntreprise'];
+		//$nomE = str_replace(' ', '_', $nomE);
 
-	$planning = planningEnt();
-									
-	$reserva = reservationsEnt();
-									
-	$absences = abscencesEnt();
-	
-	$categorie = listeCategorie();
-	
-	if(isset($_POST['ajout'])){
-		$vide = false;
-		if($_POST['categorie'] == ''){
-			$vide = true;
-		}
-		$ok = true;
-		while ($uneCat = $categorie->fetch(PDO::FETCH_OBJ)){
-			if ($_POST['categorie'] == $uneCat->categorie){
-				$ok = false;
+		//permet de récuperer les infos de connexion
+		$i = infosEntreprise();
+
+		//Le mot de passe doit être renseigner
+		if(isset($_POST['mdp'])) {
+			
+			//$mdp = md5($_POST['mdp']);
+			$mdp = $_POST['mdp'];
+		} 
+		
+		//Les informations doivent être correcte
+		if( isset($_POST['login']) && isset($_POST['mdp']) ) {
+			
+			if( $_POST['login'] == $i->loginAdmin && $mdp == $i->mdpAdmin ) {
+				
+				$_SESSION["estConnecte"] = 1;
+				$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+				
 			}
 		}
+
+		$planning = planningEnt();
+										
+		$reserva = reservationsEnt();
+										
+		$absences = abscencesEnt();
 		
-		if($ok && !$vide){
-			ajoutCategorie($connexion, $_POST['categorie']);
+		$categorie = listeCategorie();
+		
+		if(isset($_POST['ajout'])){
+			$vide = false;
+			if($_POST['categorie'] == ''){
+				$vide = true;
+			}
+			$ok = true;
+			while ($uneCat = $categorie->fetch(PDO::FETCH_OBJ)){
+				if ($_POST['categorie'] == $uneCat->categorie){
+					$ok = false;
+				}
+			}
+			
+			if($ok && !$vide){
+				ajoutCategorie($connexion, $_POST['categorie']);
+			}
+			
 		}
-		
+		if(isset($_POST['suppr'])){
+			supprimeCategorie($connexion, $_POST['categorie_suppr']);
+		}
 	}
-	if(isset($_POST['suppr'])){
-		supprimeCategorie($connexion, $_POST['categorie_suppr']);
-	}
+	
 
 ?>
 
@@ -111,6 +112,16 @@
 						
 						<?php 
 						
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+		
+							/*} else if (!isset($_GET['id_presta'])) {*/
+							
+							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+								
+							} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								
+							} else {
+							
 							if($i->logoEntreprise !="") {
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
 							} 
@@ -123,12 +134,6 @@
 							</h1>
 							<p>Page de gestion de l'entreprise</p>
 							
-							<?php 
-							
-							if(isset($_SESSION["estConnecte"])) {
-								
-							?>
-							
 								<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
 								<a href="modif_entreprise.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des informations de l'entreprise </a></br>
 								<a href="ajout_employe.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des employés </a></br>
@@ -136,29 +141,18 @@
 								<a href="modif_categorie.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des catégories </a></br>
 								<a href="gestion_absence.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des absences </a></br>
 								<a href="destruct_session.php?nomEntreprise=<?php echo $nomE ?>"><input type="button" value="Déconnexion"></a>
-							</div>
 							
 							<?php
-							
-								} else {
-							
+							}
 							?>
-						</div>
-						<form method="post" action="">
-								<div class="row">
-									<div class="6u 12u$(mobile)"><input type="text" name="login" placeholder="Login" /></div>
-									</br></br></br>
-									<div class="6u 12u$(mobile)"><input type="password" name="mdp" placeholder="Mot de passe" /></div>				
-								</div>
-								</br>
-								<div align = "center" class="12u$">
-									<input type="submit" name ="connecte" value="Connection" />
-								</div>
-							</form>
-							<?php } ?>
 
+						</div>
+						
 				</div>
 
+				<div class="bottom">
+
+				</div>
 
 			</div>
 
@@ -171,6 +165,25 @@
 						<h1>Gestion des catégorie des prestations</h1><br/>
 						
 						<?php 
+							
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+								
+								echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+		
+							/*} else if (!isset($_GET['id_presta'])) {
+								
+								echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme &id_employe=id.</p>";
+							*/
+							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+								
+								echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+								
+							} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								
+								echo "<p>Vous devez d'abord vous connectez sur l'accueil de l'entreprise </p>";
+								
+							} else {
+						
 							if(isset($_POST['ajout']) && $ok && !$vide){
 								echo "<p> Ajout de la categorie effectuée </p>";
 							}elseif(isset($vide) && $vide){
@@ -186,9 +199,6 @@
 							<form method="post" action="">
 							<div class="6u 12u$(mobile)"><input type="text" name="categorie" /><input type="hidden" name="ajout" value="ok"></br><input type="submit" name ="ajout" value="Ajouter" /></div>
 							</form>
-								<?php 
-									} 
-								?>
 								<form method="post" action="">
 								<br/>
 								Suppression d'une categorie :<br/>
@@ -206,6 +216,12 @@
 								</select>
 								<input type="hidden" name="suppr" value="ok"></br><input type="submit" name ="suppr" value="supprimer" /></div>
 						</div>	
+						
+						<?php
+						
+							}
+						
+						?>	
 			</div>
 	</body>
 </html>

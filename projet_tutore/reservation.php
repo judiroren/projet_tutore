@@ -1,17 +1,16 @@
 <?php
 
 	session_start();
-	//$_SESSION["nomE"] = $_GET['nomEntreprise'];
 	
 	try {
-		//$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		if($_GET['nomEntreprise'] != null) {
+		
+		if(isset($_GET['nomEntreprise'])) {
 			$_SESSION["nomE"] = $_GET['nomEntreprise'];
 		} else {
-			throw new Exception("Notice: Undefined offset");
+			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
 		}
 	} catch(Exception $e){
-		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+		
 	}
 	
 ?>
@@ -20,9 +19,11 @@
 	require "fonctions.inc.php";
 	require "bd.inc.php";
 	
-	if( verifEntreprise($_SESSION['nomE']) == null ) {
+	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
 		
-		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+	} else if (!isset($_SESSION["nomSession"])) {
 		
 	} else {
 		
@@ -73,6 +74,8 @@
 		}
 	}
 	
+	}
+	
 ?>
 
 <html>
@@ -92,6 +95,12 @@
 						<div id="logo">
 						
 						<?php 
+						
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+		
+							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+								
+							} else {
 						
 							if($i->logoEntreprise !="") {
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
@@ -137,7 +146,7 @@
 								</div>
 							</form>
 							
-							<?php } ?>
+							<?php } } ?>
 
 			</div>
 		</div>
@@ -151,6 +160,17 @@
 	
 					<center><h1>Réservation</h1></center>
 					<?php 
+					
+					if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+								
+					echo "<h2>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</h2>";
+								
+				} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+								
+					echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";
+								
+				} else {
+					
 						if($erreur==1){
 							echo "Vous devez sélectionnez au moins une prestation pour faire une réservation !</br>";	
 						}else if($erreur == 2){

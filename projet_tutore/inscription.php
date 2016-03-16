@@ -1,17 +1,16 @@
 <?php
 
 	session_start();
-	//$_SESSION["nomE"] = $_GET['nomEntreprise'];
 	
 	try {
-		//$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		if($_GET['nomEntreprise'] != null) {
+		
+		if(isset($_GET['nomEntreprise'])) {
 			$_SESSION["nomE"] = $_GET['nomEntreprise'];
 		} else {
-			throw new Exception("Notice: Undefined offset");
+			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
 		}
 	} catch(Exception $e){
-		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
+		
 	}
 	
 ?>
@@ -20,48 +19,51 @@
 	require "fonctions.inc.php";
 	require "bd.inc.php";
 	
-	if( verifEntreprise($_SESSION['nomE']) == null ) {
+	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
 		
-		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
+	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+		
+	} else if (!isset($_SESSION["nomSession"])) {
 		
 	} else {
 		
-	$_SESSION["nomE"] = $_GET['nomEntreprise'];	
-	
-	$connexion = connect();
-	$nomE = $_GET['nomEntreprise'];
-	//$nomE = str_replace(' ', '_', $nomE);
-
-	//permet de récuperer les infos de connexion
-	$i = infosEntreprise();
-	
-	
-
-	//Le mot de passe doit être renseigner
-	if(isset($_POST['mdp'])) {
+		$_SESSION["nomE"] = $_GET['nomEntreprise'];	
 		
-		//$mdp = md5($_POST['mdp']);
-		$mdp = $_POST['mdp'];
-	} 
-	
-	//Les informations doivent être correcte
-	if( isset($_POST['login']) && isset($_POST['mdp']) ) {
-		//récupération des infos de connexion des clients
-		$j = logClient($_POST['login'], $_POST['mdp']);
-		if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
-			$_SESSION["client"] = $j->id_client;
-			$_SESSION["estConnecte"] = 1;
-			$_SESSION["nomSession"] = $_GET['nomEntreprise'];
-			
-		}
-	}
+		$connexion = connect();
+		$nomE = $_GET['nomEntreprise'];
+		//$nomE = str_replace(' ', '_', $nomE);
 
+		//permet de récuperer les infos de connexion
+		$i = infosEntreprise();
+		
+		
+
+		//Le mot de passe doit être renseigner
+		if(isset($_POST['mdp'])) {
+			
+			//$mdp = md5($_POST['mdp']);
+			$mdp = $_POST['mdp'];
+		} 
+		
+		//Les informations doivent être correcte
+		if( isset($_POST['login']) && isset($_POST['mdp']) ) {
+			//récupération des infos de connexion des clients
+			$j = logClient($_POST['login'], $_POST['mdp']);
+			if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
+				$_SESSION["client"] = $j->id_client;
+				$_SESSION["estConnecte"] = 1;
+				$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+				
+			}
+		}
+
+	}
 
 ?>
 
 <html>
 	<head>
-		<title>Portail de réservation : Accueil BackOffice</title>
+		<title>Portail de réservation : Inscription client</title>
 		<link rel="stylesheet" href="assets/css/main.css" />
 
 	</head>
@@ -76,6 +78,12 @@
 						<div id="logo">
 						
 						<?php 
+						
+							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+		
+							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+								
+							} else {
 						
 							if($i->logoEntreprise !="") {
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
@@ -105,7 +113,9 @@
 								</div>
 							</form>
 
-
+						<?php
+							}
+						?>
 			</div>
 		</div>
 
@@ -116,6 +126,21 @@
 					
 			<div class="container">
 				<h1>Inscription d'un client :</h1>
+				
+				<?php
+				
+				if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+								
+					echo "<h2>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</h2>";
+								
+				} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+								
+					echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";
+								
+				} else {
+								
+				?>				
+				
 				<form method="post" action="inscriptionClient_valide.php?nomEntreprise=<?php echo $nomE ?>" class="formulaire">
 					</br>
 					Nom du client :<div class="6u 12u$(mobile)"><input type="text" name="nomClient" required/></div>
