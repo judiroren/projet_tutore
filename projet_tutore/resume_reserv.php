@@ -172,7 +172,6 @@
 								$dureetotale = 0;
 								foreach ($_SESSION['prestListe'] as $val){
 									$info = infosPrestation($val);
-									$info = $info->fetch(PDO::FETCH_OBJ);
 									echo $info->descriptif_presta." ( ".$info->duree." minutes, ".$info->cout." € ).</br>";
 									$prixtotal = $prixtotal + $info->cout;
 									$dureetotale = $dureetotale + $info->duree;

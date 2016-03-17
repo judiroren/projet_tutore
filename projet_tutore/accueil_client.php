@@ -182,7 +182,6 @@
 							if($prest != null){
 								while ($unePrest = $prest->fetch(PDO::FETCH_OBJ)){
 									$unePresta = infosPrestation($unePrest->id_presta);
-									$unePresta = $unePresta->fetch(PDO::FETCH_OBJ);
 									echo "<tr><td>$unePresta->descriptif_presta</td>
 											  <td>$unePresta->cout €</td>
 											  <td>";

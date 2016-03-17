@@ -23,7 +23,7 @@
 		
 	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
 		
-	} else if (!isset($_SESSION["nomSession"])) {
+	/*} else if (!isset($_SESSION["nomSession"])) {*/
 		
 	} else {
 		
@@ -39,6 +39,8 @@
 	//récupère la liste des prestations de l'entreprise
 	$prest = listePrestations();
 
+	$catego = listeCategorie();
+	
 	//Le mot de passe doit être renseigner
 	if(isset($_POST['mdp'])) {
 		
@@ -57,9 +59,47 @@
 			
 		}
 	}
-	$erreur = 0;
-	if(isset($_POST['ajout'])){
+
+	
+	if(isset($_POST['categorie'])){
+		$categActuelle = $_POST['categorie'];
 		if(!empty($_POST['choix'])){
+			if(!isset($_SESSION["prestListe"])){
+				$_SESSION["prestListe"] = $_POST['choix'];
+			}else{
+				foreach($_POST['choix'] as $val){
+					if(!in_array($val,$_SESSION["prestListe"])){
+						array_push($_SESSION["prestListe"],$val);
+					}
+				}
+				foreach($_SESSION["prestListe"] as $val){
+					$c = getCategorie($val);
+					$categAncienne = getCategorie($_POST['choix'][0]);
+					if($c->categorie==$categAncienne){
+						if(!in_array($val,$_POST['choix'])){
+							unset($_SESSION["prestListe"][array_search($val, $_SESSION["prestListe"])]);
+						}
+					}
+				}
+			}
+			
+		}else{
+			if(!empty($_SESSION["prestListe"])){
+				foreach($_SESSION["prestListe"] as $val){
+					$c = getCategorie($val);
+					if($c->categorie==$_POST['categAncienne']){
+						unset($_SESSION["prestListe"][array_search($val, $_SESSION["prestListe"])]);
+					}
+				}	
+			}
+		}
+	}
+	
+	$erreur = 0;
+	if(isset($_POST['reserv'])){
+		if(empty($_POST['choix']) && empty($_SESSION['prestListe'])){
+			$erreur = 1;
+		}else if(!empty($_POST['choix']) && empty($_SESSION['prestListe'])){
 			$liste = employeOk($_POST['choix']);
 			if($liste->rowCount()!=0){
 				$_SESSION["employeRes"] = $liste->employe;
@@ -68,9 +108,35 @@
 			}else{
 				$erreur = 2;
 			}
-				
+		}else if(!empty($_POST['choix'])){
+			foreach($_POST['choix'] as $val){
+				if(!in_array($val,$_SESSION["prestListe"])){
+					array_push($_SESSION["prestListe"],$val);
+				}
+			}
+			foreach($_SESSION["prestListe"] as $val){
+				$c = getCategorie($val);
+				if($c->categorie==$categAncienne){
+					if(!in_array($val,$_POST['choix'])){
+						unset($_SESSION["prestListe"][array_search($val, $_SESSION["prestListe"])]);
+					}
+				}
+			}
+			$liste = employeOk($_SESSION["prestListe"]);
+			if($liste->rowCount()!=0){
+				$_SESSION["employeRes"] = $liste->employe;
+				header('Location: dateReserv.php?nomEntreprise='.$nomE);
+			}else{
+				$erreur = 2;
+			}
 		}else{
-			$erreur = 1;
+			$liste = employeOk($_SESSION["prestListe"]);
+			if($liste->rowCount()!=0){
+				$_SESSION["employeRes"] = $liste->employe;
+				header('Location: dateReserv.php?nomEntreprise='.$nomE);
+			}else{
+				$erreur = 2;
+			}
 		}
 	}
 	
@@ -171,32 +237,80 @@
 								
 				} else {
 					
-						if($erreur==1){
+						if($erreur==1 && empty($_SESSION["prestListe"])){
 							echo "Vous devez sélectionnez au moins une prestation pour faire une réservation !</br>";	
 						}else if($erreur == 2){
-							echo "Aucun employé ne peut satisfaire votre demande ! Veuillez changer vos prestations !";
+							echo "Aucun employé ne peut satisfaire votre demande ! Veuillez changer vos prestations !</br>";
 						}	
 					?>
+					
+					<?php 
+					if(!empty($_SESSION["prestListe"])){
+						echo "Prestations choisies :</br>";
+						foreach($_SESSION["prestListe"] as $val){
+							$info = infosPrestation($val);
+							echo "$info->descriptif_presta $info->categorie, $info->duree minutes ($info->cout €)</br>";
+						}
+					}
+					?>
 					<form method="post" action="">
-					Liste des prestations possibles : </br>
-					<table>
+						Catégorie : <div class="6u 12u$(mobile)"><select name="categorie">
+						<option value=""></option>
+						<?php while($donnees = $catego->fetch(PDO::FETCH_OBJ)){
+							echo "<option value='$donnees->categorie'>$donnees->categorie</option>";
+						}?>
+						</select></div></br>
+						<input type="submit" name="ChoixCat" value="Choisir"/></br></br>
+						Liste des prestations possibles : </br>
+						<table>
 							<tr><td>Choix</td><td>Description</td><td>Prix</td><td>Payable Paypal</td><td>Durée</td></tr>
 							<?php 
 							if($prest != null){
 								while ($unePrest = $prest->fetch(PDO::FETCH_OBJ)){
-									echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta'</td>";
-									$unePresta = infosPrestation($unePrest->id_presta);
-									$unePresta = $unePresta->fetch(PDO::FETCH_OBJ);
-									echo "<td>$unePresta->descriptif_presta</td>
-											  <td>$unePresta->cout €</td>
-											  <td>";
-									if ($unePresta->paypal >= 1 ) {
-										echo "oui";
+									if(isset($_POST['categorie'])){
+										?>
+										<input type="hidden" name="categAncienne" value="<?php echo $_POST['categorie'];?>">
+										<?php 
+										if($unePrest->categorie == $_POST['categorie']){
+											if(!empty($_SESSION['prestListe']) && in_array($unePrest->id_presta, $_SESSION['prestListe'])){
+												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' checked='checked'></td>";
+											}else{
+												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' ></td>";
+											}
+											
+											$unePresta = infosPrestation($unePrest->id_presta);
+											echo "<td>$unePresta->descriptif_presta</td>
+													  <td>$unePresta->cout €</td>
+													  <td>";
+											if ($unePresta->paypal >= 1 ) {
+												echo "oui";
+											}else{
+												echo"non";
+											}
+											echo "</td>
+												  <td>$unePresta->duree min</td></tr>";
+										}
 									}else{
-										echo"non";
+										$p = "'".$unePrest->id_presta."'";
+										if(!empty($_SESSION['prestListe']) && in_array($p, $_SESSION['prestListe'])){
+												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' selected='selected'></td>";
+												echo "hey";
+											}else{
+												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' ></td>";
+											}
+										$unePresta = infosPrestation($unePrest->id_presta);
+										echo "<td>$unePresta->descriptif_presta</td>
+										<td>$unePresta->cout €</td>
+										<td>";
+										if ($unePresta->paypal >= 1 ) {
+											echo "oui";
+										}else{
+											echo"non";
+										}
+										echo "</td>
+										<td>$unePresta->duree min</td></tr>";
+										
 									}
-									echo "</td>
-										  <td>$unePresta->duree min</td></tr>";
 								}
 							}
 
@@ -204,7 +318,7 @@
 							</table>
 							<input type="hidden" name="ajout" value="ok"> 
 							<div align = "center" class="12u$">
-								<input type="submit" value="Réserver" />
+								<input type="submit" name="reserv" value="Réserver" />
 							</div>
 					</form>
 

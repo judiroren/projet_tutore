@@ -101,7 +101,7 @@ function listePrestations() {
 	
 	$connexion = connect();
 	$nomE = $_SESSION["nomE"];
-	$rqtPrestations = $connexion->prepare("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation");
+	$rqtPrestations = $connexion->prepare("SELECT id_presta, categorie FROM ".$nomE."_prestation");
 	$rqtPrestations->execute();
 	
 	return $rqtPrestations;
@@ -126,8 +126,10 @@ function infosPrestation($id) {
 	$nomE = $_SESSION["nomE"];
 	$listePresta = $connexion->prepare("SELECT * FROM ".$nomE."_prestation WHERE id_presta = '".$id."'");
 	$listePresta->execute();
+	$listePresta->setFetchMode(PDO::FETCH_OBJ);
+	$i = $listePresta->fetch();
 	
-	return $listePresta;
+	return $i;
 }
 
 //Permet de récupérer les informations des employés d'une entreprise
@@ -370,5 +372,15 @@ function listeCategorie(){
 	$rqtcategorie = $connexion->prepare("SELECT * FROM ".$nomE."_categorie");
 	$rqtcategorie->execute();
 	return $rqtcategorie;
+}
+
+function getCategorie($presta){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$rqt = $connexion->prepare("SELECT categorie FROM ".$nomE."_prestation WHERE id_presta = '".$presta."'");
+	$rqt->execute();
+	$rqt->setFetchMode(PDO::FETCH_OBJ);
+	$i = $rqt->fetch();
+	return $i;
 }
 ?>
