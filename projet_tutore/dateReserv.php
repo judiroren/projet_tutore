@@ -46,19 +46,23 @@
 	} 
 	
 	//Les informations doivent être correcte
-	if( isset($_POST['login']) && isset($_POST['mdp']) ) {
+	if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
 		//récupération des infos de connexion des clients
 		$j = logClient($_POST['login'], $_POST['mdp']);
-		if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
-			$_SESSION["client"] = $j->id_client;
-			$_SESSION["estConnecte"] = 1;
-			$_SESSION["nomSession"] = $_GET['nomEntreprise'];
-			
+		if($j!=null){	
+			if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
+				$_SESSION["client"] = $j->id_client;
+				$_SESSION["estConnecte"] = 1;
+				$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+			}
 		}
 	}
 	$erreur = 0;
 	if(isset($_POST['continue'])){
 		if(!empty($_POST['daterdv']) && !empty($_POST['heurerdv'])){
+			$days = array('Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche');
+			$jn = $days[date('w', strtotime($_POST['daterdv']))-1];
+			$employe = employeReserv($_POST['daterdv'], $jn, $_POST['heurerdv'], $_SESSION["employeRes"]);
 				$_SESSION["date"] = $_POST['daterdv'];
 				$_SESSION["heure"] = $_POST['heurerdv'];
 				header('Location: resume_reserv.php?nomEntreprise='.$nomE);

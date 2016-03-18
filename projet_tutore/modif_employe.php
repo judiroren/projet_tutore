@@ -35,11 +35,11 @@
 		
 		//Modification des informations de l'employé
 		majEmploye($connexion, $_POST['nom'], $_POST['prenom'], $_POST['adresse'], $_POST['mail'], $_POST['tel'], $_GET['id_employe']);
-		if(isset($_POST['competence']) && (!empty($_POST['competence']) || $_POST['competence']!=null)){
-			supprimeComp($connexion, $_POST['competence'], $_GET['id_employe']);
-		}
-		if(isset($_POST['prestation']) && (!empty($_POST['prestation']) || $_POST['prestation']!="")){
-			ajouteComp($connexion, $_POST['prestation'], $_GET['id_employe']);
+		
+		if(isset($_POST['competence'])){
+			ajouteComp($connexion, $_POST['competence'], $_GET['id_employe']);
+		}else{
+			ajouteComp($connexion, null, $_GET['id_employe']);
 		}
 		
 		$LundiM = (isset($_POST['LunM']) )? 1 : 0;		$LundiA = (isset($_POST['LunA']) )? 1 : 0;
@@ -77,7 +77,36 @@
 	<head>
 		<title>Portail de réservation : BackOffice</title>
 		<link rel="stylesheet" href="assets/css/main.css" />
+		<SCRIPT LANGUAGE="JavaScript">
+			function Deplacer( liste_depart, liste_arrivee ){
+		    	for( i = 0; i < liste_depart.options.length; i++ ){
+      				if( liste_depart.options[i].selected && liste_depart.options[i] != "" ){
+        				o = new Option( liste_depart.options[i].text, liste_depart.options[i].value );
+        				liste_arrivee.options[liste_arrivee.options.length] = o;
+        				liste_depart.options[i] = null;
+        				i = i - 1 ;
+      				}else{
+       					 // alert( "aucun element selectionne" );
+      				}
+    			}
+  			}
 
+			function Valider( liste_1, liste_2 ){
+		    	for( i = 0; i < liste_1.options.length; i++ ){
+      				liste_1.options[i].selected=true;
+    			}
+		    	for( i = 0; i < liste_2.options.length; i++ ){
+      				liste_2.options[i].selected=true;
+    			}
+		    	document.getElementById("competence").disabled = true;
+		    	document.getElementById("prestation").disabled = true;
+  			}
+			function Debloque(){
+		    	document.getElementById("competence").disabled = false;
+		    	document.getElementById("prestation").disabled = false;
+  			}
+		
+		</SCRIPT>
 	</head>
 	<body>
 
@@ -181,32 +210,34 @@
 									Numéro de téléphone : <div class="6u 12u$(mobile)">
 									<input type="text" pattern="^0[1-9][0-9]{8}" name="tel" value="<?php echo $valEmp->telephone_emp;?>"></div>				
 									</br>
-									Compétences déjà acquise : <div class="6u 12u$(mobile)"><select name="competence[]" multiple>
-										<option value=""></option>
+									Compétences déjà acquise : <div class="6u 12u$(mobile)"><select name="competence[]" id="competence" size=3 multiple>
+										
 									<?php 
 									while($rqtComp=$comp->fetch(PDO::FETCH_OBJ)){
 									?>
-										<option value="<?php echo $rqtComp->prestation;?>"><?php echo $rqtComp->descriptif_presta;?></option>
+										<option value="<?php echo $rqtComp->prestation;?>" ><?php echo $rqtComp->descriptif_presta;?></option>
 									<?php 	
 									
 									}
 									?>
-									</select></div>	
-									</br>
-									Prestations : <div class="6u 12u$(mobile)"><select name="prestation[]" multiple>
-										<option value=""></option>
+									</select></div>
+									</br><center>
+									<INPUT type="button" value="\/" onClick="Deplacer(this.form.competence,this.form.prestation)">
+									<INPUT type="button" value="/\" onClick="Deplacer(this.form.prestation,this.form.competence)">	
+										<INPUT type="button" value="Valider" onClick="Valider(this.form.prestation,this.form.competence)">
+									</center>
+									Prestations : <div class="6u 12u$(mobile)"><select name="prestation[]" id="prestation" size=3 multiple>
+										
 									<?php 
 									$i=0;
 									while($rqtPrest = $presta->fetch(PDO::FETCH_OBJ)){
 									?>
-										<option value="<?php echo $rqtPrest->id_presta;?>"><?php echo $rqtPrest->descriptif_presta;?></option>
+										<option value="<?php echo $rqtPrest->id_presta;?>" ><?php echo $rqtPrest->descriptif_presta;?></option>
 									<?php 	
 									$i++;
 									}
 									?>
-									</select></div>	
-									</br>
-								
+									</select></div></br>
 								<table>
 									<tr><td></td><td>Matin</td><td>Après-Midi</td></tr>
 									<tr><td>Lundi</td><td><input type="checkbox" name="LunM" value=1 <?php if($valPlan->LundiM==1){echo "checked='checked'";}?>/></td><td><input type="checkbox" name="LunA" value=1 <?php if($valPlan->LundiA==1){echo "checked='checked'";}?>/></td></tr>
@@ -219,7 +250,7 @@
 								</br>
 								<input type="hidden" name="modif" value="ok"> 
 								<div align = "center" class="12u$">
-									<input type="submit" value="Modifier" />
+									<input type="submit" value="Modifier" onClick="Debloque()"/>
 								</div>
 							</form>
 						</div>

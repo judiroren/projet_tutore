@@ -18,19 +18,21 @@
 			$mdp = $_POST['mdp'];
 		} 
 		
-	if( isset($_POST['login']) && isset($_POST['mdp']) ) {
+	if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
 		//récupération des infos de connexion des clients
 		$j = logClient($_POST['login'], $_POST['mdp']);
-		if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
-			$_SESSION["client"] = $j->id_client;
-			$_SESSION["estConnecte"] = 1;
-			$_SESSION["nomSession"] = $_GET['nomEntreprise'];
-			?>
-				<SCRIPT language="javascript">
-					javascript:parent.opener.location.reload();
-					window.close();
-				</SCRIPT>
-				<?php	
+		if($j!=null){
+			if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
+				$_SESSION["client"] = $j->id_client;
+				$_SESSION["estConnecte"] = 1;
+				$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+				?>
+					<SCRIPT language="javascript">
+						javascript:parent.opener.location.reload();
+						window.close();
+					</SCRIPT>
+					<?php	
+			}
 		}
 	}
 

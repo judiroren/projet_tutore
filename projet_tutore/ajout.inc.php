@@ -311,49 +311,40 @@ function modifClient($connexion, $nom, $prenom, $mail, $login){
 	$rqtMajClient->execute(array('nom_client' => $nom, 'prenom_client' => $prenom, 'mail' => $mail, 'login_client' => $login, 'client' => $id));
 }
 
-//Supprime les anciennes compétences
-function supprimeComp($connexion, $tabComp, $emp){
-	$nomE = $_SESSION["nomE"];
-	foreach ($tabComp as $val){
-		$rqtSuppr = $connexion->prepare("DELETE FROM ".$nomE."_competence WHERE employe = '".$emp."' AND prestation = '".$val."'");
-		$rqtSuppr->execute();
-	}
-}
+
 
 //Ajoute des nouvelles compétences
 function ajouteComp($connexion, $tabPrest, $emp){
 	$nomE = $_SESSION["nomE"];
+	
+	$rqtDeleteComp = $connexion->prepare("DELETE FROM ".$nomE."_competence WHERE employe = '".$emp."'");
+	$rqtDeleteComp->execute();
 	$id = code($nomE."_competence", 'id_competence');
-	foreach ($tabPrest as $val){
-		
-		$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation) 
-					VALUES (:id, :emp, :prest)");
-
-		$rqtAjoutComp->execute(array('id' => $id, 'emp' => $emp, 'prest' => $val));
-		$id++;
-	}
-}
-
-//Supprime les anciennes compétences
-function supprimeComp2($connexion, $tabAncienEmp, $presta){
-	$nomE = $_SESSION["nomE"];
-	foreach ($tabAncienEmp as $val){
-		$rqtSuppr = $connexion->prepare("DELETE FROM ".$nomE."_competence WHERE employe = '".$val."' AND prestation = '".$presta."'");
-		$rqtSuppr->execute();
+	if($tabPrest!=null){	
+		foreach ($tabPrest as $val){
+			
+			$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation) 
+						VALUES (:id, :emp, :prest)");
+	
+			$rqtAjoutComp->execute(array('id' => $id, 'emp' => $emp, 'prest' => $val));
+			$id++;
+		}
 	}
 }
 
 //Ajoute des nouvelles compétences
 function ajouteComp2($connexion, $tabNouveauEmp, $presta){
 	$nomE = $_SESSION["nomE"];
+	$rqtSuppr = $connexion->prepare("DELETE FROM ".$nomE."_competence WHERE prestation = '".$presta."'");
+	$rqtSuppr->execute();
 	$id = code($nomE."_competence", 'id_competence');
-	foreach ($tabNouveauEmp as $val){
-
-		$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation)
-					VALUES (:id, :emp, :prest)");
-
-		$rqtAjoutComp->execute(array('id' => $id, 'emp' => $val, 'prest' => $presta));
-		$id++;
+	if($tabNouveauEmp!=null){	
+		foreach ($tabNouveauEmp as $val){
+			$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation)
+						VALUES (:id, :emp, :prest)");
+			$rqtAjoutComp->execute(array('id' => $id, 'emp' => $val, 'prest' => $presta));
+			$id++;
+		}
 	}
 }
 

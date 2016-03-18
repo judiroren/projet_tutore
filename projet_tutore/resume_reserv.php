@@ -44,14 +44,16 @@
 	} 
 	
 	//Les informations doivent être correcte
-	if( isset($_POST['login']) && isset($_POST['mdp']) ) {
+	if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
 		//récupération des infos de connexion des clients
 		$j = logClient($_POST['login'], $_POST['mdp']);
-		if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
-			$_SESSION["client"] = $j->id_client;
-			$_SESSION["estConnecte"] = 1;
-			$_SESSION["nomSession"] = $_GET['nomEntreprise'];
-			
+		if($j!=null){
+			if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
+				$_SESSION["client"] = $j->id_client;
+				$_SESSION["estConnecte"] = 1;
+				$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+				
+			}
 		}
 	}
 
@@ -159,10 +161,18 @@
 							}
 							?>
 							<p>
-								Jour de la réservation : <?php echo $_SESSION['date'];?>
+								<?php 
+								
+									$days = array('Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche');
+									$months = array('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre');
+									$j = date('d', strtotime($_SESSION['date']));
+									  $jn = $days[date('w', strtotime($_SESSION['date']))-1];
+									  $m = $months[date('n', strtotime($_SESSION['date']))-1];
+									  $a = date('Y', strtotime($_SESSION['date']));?>
+								Jour de la réservation : <?php echo $jn." ".$j." ".$m." ".$a." ";?>
 							</p>
 							<p>
-								Heure de la réservation : <?php echo $_SESSION['heure'];?>
+								Heure de la réservation : <?php echo $_SESSION['heure']."</br>";?>
 							</p>
 
 							<p>

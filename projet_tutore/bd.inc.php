@@ -101,7 +101,7 @@ function listePrestations() {
 	
 	$connexion = connect();
 	$nomE = $_SESSION["nomE"];
-	$rqtPrestations = $connexion->prepare("SELECT id_presta, categorie FROM ".$nomE."_prestation");
+	$rqtPrestations = $connexion->prepare("SELECT id_presta, categorie, descriptif_presta FROM ".$nomE."_prestation");
 	$rqtPrestations->execute();
 	
 	return $rqtPrestations;
@@ -374,6 +374,7 @@ function listeCategorie(){
 	return $rqtcategorie;
 }
 
+//Récupère la catégorie d'une prestation
 function getCategorie($presta){
 	$connexion = connect();
 	$nomE = $_SESSION["nomE"];
@@ -382,5 +383,32 @@ function getCategorie($presta){
 	$rqt->setFetchMode(PDO::FETCH_OBJ);
 	$i = $rqt->fetch();
 	return $i;
+}
+
+//sélectionne le ou les employés qui feront une réservation
+function employeReserv($date, $jourSem, $heure, $listeEmp){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$h = substr($heure,0,2);
+	if(8 <= $h || $h <=12){
+		$attribut = $jourSem.'M';
+		$liste = empPlanningOk();
+	}else if(13 <= $h || $h <=18){
+		$attribut = $jourSem.'A';
+		$liste = empPlanningOk();
+	}else{
+		return 1;	//erreur : heure incorrecte
+	}
+	$liste = empAbsenceOk();
+	if($liste == null){
+		return 2;	//personne de disponible
+	}else{
+		$liste = empHoraireOk();
+		if($liste == null){
+			return 3;	//aucun horaire de dispo
+		}else{
+			//on a au moins quelqu'un
+		}
+	}
 }
 ?>

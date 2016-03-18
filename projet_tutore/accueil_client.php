@@ -50,11 +50,13 @@
 		if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
 			//récupération des infos de connexion des clients
 			$j = logClient($_POST['login'], $_POST['mdp']);
-			if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
-				$_SESSION["client"] = $j->id_client;
-				$_SESSION["estConnecte"] = 1;
-				$_SESSION["nomSession"] = $_GET['nomEntreprise'];
-				
+			if($j!=null){	
+				if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
+					$_SESSION["client"] = $j->id_client;
+					$_SESSION["estConnecte"] = 1;
+					$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+					
+				}
 			}
 		}
 	
@@ -157,7 +159,6 @@
 				<!-- Intro -->
 					<h1>Page d'accueil front-office <br>Client
 					<?php 
-					
 					if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
 									
 						echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";

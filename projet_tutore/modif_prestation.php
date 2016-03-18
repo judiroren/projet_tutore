@@ -39,19 +39,17 @@
 			
 			//Permet de modifier une prestation
 			majPresta($connexion, $_POST['descrip'], $_POST['cout'], $_POST['duree'], $_POST['categorie'], $paypal, $id);
-			if(!empty($_POST['dejaCap'])){
-				supprimeComp2($connexion, $_POST['dejaCap'], $id);
-			}
-			if(!empty($_POST['nonCap'])){
-				ajouteComp2($connexion, $_POST['nonCap'], $id);
+			if(isset($_POST['dejaCap'])){
+				ajouteComp2($connexion, $_POST['dejaCap'], $id);
+			}else{
+				ajouteComp2($connexion, null, $id);
 			}
 		
 		}
 		
 		$i = infosEntreprise();
 		
-		$listePresta = infosPrestation($id);
-		$presta = $listePresta->fetch(PDO::FETCH_OBJ);
+		$presta = infosPrestation($id);
 
 		$empComp = listeEmpCapable($id);
 		$empNonComp = listeEmpNonCapable($id);
@@ -63,7 +61,36 @@
 	<head>
 		<title>Portail de réservation : BackOffice</title>
 		<link rel="stylesheet" href="assets/css/main.css" />
+		<SCRIPT LANGUAGE="JavaScript">
+			function Deplacer( liste_depart, liste_arrivee ){
+		    	for( i = 0; i < liste_depart.options.length; i++ ){
+      				if( liste_depart.options[i].selected && liste_depart.options[i] != "" ){
+        				o = new Option( liste_depart.options[i].text, liste_depart.options[i].value );
+        				liste_arrivee.options[liste_arrivee.options.length] = o;
+        				liste_depart.options[i] = null;
+        				i = i - 1 ;
+      				}else{
+       					 // alert( "aucun element selectionne" );
+      				}
+    			}
+  			}
 
+			function Valider( liste_1, liste_2 ){
+		    	for( i = 0; i < liste_1.options.length; i++ ){
+      				liste_1.options[i].selected=true;
+    			}
+		    	for( i = 0; i < liste_2.options.length; i++ ){
+      				liste_2.options[i].selected=true;
+    			}
+		    	document.getElementById("dejaCap").disabled = true;
+		    	document.getElementById("nonCap").disabled = true;
+  			}
+			function Debloque(){
+		    	document.getElementById("dejaCap").disabled = false;
+		    	document.getElementById("nonCap").disabled = false;
+  			}
+		
+		</SCRIPT>
 	</head>
 	<body>
 
@@ -150,7 +177,7 @@
 							
 							
 							</br>
-							<h2>Ajout d'une prestation</h2>
+							<h2>Modification d'une prestation</h2>
 							<form method="post" action="">
 								
 								</br>
@@ -164,8 +191,7 @@
 									Paiement PayPal : <input type="checkbox" name="paypal" value="1" <?php if($presta->paypal==1){echo "checked='checked'";}?>/>
 								
 								</br>
-								Employés pouvant faire la prestation : <div class="6u 12u$(mobile)"><select name="dejaCap[]" multiple>
-									<option value=""></option>
+								Employés pouvant faire la prestation : <div class="6u 12u$(mobile)"><select name="dejaCap[]" id="dejaCap" size=3 multiple>
 									<?php 
 									while($rqt=$empComp->fetch(PDO::FETCH_OBJ)){
 										$identite = $rqt->nom_employe." ".$rqt->prenom_employe;
@@ -176,10 +202,13 @@
 									}
 									?>
 								</select>
-								</div>
+								</div><center>
+									<INPUT type="button" value="\/" onClick="Deplacer(this.form.dejaCap,this.form.nonCap)">
+									<INPUT type="button" value="/\" onClick="Deplacer(this.form.nonCap,this.form.dejaCap)">	
+										<INPUT type="button" value="Valider" onClick="Valider(this.form.nonCap,this.form.dejaCap)">
+									</center>
 								</br>
-								Autres employés : <div class="6u 12u$(mobile)"><select name="nonCap[]" multiple>
-									<option value=""></option>
+								Autres employés : <div class="6u 12u$(mobile)"><select name="nonCap[]" id="nonCap" size=3 multiple>
 									<?php 
 									while($rqt=$empNonComp->fetch(PDO::FETCH_OBJ)){
 										$identite = $rqt->nom_employe." ".$rqt->prenom_employe;
@@ -209,7 +238,7 @@
 								</br>
 								<input type="hidden" name="modif" value="ok"> 
 								<div align = "center" class="12u$">
-									<input type="submit" value="Modifier" />
+									<input type="submit" value="Modifier" onClick="Debloque()"/>
 								</div>
 							</form>
 						</div>
