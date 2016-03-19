@@ -61,12 +61,20 @@
 	$erreur = 0;
 	if(isset($_POST['continue'])){
 		if(!empty($_POST['daterdv']) && !empty($_POST['heurerdv'])){
-				$_SESSION["date"] = $_POST['daterdv'];
-				$_SESSION["heure"] = $_POST['heurerdv'];
-				header('Location: resume_reserv.php?nomEntreprise='.$nomE);
-			}else{
-				$erreur = 2;
+			$days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
+			$jn = $days[date('w', strtotime($_POST['daterdv']))];
+			$duree = 0;
+			foreach ($_SESSION['prestListe'] as $val){
+				$info = infosPrestation($val);
+				$duree = $duree + $info->duree;
 			}
+			$employe = employeReserv($_POST['daterdv'], $jn, $_POST['heurerdv'], $_SESSION["employeRes"], $duree);
+			$_SESSION["date"] = $_POST['daterdv'];
+			$_SESSION["heure"] = $_POST['heurerdv'];
+			header('Location: resume_reserv.php?nomEntreprise='.$nomE);
+		}else{
+			$erreur = 2;
+		}
 				
 	}else{
 		$erreur = 1;

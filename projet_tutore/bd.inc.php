@@ -352,7 +352,11 @@ function employeOk($tab){
 	}
 	$rqtListe = $connexion->prepare($rqt);
 	$rqtListe->execute();
-	return $rqtListe;
+	$res = array();
+	while($donnees = $rqtListe->fetch(PDO::FETCH_OBJ)){
+		array_push($res, $donnees->employe);
+	}
+	return $res;
 }
 
 //Récupère les prestations d'une réservation
@@ -386,29 +390,115 @@ function getCategorie($presta){
 }
 
 //sélectionne le ou les employés qui feront une réservation
-function employeReserv($date, $jourSem, $heure, $listeEmp){
+function employeReserv($date, $jourSem, $heure, $listeEmp, $duree){
 	$connexion = connect();
 	$nomE = $_SESSION["nomE"];
 	$h = substr($heure,0,2);
-	if(8 <= $h || $h <=12){
+	if(8 <= $h || $h <12){
 		$attribut = $jourSem.'M';
-		$liste = empPlanningOk();
-	}else if(13 <= $h || $h <=18){
-		$attribut = $jourSem.'A';
-		$liste = empPlanningOk();
-	}else{
-		return 1;	//erreur : heure incorrecte
-	}
-	$liste = empAbsenceOk();
-	if($liste == null){
-		return 2;	//personne de disponible
-	}else{
-		$liste = empHoraireOk();
-		if($liste == null){
-			return 3;	//aucun horaire de dispo
+		$liste = empPlanningOk($listeEmp, $attribut, $date);
+		if(sizeof($liste) == 0){
+			return 1;	//pas d'employe travaillant ce jour
 		}else{
-			//on a au moins quelqu'un
+			$liste = empAbsenceOk($liste, $date, 'M');
+			if(sizeof($liste) == 0){
+				return 2;	//personne de disponible
+			}else{
+				$liste = empHoraireOk($liste, $date, $heure, $duree, 'M');
+				if(sizeof($liste) == 0){
+					return 3;	//aucun horaire de dispo
+				}else{
+					return liste;	//on a au moins quelqu'un
+				}
+			}
+		}
+	}else if(13 <= $h || $h <18){
+		$attribut = $jourSem.'A';
+		$liste = empPlanningOk($listeEmp, $attribut, $date);
+		if(sizeof($liste) == 0){
+			return 1;	//pas d'employe travaillant ce jour
+		}else{
+			$liste = empAbsenceOk($liste, $date, 'A');
+			if(sizeof($liste) == 0){
+				return 2;	//personne de disponible
+			}else{
+				$liste = empHoraireOk($liste, $date, $heure, $duree, 'A');
+				if(sizeof($liste) == 0){
+					return 3;	//aucun horaire de dispo
+				}else{
+					return liste;	//on a au moins quelqu'un
+				}
+			}
+		}
+	}else{
+		return 4;	//erreur : heure incorrecte
+	}
+}
+
+//Renvoi la liste des employés travaillant sur la demi-journé demandée
+function empPlanningOk($listeEmp, $attribut, $date){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$newListe = array();
+	foreach($listeEmp as $val){
+		$rqt = $connexion->prepare("SELECT ".$attribut." FROM ".$nomE."_planning WHERE code_employe = '".$val."'");
+		$rqt->execute();
+		$donnees = $rqt->fetch(PDO::FETCH_OBJ);
+		if($donnees->$attribut==1){
+			array_push($newListe, $val);
 		}
 	}
+	return $newListe;
+}
+
+//Renvoi la liste des employés sans absence à ce moment 
+function empAbsenceOk($listeEmp, $date, $moment){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$newListe = array();
+	foreach($listeEmp as $val){
+		$rqt = $connexion->prepare("SELECT dateDebut, dateFin, demiJourDebut, demiJourFin FROM ".$nomE."_absence WHERE code_employe = '".$val."' AND ".$date." BETWEEN dateDebut AND dateFin");
+		$rqt->execute();
+		if($rqt->rowCount()==0){
+			array_push($newListe, $val);
+		}else{
+			while($donnees = $rqt->fetch(PDO::FETCH_OBJ)){
+				if($date == $donnees->dateDebut && $moment=='M' && $donnees->demiJourDebut==1){
+					array_push($newListe, $val);
+				}else if ($date == $donnees->dateFin && $moment=='A' && $donnees->demiJourFin==0){
+					array_push($newListe, $val);
+				}
+			}
+		}
+	}
+	return $newListe;
+}
+
+//Renvoi la liste des employés pouvant faire la réservation
+function empHoraireOk($listeEmp, $date, $heure, $duree, $moment){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$newListe = array();
+	$heuredebut = new DateTime($heure);
+	$a = new DateInterval('PT'.$duree.'M');
+	$heurefin = $heuredebut->add($a);
+	foreach($listeEmp as $val){
+		$rqt = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE employe = '".$val."' AND ".$date." = date");
+		$rqt->execute();
+		if($rqt->rowCount()==0){
+			array_push($newListe,$val);
+		}else{
+			while($donnes=$rqt->fetch(PDO::FETCH_OBJ)){
+				$resDebut = new DateTime($donnees->heure);
+				$b = new DateInterval('PT'.$donnees->duree.'M');
+				$resFin = $resDebut->add($b);
+				if(($heuredebut < $resDebut && $heurefin <= $resDebut)
+						|| ($heuredebut >= $resFin && $heurefin > $resFin)){
+					array_push($newListe,$val);
+				}
+			}
+		}
+	}
+	return $newListe;
 }
 ?>

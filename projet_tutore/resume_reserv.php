@@ -163,10 +163,10 @@
 							<p>
 								<?php 
 								
-									$days = array('Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche');
+									$days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
 									$months = array('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre');
 									$j = date('d', strtotime($_SESSION['date']));
-									  $jn = $days[date('w', strtotime($_SESSION['date']))-1];
+									  $jn = $days[date('w', strtotime($_SESSION['date']))];
 									  $m = $months[date('n', strtotime($_SESSION['date']))-1];
 									  $a = date('Y', strtotime($_SESSION['date']));?>
 								Jour de la réservation : <?php echo $jn." ".$j." ".$m." ".$a." ";?>

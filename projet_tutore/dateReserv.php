@@ -60,15 +60,25 @@
 	$erreur = 0;
 	if(isset($_POST['continue'])){
 		if(!empty($_POST['daterdv']) && !empty($_POST['heurerdv'])){
-			$days = array('Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche');
-			$jn = $days[date('w', strtotime($_POST['daterdv']))-1];
-			$employe = employeReserv($_POST['daterdv'], $jn, $_POST['heurerdv'], $_SESSION["employeRes"]);
+			$days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
+			$jn = $days[date('w', strtotime($_POST['daterdv']))];
+			$dureeRes = 0;
+			foreach ($_SESSION['prestListe'] as $val){
+				$info = infosPrestation($val);
+				$dureeRes = $dureeRes + $info->duree;
+			}
+			$emp = employeOk($_SESSION['prestListe']);
+			$employe = employeReserv($_POST['daterdv'], $jn, $_POST['heurerdv'], $emp, $dureeRes);
+			$valeurFaux = array(1,2,3,4);
+			if(!in_array($employe,$valeurFaux)){
 				$_SESSION["date"] = $_POST['daterdv'];
 				$_SESSION["heure"] = $_POST['heurerdv'];
+				$_SESSION["employeRes"] = $employe;
 				header('Location: resume_reserv.php?nomEntreprise='.$nomE);
-			}else{
-				$erreur = 2;
 			}
+		}else{
+			$erreur = 2;
+		}
 				
 	}else{
 		$erreur = 1;
@@ -173,6 +183,20 @@
 				<!-- Intro -->
 					
 			<div class="container">
+			<?php 
+			$valeurFaux = array(1,2,3,4);
+			if(isset($employe) && in_array($employe,$valeurFaux)){
+				switch($employe){
+					case 1 : echo "Aucun employe ne sera disponible à ce moment là ! 1"	;
+					break;
+					case 2 : echo "Aucun employe ne sera disponible à ce moment là ! 2"	;
+					break;
+					case 3 : echo "Aucun employe ne sera disponible à ce moment là ! 3"	;
+					break;
+					case 4 : echo "L'entreprise n'ouvre qu'entre 8h et 12h le matin et 13h et 18h l'après-midi";
+				}
+			}
+			?>
 			<h1>Réservation : choix de la date et de l'heure</h1>
 					<?php
 			require('date.php');
@@ -257,7 +281,9 @@
 					</tbody>
 				</table>
 				</div>
-			<?php endforeach; ?>
+			<?php endforeach; 
+		//	print_r($employe);
+			?>
 		</div>
 		<form method="post" action="">
 			Jour de la réservation : </br>

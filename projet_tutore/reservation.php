@@ -103,7 +103,7 @@
 			$erreur = 1;
 		}else if(!empty($_POST['choix']) && empty($_SESSION['prestListe'])){
 			$liste = employeOk($_POST['choix']);
-			if($liste->rowCount()!=0){
+			if(sizeof($liste)!=0){
 				$_SESSION["employeRes"] = $liste->employe;
 				$_SESSION["prestListe"] = $_POST['choix'];
 				header('Location: dateReserv.php?nomEntreprise='.$nomE);
@@ -125,7 +125,7 @@
 				}
 			}
 			$liste = employeOk($_SESSION["prestListe"]);
-			if($liste->rowCount()!=0){
+			if(sizeof($liste)!=0){
 				$_SESSION["employeRes"] = $liste->employe;
 				header('Location: dateReserv.php?nomEntreprise='.$nomE);
 			}else{
@@ -133,7 +133,7 @@
 			}
 		}else{
 			$liste = employeOk($_SESSION["prestListe"]);
-			if($liste->rowCount()!=0){
+			if(sizeof($liste)!=0){
 				$_SESSION["employeRes"] = $liste->employe;
 				header('Location: dateReserv.php?nomEntreprise='.$nomE);
 			}else{
