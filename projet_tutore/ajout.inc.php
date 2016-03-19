@@ -353,10 +353,10 @@ function enregistreReserv($connexion, $listePrest, $client, $date, $heure, $paye
 	$nomE = $_SESSION["nomE"];
 	$id = code($nomE."_reserv", 'id_reserv');
 	$emp = employeOk($listePrest);
-	$emp = $emp->fetch(PDO::FETCH_OBJ);
+	$emp = $emp[0];
 	$rqtAjoutRes = $connexion->prepare("INSERT INTO ".$nomE."_reserv(id_reserv, client, employe, paye, date, heure, prix, duree)
 					VALUES (:id, :cli, :emp, :payer, :d, :h, :p, :du)");
-	$rqtAjoutRes->execute(array('id' => $id, 'cli' =>$client, 'emp' => $emp->employe, 'payer' => $paye, 'd' => $date, 'h' => $heure, 'p' => $prix, 'du' => $duree));
+	$rqtAjoutRes->execute(array('id' => $id, 'cli' =>$client, 'emp' => $emp, 'payer' => $paye, 'd' => $date, 'h' => $heure, 'p' => $prix, 'du' => $duree));
 	$id2 = code($nomE."_prestresv", 'id_prestresv');
 	foreach ($listePrest as $val){
 	
