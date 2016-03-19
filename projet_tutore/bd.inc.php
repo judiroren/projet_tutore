@@ -37,7 +37,7 @@ function planningEmp($id_employe) {
 	
 	$connexion = connect();
 	$nomE = $_SESSION["nomE"];
-	$planning = $connexion->prepare('SELECT * FROM '.$nomE.'_planning JOIN '.$nomE.'_employe ON id_employe = "'.$id_employe.'"');
+	$planning = $connexion->prepare('SELECT * FROM '.$nomE.'_planning JOIN '.$nomE.'_employe ON code_employe = id_employe where id_employe = "'.$id_employe.'"');
 	
 	$planning->execute();
 	
@@ -389,7 +389,7 @@ function getCategorie($presta){
 	return $i;
 }
 
-//sélectionne le ou les employés qui feront une réservation
+//sélectionne l'employé qui fera une réservation
 function employeReserv($date, $jourSem, $heure, $listeEmp, $duree){
 	$connexion = connect();
 	$nomE = $_SESSION["nomE"];
@@ -500,5 +500,109 @@ function empHoraireOk($listeEmp, $date, $heure, $duree, $moment){
 		}
 	}
 	return $newListe;
+}
+
+//Permet de séléctionner les réservations d'un employé a une certaine date
+function reservationsEmpDate($idemp,$date,$matin) {
+
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+
+	if($matin == 1){
+		$heureDebut = "08:00:00";
+		$heureFin = "12:00:00";
+	}else{
+		$heureDebut = "13:00:00";
+		$heureFin = "18:00:00";
+	}
+	//$rqt = $connexion->query('SELECT * FROM '.$nomE.'_reserv WHERE employe = "'.$_POST['employe_modif'].'"');
+	$rqtReservEmp = $connexion->prepare('SELECT * FROM '.$nomE.'_reserv WHERE employe = "'.$idemp.'" AND date = '.$date.' AND heure BETWEEN "'.$heureDebut.'" AND "'.$heureFin.'" Order By heure');
+	$rqtReservEmp->execute();
+
+	return $rqtReservEmp;
+
+}
+
+//renvoie les absence d'un employé
+function abscencesEntEmploye($idEmp) {
+
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$absences = $connexion->prepare('SELECT * FROM '.$nomE.'_absence
+									JOIN '.$nomE.'_employe ON code_employe = id_employe WHERE id_employe = "'.$idEmp.'"' );
+	$absences->execute();
+	return $absences;
+}
+
+//Récupère les créneaux de libres par employés
+function creneauLibreParEmp($listeEmp,$date){
+	$connexion = connect();
+	$nomE = $_SESSION["nomE"];
+	$i = 1;
+	$tabFinal = array(array());
+	
+	foreach($listeEmp as $val){
+		
+		$rqt = $connexion->prepare('SELECT heure, duree FROM '.$nomE.'_reserv WHERE employe = "'.$val.'" AND date = "'.$date.'" ORDER BY heure' );
+		echo $rqt;
+		$rqt->execute();
+		if($rqt->rowCount()!=0){
+			${'tab'.$i} = array(array()); 
+			$j=0;
+			while($donnee = $rqt->fetch(PDO::FETCH_OBJ)){
+				${'tab'.$i}[$j][0] = new DateTime($donnee->heure);
+				$b = new DateInterval('PT'.$donnees->duree.'M');
+				${'tab'.$i}[$j][1] = ${'tab'.$i}[$j][0]->add($b);
+				$j++;
+			}
+			${'tab'.$i} = inverseCreneau(${'tab'.$i});
+			//$tabFinal = assemblageCren($tabFinal, ${'tab'.$i});
+			foreach(${'tab'.$i} as list($val, $val2)){
+				$chaine.= $val."-".$val2." / ";
+			}
+			$chaine.="\n";
+			$i++;
+		}
+	}
+	return $chaine;
+}
+
+//Fait paseer un tableau de créneau occupé à un de créneau libre
+function inverseCreneau($tab){
+	$tab2 = array(array());
+	if($tab[0][0]!= '08:00:00'){
+		$tab2[0][0]='08:00:00';
+		$tab2[0][1]=$tab[0][0];
+	}
+	$i=0;
+	while($i < sizeof($tab)){
+		$tab2[$i++][0]=$tab[$i][1];
+		$tab2[$i++][1]=$tab[$i++][0];
+		if($i++==sizeof($tab)-1){
+			if($tab[$i][1]=='12:00:00'){
+				$tab2[$i++][0] = $tab[$i][0];
+				$tab2[$i++][1] = '12:00:00';
+			}
+		}
+		$i++;
+	}
+	return $tab2;
+}
+
+//Assemble les créneaux des tableaux
+function assemblageCren($tabFinal, $tab){
+	if(sizeof($tabFinal)==0){
+		$tabFinal = $tab;
+		return $tabFinal;
+	}else{
+		$i = 0;
+		foreach($tab as list($a, $b)){
+			if($a<$tabFinal[$i][0]){
+				if($b>=$tabFinal[$i][0] && $b<=$tabFinal[$i][1]){
+					$tabFinal[$i][0] = $a;
+				}
+			}
+		}
+	}
 }
 ?>

@@ -15,13 +15,13 @@ function getDBNAME() {
 
 
 function getDBUSER() {
-	$DBUSER = "geo_admin";
+	$DBUSER = "root";
 	return $DBUSER;
 }
 
 
 function getDBPASSWD() {
-	$DBPASSWD = "Admin%7";
+	$DBPASSWD = "";
 	return $DBPASSWD;
 }
 

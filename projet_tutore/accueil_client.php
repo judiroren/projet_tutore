@@ -16,7 +16,7 @@
 								
 	} else {
 								
-		if(isset($_SESSION["estConnecteClient"])) {
+		//if(isset($_SESSION["estConnecteClient"])) {
 						
 			if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 						
@@ -55,7 +55,7 @@
 	
 		}
 	}
-	}
+//	}
 
 
 ?>
@@ -115,7 +115,7 @@
 								
 							} else {
 								
-								if(isset($_SESSION["estConnecteClient"])) {
+								//if(isset($_SESSION["estConnecteClient"])) {
 						
 									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 								
@@ -156,7 +156,7 @@
 								}
 								}
 							}
-							}
+						//	}
 								
 							?>
 
@@ -181,7 +181,7 @@
 						
 					} else {			
 					
-						if(isset($_SESSION["estConnecteClient"])) {
+						//if(isset($_SESSION["estConnecteClient"])) {
 						
 							if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 								
@@ -219,7 +219,7 @@
 						} 
 						
 					}
-					}
+				//	}
 						?>
 							</table>
 			</div>

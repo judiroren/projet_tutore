@@ -56,19 +56,23 @@
 			if(!empty($_POST['daterdv']) && !empty($_POST['heurerdv'])){
 				$days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
 				$jn = $days[date('w', strtotime($_POST['daterdv']))];
-				$dureeRes = 0;
-				foreach ($_SESSION['prestListe'] as $val){
-					$info = infosPrestation($val);
-					$dureeRes = $dureeRes + $info->duree;
-				}
-				$emp = employeOk($_SESSION['prestListe']);
-				$employe = employeReserv($_POST['daterdv'], $jn, $_POST['heurerdv'], $emp, $dureeRes);
-				$valeurFaux = array(1,2,3,4);
-				if(!in_array($employe,$valeurFaux)){
-					$_SESSION["date"] = $_POST['daterdv'];
-					$_SESSION["heure"] = $_POST['heurerdv'];
-					$_SESSION["employeRes"] = $employe;
-					header('Location: resume_reserv.php?nomEntreprise='.$nomE);
+				if($jn!='Dimanche'){
+					$dureeRes = 0;
+					foreach ($_SESSION['prestListe'] as $val){
+						$info = infosPrestation($val);
+						$dureeRes = $dureeRes + $info->duree;
+					}
+					$emp = employeOk($_SESSION['prestListe']);
+					$employe = employeReserv($_POST['daterdv'], $jn, $_POST['heurerdv'], $emp, $dureeRes);
+					$valeurFaux = array(1,2,3,4);
+					if(!in_array($employe,$valeurFaux)){
+						$_SESSION["date"] = $_POST['daterdv'];
+						$_SESSION["heure"] = $_POST['heurerdv'];
+						$_SESSION["employeRes"] = $employe;
+						header('Location: resume_reserv.php?nomEntreprise='.$nomE);
+					}
+				}else{
+					$erreur = 3;
 				}
 			}else{
 				$erreur = 2;
@@ -310,7 +314,7 @@
 								<ul class="events">
 									<li>
 										<?php 
-										/*if($m < 10){
+										if($m < 10){
 											$mF = '0'.$m;
 										}else{
 											$mF = $m;
@@ -321,10 +325,9 @@
 											$dF = $d;
 										}
 										$dateF = $year.'-'.$mF.'-'.$dF;
-										//$rqtReservCli = $connexion->prepare("SELECT date FROM ".$nomE."_reserv");
-										$rqtReservCli = $connexion->prepare("SELECT date FROM ".$nomE."_reserv WHERE date = '".$dateF."'");
-										$rqtReservCli->execute();
-										while($donnees=$rqtReservCli->fetch(PDO::FETCH_OBJ)){
+										echo $dateF;
+										creneauLibreParEmp($_SESSION['employeRes'],$dateF);
+										/*while($donnees=$rqtReservCli->fetch(PDO::FETCH_OBJ)){
 											//$dateF1 = "$donnees->date";
 											//$dateF2 = "$dateF";
 											//if(strtotime($dateF1)==strtotime($dateF2)){

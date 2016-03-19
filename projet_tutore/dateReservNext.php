@@ -60,25 +60,34 @@
 	}
 	$erreur = 0;
 	if(isset($_POST['continue'])){
-		if(!empty($_POST['daterdv']) && !empty($_POST['heurerdv'])){
-			$days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
-			$jn = $days[date('w', strtotime($_POST['daterdv']))];
-			$duree = 0;
-			foreach ($_SESSION['prestListe'] as $val){
-				$info = infosPrestation($val);
-				$duree = $duree + $info->duree;
+			if(!empty($_POST['daterdv']) && !empty($_POST['heurerdv'])){
+				$days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
+				$jn = $days[date('w', strtotime($_POST['daterdv']))];
+			if($jn!='Dimanche'){
+					$dureeRes = 0;
+					foreach ($_SESSION['prestListe'] as $val){
+						$info = infosPrestation($val);
+						$dureeRes = $dureeRes + $info->duree;
+					}
+					$emp = employeOk($_SESSION['prestListe']);
+					$employe = employeReserv($_POST['daterdv'], $jn, $_POST['heurerdv'], $emp, $dureeRes);
+					$valeurFaux = array(1,2,3,4);
+					if(!in_array($employe,$valeurFaux)){
+						$_SESSION["date"] = $_POST['daterdv'];
+						$_SESSION["heure"] = $_POST['heurerdv'];
+						$_SESSION["employeRes"] = $employe;
+						header('Location: resume_reserv.php?nomEntreprise='.$nomE);
+					}
+				}else{
+					$erreur = 3;
+				}
+			}else{
+				$erreur = 2;
 			}
-			$employe = employeReserv($_POST['daterdv'], $jn, $_POST['heurerdv'], $_SESSION["employeRes"], $duree);
-			$_SESSION["date"] = $_POST['daterdv'];
-			$_SESSION["heure"] = $_POST['heurerdv'];
-			header('Location: resume_reserv.php?nomEntreprise='.$nomE);
+					
 		}else{
-			$erreur = 2;
+			$erreur = 1;
 		}
-				
-	}else{
-		$erreur = 1;
-	}
 	
 	if(isset($_POST['annule'])){
 		header('Location: accueil_client.php?nomEntreprise='.$nomE);
