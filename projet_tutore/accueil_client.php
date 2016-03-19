@@ -2,17 +2,6 @@
 
 	session_start();
 	
-	try {
-		
-		if(isset($_GET['nomEntreprise'])) {
-			$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		} else {
-			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
-		}
-	} catch(Exception $e){
-		
-	}
-	
 ?>
 <!DOCTYPE HTML>
 <?php
@@ -21,45 +10,51 @@
 	require "bd.inc.php";
 	
 	
-	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+	if(!isset($_GET['nomEntreprise'])) {
 		
-	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
-		
+	} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+								
 	} else {
-		
-		$_SESSION["nomE"] = $_GET['nomEntreprise'];	
-		
-		$connexion = connect();
-		$nomE = $_GET['nomEntreprise'];
-		//$nomE = str_replace(' ', '_', $nomE);
+								
+		if(isset($_SESSION["estConnecteClient"])) {
+						
+			if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+						
+			} else {
+				
+			$connexion = connect();
+			$nomE = $_GET['nomEntreprise'];
+			$nomAffichage = str_replace(' ', '_', $nomE);
 
-		//permet de récuperer les infos de connexion
-		$i = infosEntreprise();
-		
-		//récupère la liste des prestations de l'entreprise
-		$prest = listePrestations();
+			//permet de récuperer les infos de connexion
+			$i = infosEntreprise();
+				
+			//récupère la liste des prestations de l'entreprise
+			$prest = listePrestations();
 
-		//Le mot de passe doit être renseigner
-		if(isset($_POST['mdp'])) {
-			
-			//$mdp = md5($_POST['mdp']);
-			$mdp = $_POST['mdp'];
-		} 
-		
-		//Les informations doivent être correcte
-		if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
-			//récupération des infos de connexion des clients
-			$j = logClient($_POST['login'], $_POST['mdp']);
-			if($j!=null){	
-				if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
-					$_SESSION["client"] = $j->id_client;
-					$_SESSION["estConnecte"] = 1;
-					$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+			//Le mot de passe doit être renseigner
+			if(isset($_POST['mdp'])) {
 					
+				//$mdp = md5($_POST['mdp']);
+				$mdp = $_POST['mdp'];
+			} 
+				
+			//Les informations doivent être correcte
+			if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
+				//récupération des infos de connexion des clients
+				$j = logClient($_POST['login'], $_POST['mdp']);
+				if($j!=null){	
+					if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
+						$_SESSION["client"] = $j->id_client;
+						$_SESSION["estConnecteClient"] = 1;
+						$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+							
+					}
 				}
 			}
-		}
 	
+		}
+	}
 	}
 
 
@@ -83,11 +78,17 @@
 						
 						<?php 
 						
-							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
-								
-								} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+							if(!isset($_GET['nomEntreprise'])) {
 		
-								} else {
+							} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+								
+							} else {
+								
+								if(isset($_SESSION["estConnecteClient"])) {
+						
+									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+						
+									} else {
 						
 							if($i->logoEntreprise !="") {
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
@@ -97,22 +98,30 @@
 							<h1>
 							<?php 
 							
-								echo $nomE;
+								echo $nomAffichage;
 								
 							?>
 							</h1>
 							<p>Page de gestion de l'entreprise</p>
 							
 							<?php 
+							}	
+							}
 							}
 							
-							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
-								
-								} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+							if(!isset($_GET['nomEntreprise'])) {
 		
-								} else {
+							} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+								
+							} else {
+								
+								if(isset($_SESSION["estConnecteClient"])) {
+						
+									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								
+									} else {
 							
-							if(isset($_SESSION["estConnecte"])) {
+							if(isset($_SESSION["estConnecteClient"])) {
 								
 							?>
 								<a href="accueil_client.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
@@ -132,9 +141,9 @@
 						<a href="reservation.php?nomEntreprise=<?php echo $nomE ?>"> Réserver </a></br></br>
 						<form method="post" action="">
 								<div class="row">
-									<div class="6u 12u$(mobile)"><input type="text" name="login" placeholder="Login" /></div>
+									<div class="6u 12u$(mobile)"><input type="text" name="login" placeholder="Login" required/></div>
 									</br></br></br>
-									<div class="6u 12u$(mobile)"><input type="password" name="mdp" placeholder="Mot de passe" /></div>				
+									<div class="6u 12u$(mobile)"><input type="password" name="mdp" placeholder="Mot de passe" required/></div>				
 								</div>
 								</br>
 								<div align = "center" class="12u$">
@@ -145,7 +154,9 @@
 							<?php 
 							
 								}
-								}	
+								}
+							}
+							}
 								
 							?>
 
@@ -159,15 +170,25 @@
 				<!-- Intro -->
 					<h1>Page d'accueil front-office <br>Client
 					<?php 
-					if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
-									
-						echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
 								
-					} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+					if(!isset($_GET['nomEntreprise'])) {
+						
+						echo "<h2>Le nom de l'entreprise doit être rajouté dans l'url à la suite sous la forme : ?nomEntreprise=nom.</h2>";
 		
-						echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
-		
-					} else {
+					} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+						
+						echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";	
+						
+					} else {			
+					
+						if(isset($_SESSION["estConnecteClient"])) {
+						
+							if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								
+								echo "<h2>Vous devez d'abord vous connectez sur le coté client de cette entreprise </h2>";
+						
+							} else {
+					
 					
 					?>
 					<h2><?php
@@ -196,7 +217,10 @@
 								}
 							}
 						} 
-							?>
+						
+					}
+					}
+						?>
 							</table>
 			</div>
 		</div>

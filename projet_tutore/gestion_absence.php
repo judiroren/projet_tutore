@@ -66,6 +66,18 @@
 		}
 	}
 	
+	if (isset($_POST['supprime'])) {
+			
+			//Permet de supprimer l'absence
+			supprimerAbsence($connexion, $_POST['absence_modif']);
+			
+			$supprimeOk = 1;
+			
+	}
+	if(isset($_POST['modifie'])){
+		header('Location: modif_absence.php?nomEntreprise='.$nomE.'&id_absence='.$_POST['absence_modif']);
+	}
+	
 	}
 
 ?>
@@ -151,19 +163,40 @@
 								if($erreurDate==1){
 									echo "<p> Erreur : la date de début doit être inférieure à celle de fin !</p>";
 								}
-								if($erreurReserv==1){
-									echo "<p> Erreur : L'employe à au moins une réservation de prévu sur cette période !</p>";
-								}
-								/**if($erreurNbAbs == 1){
-									echo "<p> Erreur : Nombre d'absence max atteint !</p>";
-								} */
 								if($ok==1){
 									echo "<p> Ajout d'absence effectué </p>";
 								}
 								
 							}
+							if(isset($_POST['supprime'])){
+								if($supprimeOk==1){
+									echo "<p> Suppression de l'absence effectuée. </p>";
+								}else{
+									echo "<p> Suppression de l'absence impossible.</p>";	
+								}
+							}
 							
 							?>
+							
+							<form method="post" action="" class="formulaire">
+								<div class="6u 12u$(mobile)"><select name="absence_modif">
+								<?php 
+								$listeAbs = $connexion->query("SELECT id_absence, code_employe, motif, dateDebut, dateFin, nom_employe, prenom_employe 
+								FROM ".$nomE."_absence JOIN ".$nomE."_employe ON code_employe = id_employe");
+								while($donnees=$listeAbs->fetch(PDO::FETCH_OBJ)){
+									$absences = "du ".$donnees->dateDebut." au ".$donnees->dateFin." ".$donnees->nom_employe." ".$donnees->prenom_employe." : ".$donnees->motif;
+								?>
+									<option value="<?php echo $donnees->id_absence ?>"><?php echo $absences; ?></option>   
+								<?php
+								}
+								?>
+								</select></div></br>
+								<div align = "center" class="12u$">
+									<input type="submit"  name="supprime" value="Supprimer" />
+									<input type="submit"  name="modifie" value="Modifier" />
+								</div>
+							</form>
+							
 							</br>
 							<h2>Ajout d'une absence</h2>
 							<form method="post" action="">
@@ -184,14 +217,14 @@
 									Début de l'absence : 
 									<div class="6u 12u$(mobile)">
 										<input type="date" name="debut">
-										Matin : <input type="radio" name="demiDebut" value="0" />
+										Matin : <input type="radio" name="demiDebut" value="0" /></br>
 										Après-midi : <input type="radio" name="demiDebut" value="1" /></br>
 									</div>
 									</br>
 									Fin de l'absence : 
 									<div class="6u 12u$(mobile)">
 										<input type="date" name="fin">
-										Matin : <input type="radio" name="demiFin" value="0" />
+										Matin : <input type="radio" name="demiFin" value="0" /><br/>
 										Après-midi : <input type="radio" name="demiFin" value="1" /></br>
 									</div>
 									</br>

@@ -2,36 +2,27 @@
 
 	session_start();
 	
-	try {
-		
-		if(isset($_GET['nomEntreprise'])) {
-			$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		} else {
-			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
-		}
-	} catch(Exception $e){
-		
-	}
-	
 ?>
 <!DOCTYPE HTML>
 <?php
 	require "fonctions.inc.php";
 	require "bd.inc.php";
 	
-	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+	if(!isset($_GET['nomEntreprise'])) {
 		
-	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
-		
-	/*} else if (!isset($_SESSION["nomSession"])) {*/
-		
+	} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+								
 	} else {
-		
-	$_SESSION["nomE"] = $_GET['nomEntreprise'];	
+								
+		if(isset($_SESSION["estConnecteClient"])) {
+						
+			if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+						
+			} else {
 	
 	$connexion = connect();
 	$nomE = $_GET['nomEntreprise'];
-	//$nomE = str_replace(' ', '_', $nomE);
+	$nomAffichage = str_replace(' ', '_', $nomE);
 
 	//permet de récuperer les infos de connexion
 	$i = infosEntreprise();
@@ -140,9 +131,12 @@
 				$erreur = 2;
 			}
 		}
+		}
+	
+		}
+		}
 	}
 	
-	}
 	
 ?>
 
@@ -164,11 +158,17 @@
 						
 						<?php 
 						
-							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+							if(!isset($_GET['nomEntreprise'])) {
 		
-							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
-								
+							} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+														
 							} else {
+														
+								if(isset($_SESSION["estConnecteClient"])) {
+												
+									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+												
+									} else {
 						
 							if($i->logoEntreprise !="") {
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
@@ -177,7 +177,7 @@
 							<h1>
 							<?php 
 							
-								echo $nomE;
+								echo $nomAffichage;
 							?>
 							</h1>
 							<p>Page de gestion de l'entreprise</p>
@@ -214,7 +214,7 @@
 								</div>
 							</form>
 							
-							<?php } } ?>
+							<?php } } } } ?>
 
 			</div>
 		</div>
@@ -229,15 +229,23 @@
 					<center><h1>Réservation</h1></center>
 					<?php 
 					
-					if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+					if(!isset($_GET['nomEntreprise'])) {
+						
+						echo "<h2>Le nom de l'entreprise doit être rajouté dans l'url à la suite sous la forme : ?nomEntreprise=nom.</h2>";
+		
+					} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+						
+						echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";	
+						
+					} else {			
+					
+						if(isset($_SESSION["estConnecteClient"])) {
+						
+							if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 								
-					echo "<h2>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</h2>";
-								
-				} else if( verifEntreprise($_SESSION['nomE']) == null ) {
-								
-					echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";
-								
-				} else {
+								echo "<h2>Vous devez d'abord vous connectez sur le coté client de cette entreprise </h2>";
+						
+							} else {
 					
 						if($erreur==1 && empty($_SESSION["prestListe"])){
 							echo "Vous devez sélectionnez au moins une prestation pour faire une réservation !</br>";	
@@ -275,9 +283,9 @@
 										<?php 
 										if($unePrest->categorie == $_POST['categorie']){
 											if(!empty($_SESSION['prestListe']) && in_array($unePrest->id_presta, $_SESSION['prestListe'])){
-												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' checked='checked'></td>";
+												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' checked='checked' required></td>";
 											}else{
-												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' ></td>";
+												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' required ></td>";
 											}
 											
 											$unePresta = infosPrestation($unePrest->id_presta);
@@ -324,7 +332,7 @@
 							</div>
 					</form>
 
-							<?php } ?>
+					<?php } } } ?>
 			</div>
 		</div>
 	</body>

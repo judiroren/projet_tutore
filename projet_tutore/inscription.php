@@ -2,36 +2,21 @@
 
 	session_start();
 	
-	try {
-		
-		if(isset($_GET['nomEntreprise'])) {
-			$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		} else {
-			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
-		}
-	} catch(Exception $e){
-		
-	}
-	
 ?>
 <!DOCTYPE HTML>
 <?php
 	require "fonctions.inc.php";
 	require "bd.inc.php";
 	
-	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+	if(!isset($_GET['nomEntreprise'])) {
 		
-	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
-		
-	} else if (!isset($_SESSION["nomSession"])) {
+	} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
 		
 	} else {
 		
-		$_SESSION["nomE"] = $_GET['nomEntreprise'];	
-		
 		$connexion = connect();
 		$nomE = $_GET['nomEntreprise'];
-		//$nomE = str_replace(' ', '_', $nomE);
+		$nomAffichage = str_replace(' ', '_', $nomE);
 
 		//permet de récuperer les infos de connexion
 		$i = infosEntreprise();
@@ -81,10 +66,10 @@
 						
 						<?php 
 						
-							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+							if(!isset($_GET['nomEntreprise'])) {
 		
-							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
-								
+							} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+		
 							} else {
 						
 							if($i->logoEntreprise !="") {
@@ -94,10 +79,10 @@
 							<h1>
 							<?php 
 							
-								echo $nomE;
+								echo $nomAffichage;
 							?>
 							</h1>
-							<p>Page de gestion de l'entreprise</p>
+							<p>Page d'inscription client</p>
 							
 						</div>
 						<a href="accueil_client.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
@@ -131,11 +116,11 @@
 				
 				<?php
 				
-				if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+				if(!isset($_GET['nomEntreprise'])) {
 								
-					echo "<h2>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</h2>";
+					echo "<h2>Le nom de l'entreprise doit être rajouté dans l'url à la suite sous la forme : ?nomEntreprise=nom.</h2>";
 								
-				} else if( verifEntreprise($_SESSION['nomE']) == null ) {
+				} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
 								
 					echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";
 								

@@ -1,18 +1,6 @@
 <?php
 
 	session_start();
-	//$_SESSION["nomE"] = $_GET['nomEntreprise'];
-	
-	try {
-		//$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		if($_GET['nomEntreprise'] != null) {
-			$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		} else {
-			throw new Exception("Notice: Undefined offset");
-		}
-	} catch(Exception $e){
-		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
-	}
 	
 ?>
 <!DOCTYPE HTML>
@@ -20,72 +8,82 @@
 	require "fonctions.inc.php";
 	require "bd.inc.php";
 	
-	if( verifEntreprise($_SESSION['nomE']) == null ) {
+	if(!isset($_GET['nomEntreprise'])) {
 		
-		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
-		
+	} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+								
 	} else {
+								
+		if(isset($_SESSION["estConnecteClient"])) {
+						
+			if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+						
+			} else {
 		
-	$_SESSION["nomE"] = $_GET['nomEntreprise'];	
-	
-	$connexion = connect();
-	$nomE = $_GET['nomEntreprise'];
-	//$nomE = str_replace(' ', '_', $nomE);
-
-	//permet de récuperer les infos de connexion
-	$i = infosEntreprise();
-	
-	//récupère la liste des prestations de l'entreprise
-	$prest = listePrestations();
-
-	//Le mot de passe doit être renseigner
-	if(isset($_POST['mdp'])) {
+		$_SESSION["nomE"] = $_GET['nomEntreprise'];	
 		
-		//$mdp = md5($_POST['mdp']);
-		$mdp = $_POST['mdp'];
-	} 
-	
-	//Les informations doivent être correcte
-	if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
-		//récupération des infos de connexion des clients
-		$j = logClient($_POST['login'], $_POST['mdp']);
-		if($j!=null){	
-			if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
-				$_SESSION["client"] = $j->id_client;
-				$_SESSION["estConnecte"] = 1;
-				$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+		$connexion = connect();
+		$nomE = $_GET['nomEntreprise'];
+		$nomAffichage = str_replace(' ', '_', $nomE);
+
+		//permet de récuperer les infos de connexion
+		$i = infosEntreprise();
+		
+		//récupère la liste des prestations de l'entreprise
+		$prest = listePrestations();
+
+		//Le mot de passe doit être renseigner
+		if(isset($_POST['mdp'])) {
+			
+			//$mdp = md5($_POST['mdp']);
+			$mdp = $_POST['mdp'];
+		} 
+		
+		//Les informations doivent être correcte
+		if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
+			//récupération des infos de connexion des clients
+			$j = logClient($_POST['login'], $_POST['mdp']);
+			if($j!=null){	
+				if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
+					$_SESSION["client"] = $j->id_client;
+					$_SESSION["estConnecte"] = 1;
+					$_SESSION["nomSession"] = $_GET['nomEntreprise'];
+				}
 			}
 		}
-	}
-	$erreur = 0;
-	if(isset($_POST['continue'])){
-		if(!empty($_POST['daterdv']) && !empty($_POST['heurerdv'])){
-			$days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
-			$jn = $days[date('w', strtotime($_POST['daterdv']))];
-			$dureeRes = 0;
-			foreach ($_SESSION['prestListe'] as $val){
-				$info = infosPrestation($val);
-				$dureeRes = $dureeRes + $info->duree;
+		$erreur = 0;
+		if(isset($_POST['continue'])){
+			if(!empty($_POST['daterdv']) && !empty($_POST['heurerdv'])){
+				$days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
+				$jn = $days[date('w', strtotime($_POST['daterdv']))];
+				$dureeRes = 0;
+				foreach ($_SESSION['prestListe'] as $val){
+					$info = infosPrestation($val);
+					$dureeRes = $dureeRes + $info->duree;
+				}
+				$emp = employeOk($_SESSION['prestListe']);
+				$employe = employeReserv($_POST['daterdv'], $jn, $_POST['heurerdv'], $emp, $dureeRes);
+				$valeurFaux = array(1,2,3,4);
+				if(!in_array($employe,$valeurFaux)){
+					$_SESSION["date"] = $_POST['daterdv'];
+					$_SESSION["heure"] = $_POST['heurerdv'];
+					$_SESSION["employeRes"] = $employe;
+					header('Location: resume_reserv.php?nomEntreprise='.$nomE);
+				}
+			}else{
+				$erreur = 2;
 			}
-			$emp = employeOk($_SESSION['prestListe']);
-			$employe = employeReserv($_POST['daterdv'], $jn, $_POST['heurerdv'], $emp, $dureeRes);
-			$valeurFaux = array(1,2,3,4);
-			if(!in_array($employe,$valeurFaux)){
-				$_SESSION["date"] = $_POST['daterdv'];
-				$_SESSION["heure"] = $_POST['heurerdv'];
-				$_SESSION["employeRes"] = $employe;
-				header('Location: resume_reserv.php?nomEntreprise='.$nomE);
-			}
+					
 		}else{
-			$erreur = 2;
+			$erreur = 1;
 		}
-				
-	}else{
-		$erreur = 1;
-	}
+		
+		if(isset($_POST['annule'])){
+			header('Location: accueil_client.php?nomEntreprise='.$nomE);
+		}
 	
-	if(isset($_POST['annule'])){
-		header('Location: accueil_client.php?nomEntreprise='.$nomE);
+		}
+		}
 	}
 	
 ?>
@@ -94,6 +92,23 @@
 	<head>
 		<title>Portail de réservation : Accueil BackOffice</title>
 		<link rel="stylesheet" href="assets/css/main.css" />
+		
+		<?php
+		
+		if(!isset($_GET['nomEntreprise'])) {
+		
+		} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+								
+		} else {
+								
+			if(isset($_SESSION["estConnecteClient"])) {
+						
+				if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+						
+			} else {
+			
+		?>	
+		
 		<script type="text/javascript" src="jquery-1.12.1.min.js"></script>
 		<script type="text/javascript">
 			jQuery(function($){ 
@@ -115,6 +130,13 @@
 			}); 
 			});
 		</script>
+		
+		<?php
+		
+		} } }
+		
+		?>
+		
 	</head>
 	<body>
 
@@ -128,19 +150,45 @@
 						
 						<?php 
 						
+						if(!isset($_GET['nomEntreprise'])) {
+		
+						} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+													
+						} else {
+													
+							if(isset($_SESSION["estConnecteClient"])) {
+											
+								if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+											
+								} else {
+						
 							if($i->logoEntreprise !="") {
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
 							} 
 						?>
 							<h1>
-							<?php 
+						<?php 
 							
-								echo $nomE;
-							?>
+								echo $nomAffichage;
+								
+						}	} 	}
+						?>
 							</h1>
 							<p>Page de gestion de l'entreprise</p>
 							
 							<?php 
+							
+							if(!isset($_GET['nomEntreprise'])) {
+		
+							} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+														
+							} else {
+														
+								if(isset($_SESSION["estConnecteClient"])) {
+												
+									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+												
+									} else {
 							
 							if(isset($_SESSION["estConnecte"])) {
 								
@@ -172,18 +220,35 @@
 								</div>
 							</form>
 							
-							<?php } ?>
+							<?php } } } }?>
 
 			</div>
 		</div>
 
 		<!-- Main -->
 		<div id="main">
-
 				<!-- Intro -->
-					
 			<div class="container">
 			<?php 
+			
+			if(!isset($_GET['nomEntreprise'])) {
+						
+				echo "<h2>Le nom de l'entreprise doit être rajouté dans l'url à la suite sous la forme : ?nomEntreprise=nom.</h2>";
+		
+			} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+						
+				echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";	
+						
+			} else {			
+					
+				if(isset($_SESSION["estConnecteClient"])) {
+						
+					if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								
+						echo "<h2>Vous devez d'abord vous connectez sur le coté client de cette entreprise </h2>";
+						
+					} else {
+			
 			$valeurFaux = array(1,2,3,4);
 			if(isset($employe) && in_array($employe,$valeurFaux)){
 				switch($employe){
@@ -297,7 +362,7 @@
 			<input type="submit" name="annule" value="Annuler" />
 			</div>
 		</form>
-							<?php } ?>
+			<?php } } }?>
 			</div>
 		</div>
 	</body>

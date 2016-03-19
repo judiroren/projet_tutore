@@ -2,17 +2,6 @@
 
 	session_start();
 	
-	try {
-		
-		if(isset($_GET['nomEntreprise'])) {
-			$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		} else {
-			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
-		}
-	} catch(Exception $e){
-		
-	}
-	
 ?>
 <!DOCTYPE HTML>
 <?php
@@ -20,19 +9,23 @@
 	require "bd.inc.php";
 	require "ajout.inc.php";
 	
-	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+	if(!isset($_GET['nomEntreprise'])) {
 		
-	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
-		
-	} else if (!isset($_SESSION["nomSession"])) {
-		
+	} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+								
 	} else {
+								
+		if(isset($_SESSION["estConnecteClient"])) {
+						
+			if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+						
+			} else {
 		
 	$_SESSION["nomE"] = $_GET['nomEntreprise'];	
 	
 	$connexion = connect();
 	$nomE = $_GET['nomEntreprise'];
-	//$nomE = str_replace(' ', '_', $nomE);
+	$nomAffichage = str_replace(' ', '_', $nomE);
 
 	if(isset($_POST['verif'])){
 		if(!empty($_POST['mdp'])){
@@ -56,7 +49,7 @@
 	//Récupération des réservations du client
 	$reserv = reservClient();
 	
-	}
+	} } }
 
 ?>
 
@@ -78,11 +71,17 @@
 						
 						<?php 
 											
-							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+							if(!isset($_GET['nomEntreprise'])) {
 		
-							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
-								
+							} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+														
 							} else {
+														
+								if(isset($_SESSION["estConnecteClient"])) {
+												
+									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+												
+									} else {
 						
 							if($i->logoEntreprise !="") {
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
@@ -91,7 +90,7 @@
 							<h1>
 							<?php 
 							
-								echo $nomE;
+								echo $nomAffichage;
 							?>
 							</h1>
 							<p>Page de gestion de l'entreprise</p>
@@ -103,7 +102,7 @@
 							</div>
 							
 						<?php
-							}
+							} } }
 						?>
 
 			</div>
@@ -119,15 +118,23 @@
 			
 				<?php 
 				
-				if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
+				if(!isset($_GET['nomEntreprise'])) {
+						
+						echo "<h2>Le nom de l'entreprise doit être rajouté dans l'url à la suite sous la forme : ?nomEntreprise=nom.</h2>";
+		
+					} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+						
+						echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";	
+						
+					} else {			
+					
+						if(isset($_SESSION["estConnecteClient"])) {
+						
+							if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 								
-					echo "<h2>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</h2>";
-								
-				} else if( verifEntreprise($_SESSION['nomE']) == null ) {
-								
-					echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";
-								
-				} else {
+								echo "<h2>Vous devez d'abord vous connectez sur le coté client de cette entreprise </h2>";
+						
+							} else {
 				
 				if(isset($erreur)){
 					echo "Si vous changez de mot de passe, saisissez le nouveau dans les 2 champs !";	
@@ -179,7 +186,7 @@
 					}
 				?>
 				
-				<?php } ?>
+					<?php } } } ?>
 			</div>
 		</div>
 	</body>

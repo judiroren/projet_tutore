@@ -1,18 +1,6 @@
 <?php
 
 	session_start();
-	//$_SESSION["nomE"] = $_GET['nomEntreprise'];
-	
-	try {
-		//$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		if($_GET['nomEntreprise'] != null) {
-			$_SESSION["nomE"] = $_GET['nomEntreprise'];
-		} else {
-			throw new Exception("Notice: Undefined offset");
-		}
-	} catch(Exception $e){
-		echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
-	}
 	
 ?>
 <!DOCTYPE HTML>
@@ -21,17 +9,21 @@
 	require "bd.inc.php";
 	require "ajout.inc.php";
 	
-	if( verifEntreprise($_SESSION['nomE']) == null ) {
+	if(!isset($_GET['nomEntreprise'])) {
 		
-		echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
-		
+	} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+								
 	} else {
-		
-	$_SESSION["nomE"] = $_GET['nomEntreprise'];	
+								
+		if(isset($_SESSION["estConnecteClient"])) {
+						
+			if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+						
+			} else {
 	
 	$connexion = connect();
 	$nomE = $_GET['nomEntreprise'];
-	//$nomE = str_replace(' ', '_', $nomE);
+	$nomAffichage = str_replace(' ', '_', $nomE);
 
 	//permet de récuperer les infos de connexion
 	$i = infosEntreprise();
@@ -50,7 +42,7 @@
 		if($j!=null){
 			if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
 				$_SESSION["client"] = $j->id_client;
-				$_SESSION["estConnecte"] = 1;
+				$_SESSION["estConnecteClient"] = 1;
 				$_SESSION["nomSession"] = $_GET['nomEntreprise'];
 				
 			}
@@ -73,6 +65,10 @@
 	if(isset($_POST['annule'])){
 		header('Location: accueil_client.php?nomEntreprise='.$nomE);
 	}
+	
+	}
+	}
+	}
 ?>
 
 <html>
@@ -93,6 +89,18 @@
 						
 						<?php 
 						
+						if(!isset($_GET['nomEntreprise'])) {
+		
+						} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+													
+						} else {
+													
+							if(isset($_SESSION["estConnecteClient"])) {
+											
+								if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+											
+								} else {
+						
 							if($i->logoEntreprise !="") {
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
 							} 
@@ -100,14 +108,14 @@
 							<h1>
 							<?php 
 							
-								echo $nomE;
+								echo $nomAffichage;
 							?>
 							</h1>
 							<p>Page de gestion de l'entreprise</p>
 							
 							<?php 
 							
-							if(isset($_SESSION["estConnecte"])) {
+							if(isset($_SESSION["estConnecteClient"])) {
 								
 							?>
 								<a href="accueil_client.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
@@ -137,7 +145,10 @@
 								</div>
 							</form>
 							
-							<?php } ?>
+						<?php 
+							} 
+						} } }
+						?>
 
 			</div>
 		</div>
@@ -151,14 +162,33 @@
 	
 							<h1>Résumé de la réservation : </h1>
 							<?php 
-							if(isset($ok)){
-								if($ok == 1){
-									echo "Reservation sans paiement effectuée";
+							
+							if(!isset($_GET['nomEntreprise'])) {
+						
+								echo "<h2>Le nom de l'entreprise doit être rajouté dans l'url à la suite sous la forme : ?nomEntreprise=nom.</h2>";
+				
+							} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+								
+								echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";	
+								
+							} else {			
+							
+								if(isset($_SESSION["estConnecteClient"])) {
+								
+									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+										
+										echo "<h2>Vous devez d'abord vous connectez sur le coté client de cette entreprise </h2>";
+								
+									} else {
+										
+								if(isset($ok)){
+									if($ok == 1){
+										echo "Reservation sans paiement effectuée";
+									}
+									if($ok == 2){
+										echo "Reservation avec paiement effectuée";
+									}
 								}
-								if($ok == 2){
-									echo "Reservation avec paiement effectuée";
-								}
-							}
 							?>
 							<p>
 								<?php 
@@ -192,26 +222,33 @@
 							<p> Prix total : <?php echo $prixtotal; $_SESSION['prix']=$prixtotal;?> €</p>
 							<form method="post" action="">
 							<?php
-							if(isset($_SESSION["estConnecte"])) {
+							if(isset($_SESSION["estConnecteClient"])) {
 								?>
 								<input type="submit" name="sanspaiement" value="Confirmation" />
 								<input type="submit" name="avecpaiement" value="Paiment" />
 								<?php
 							} else {
 								?>
-								<A href="javascript:ouvre_popup('popupConnection.php?nomEntreprise=test')">Attention : Veuillez vous connecter pour confirmer ou payer ! </A><br/><br/>
+								
+								<A href="javascript:ouvre_popup('popupConnection.php?nomEntreprise=<?php echo $nomE ?>')">Attention : Veuillez vous connecter pour confirmer ou payer ! </A><br/><br/>
 								<SCRIPT language="javascript">
 								function ouvre_popup(page) {
 								window.open(page,"nom_popup","menubar=no, status=no, scrollbars=no, menubar=no, width=600, height=400");
 								}
-								</SCRIPT>
+								</SCRIPT></br>
+								<p>Pas encore inscrit ?</p>
+								<A href="javascript:ouvre_popup('popupInscription.php?nomEntreprise=<?php echo $nomE ?>')">Cliquer pour vous enregistrer.</A><br/><br/>
+								<SCRIPT language="javascript">
+								function ouvre_popup(page) {
+									window.open(page,"nom_popup","menubar=no, status=no, scrollbars=no, menubar=no, width=600, height=400");
+								}
 								<?php
 							}
 							?>
 							<input type="submit" name="annule" value="Annulation" />
 							</form>
 							
-							<?php } ?>
+							<?php } } } ?>
 			</div>
 		</div>
 	</body>
