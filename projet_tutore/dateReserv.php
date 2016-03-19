@@ -326,7 +326,8 @@
 										}
 										$dateF = $year.'-'.$mF.'-'.$dF;
 										$emp2 = employeOk($_SESSION['prestListe']);
-										
+										//$libreMatin = horaireCreneauLibre($emp2, $connexion, $date->days[$w-1], 1, $dateF);
+										//$libreAprem = horaireCreneauLibre($emp2, $connexion, $date->days[$w-1], 0, $dateF);
 										//$rqtReservCli = $connexion->prepare("SELECT date FROM ".$nomE."_reserv");
 										$i = 0;
 										while($i < sizeof($emp2)){

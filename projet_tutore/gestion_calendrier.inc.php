@@ -12,10 +12,10 @@ function recup_employe_dispo($connexion, $idemployes, $jour, $matin) {
 		$jour .= "A";
 	}
 	
-	while ( ($emp = $idemployes->fetch ( PDO::FETCH_OBJ )) != null ) {
-		$planning = planningEmp ( $emp->employe );
+	foreach( $idemployes as $val ) {
+		$planning = planningEmp ( $val );
 		$pl = $planning->fetch ( PDO::FETCH_OBJ );
-		if ($pl->LundiM == 1) {
+		if ($pl->$jour == 1) {
 			array_push ( $employeDispo, $pl->code_employe );
 		}
 	}
@@ -225,8 +225,8 @@ function fusion($creneauLibre) {
 //   - $jourSemaine = 'Lundi'
 //   - $matin = 1 pour le matin, 0 pour l'apres midi
 //   - $jour = '2016-03-11'
-function horaireCreneauLibre($presta, $connexion, $jourSemaine, $matin, $jour) {
-	$idemployes = listeEmpCapable ( $presta ); // recup employé presta
+function horaireCreneauLibre($idemployes, $connexion, $jourSemaine, $matin, $jour) {
+	//$idemployes = listeEmpCapable ( $presta ); // recup employé presta
 	
 	$idemployes = recup_employe_dispo ( $connexion, $idemployes, $jourSemaine, $matin ); // recup employe travaillant sur la demi journé
 	
@@ -244,7 +244,6 @@ function horaireCreneauLibre($presta, $connexion, $jourSemaine, $matin, $jour) {
 	$libre = creneauLibrePourTous ( $creneauLibres );
 	
 	$libre = fusion ( $libre );
-	print_r($libre);
 	return $libre;
 }
 ?>
