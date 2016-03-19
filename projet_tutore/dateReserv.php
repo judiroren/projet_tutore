@@ -325,16 +325,20 @@
 											$dF = $d;
 										}
 										$dateF = $year.'-'.$mF.'-'.$dF;
-										echo $dateF;
-										creneauLibreParEmp($_SESSION['employeRes'],$dateF);
-										/*while($donnees=$rqtReservCli->fetch(PDO::FETCH_OBJ)){
-											//$dateF1 = "$donnees->date";
-											//$dateF2 = "$dateF";
-											//if(strtotime($dateF1)==strtotime($dateF2)){
-											//	echo $dateF1;
-											//}
-											echo "c bon";
-										}*/?>
+										$emp2 = employeOk($_SESSION['prestListe']);
+										
+										//$rqtReservCli = $connexion->prepare("SELECT date FROM ".$nomE."_reserv");
+										$i = 0;
+										while($i < sizeof($emp2)){
+										$rqtReservCli = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE date = '".$dateF."' AND employe = '".$emp2[0]."'");
+										$rqtReservCli->execute();
+										while($donnees=$rqtReservCli->fetch(PDO::FETCH_OBJ)){
+											$resDebut = new DateTime($donnees->heure);
+											$b = new DateInterval('PT'.$donnees->duree.'M');
+											$resFin = $resDebut->add($b);
+											//echo $resDebut->format('H:i:s');
+											echo $resFin->format('H:i:s');
+										}$i++;}?>
 									</li>
 								</ul>
 							</td>

@@ -544,7 +544,6 @@ function creneauLibreParEmp($listeEmp,$date){
 	foreach($listeEmp as $val){
 		
 		$rqt = $connexion->prepare('SELECT heure, duree FROM '.$nomE.'_reserv WHERE employe = "'.$val.'" AND date = "'.$date.'" ORDER BY heure' );
-		echo $rqt;
 		$rqt->execute();
 		if($rqt->rowCount()!=0){
 			${'tab'.$i} = array(array()); 
