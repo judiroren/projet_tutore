@@ -91,6 +91,11 @@
 	
 	if(isset($_POST['annule'])){
 		header('Location: accueil_client.php?nomEntreprise='.$nomE);
+		unset($_SESSION['prestListe']);
+		unset($_SESSION['date']);
+		unset($_SESSION['heure']);
+		unset($_SESSION['duree']);
+		unset($_SESSION['prix']);
 	}
 	
 ?>
@@ -147,7 +152,7 @@
 							
 							<?php 
 							
-							if(isset($_SESSION["estConnecte"])) {
+							if(isset($_SESSION["estConnecteClient"])) {
 								
 							?>
 								<a href="accueil_client.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>

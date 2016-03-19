@@ -14,7 +14,7 @@
 								
 	} else {
 								
-		if(isset($_SESSION["estConnecteClient"])) {
+		//if(isset($_SESSION["estConnecteClient"])) {
 						
 			if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 						
@@ -84,11 +84,16 @@
 		
 		if(isset($_POST['annule'])){
 			header('Location: accueil_client.php?nomEntreprise='.$nomE);
+			unset($_SESSION['prestListe']);
+			unset($_SESSION['date']);
+			unset($_SESSION['heure']);
+			unset($_SESSION['duree']);
+			unset($_SESSION['prix']);
 		}
 	
 		}
 		}
-	}
+	//}
 	
 ?>
 
@@ -105,7 +110,7 @@
 								
 		} else {
 								
-			if(isset($_SESSION["estConnecteClient"])) {
+			//if(isset($_SESSION["estConnecteClient"])) {
 						
 				if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 						
@@ -137,7 +142,7 @@
 		
 		<?php
 		
-		} } }
+		} } //}
 		
 		?>
 		
@@ -160,7 +165,7 @@
 													
 						} else {
 													
-							if(isset($_SESSION["estConnecteClient"])) {
+							//if(isset($_SESSION["estConnecteClient"])) {
 											
 								if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 											
@@ -175,7 +180,7 @@
 							
 								echo $nomAffichage;
 								
-						}	} 	}
+						}	} 	//}
 						?>
 							</h1>
 							<p>Page de gestion de l'entreprise</p>
@@ -188,7 +193,7 @@
 														
 							} else {
 														
-								if(isset($_SESSION["estConnecteClient"])) {
+								//if(isset($_SESSION["estConnecteClient"])) {
 												
 									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 												
@@ -224,7 +229,7 @@
 								</div>
 							</form>
 							
-							<?php } } } }?>
+							<?php } } } //}?>
 
 			</div>
 		</div>
@@ -245,7 +250,7 @@
 						
 			} else {			
 					
-				if(isset($_SESSION["estConnecteClient"])) {
+				//if(isset($_SESSION["estConnecteClient"])) {
 						
 					if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 								
@@ -370,7 +375,7 @@
 			<input type="submit" name="annule" value="Annuler" />
 			</div>
 		</form>
-			<?php } } }?>
+			<?php } } //}?>
 			</div>
 		</div>
 	</body>

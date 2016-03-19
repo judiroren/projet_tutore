@@ -15,7 +15,7 @@
 								
 	} else {
 								
-		if(isset($_SESSION["estConnecteClient"])) {
+	//	if(isset($_SESSION["estConnecteClient"])) {
 						
 			if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 						
@@ -53,6 +53,11 @@
 		if(isset($_SESSION['client'])){
 			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 0, $_SESSION['duree'], $_SESSION['prix']);
 			$ok = 1;
+			unset($_SESSION['prestListe']);
+			unset($_SESSION['date']);
+			unset($_SESSION['heure']);
+			unset($_SESSION['duree']);
+			unset($_SESSION['prix']);
 		}
 	}
 	
@@ -60,15 +65,25 @@
 		if(isset($_SESSION['client'])){
 			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 1, $_SESSION['duree'], $_SESSION['prix']);
 			$ok = 2;
+			unset($_SESSION['prestListe']);
+			unset($_SESSION['date']);
+			unset($_SESSION['heure']);
+			unset($_SESSION['duree']);
+			unset($_SESSION['prix']);
 		}
 	}
 	if(isset($_POST['annule'])){
 		header('Location: accueil_client.php?nomEntreprise='.$nomE);
+		unset($_SESSION['prestListe']);
+		unset($_SESSION['date']);
+		unset($_SESSION['heure']);
+		unset($_SESSION['duree']);
+		unset($_SESSION['prix']);
 	}
 	
 	}
 	}
-	}
+	//}
 ?>
 
 <html>
@@ -95,7 +110,7 @@
 													
 						} else {
 													
-							if(isset($_SESSION["estConnecteClient"])) {
+						//	if(isset($_SESSION["estConnecteClient"])) {
 											
 								if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 											
@@ -147,7 +162,7 @@
 							
 						<?php 
 							} 
-						} } }
+						} } //}
 						?>
 
 			</div>
@@ -173,7 +188,7 @@
 								
 							} else {			
 							
-								if(isset($_SESSION["estConnecteClient"])) {
+								//if(isset($_SESSION["estConnecteClient"])) {
 								
 									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 										
@@ -248,7 +263,7 @@
 							<input type="submit" name="annule" value="Annulation" />
 							</form>
 							
-							<?php } } } ?>
+							<?php } } //} ?>
 			</div>
 		</div>
 	</body>

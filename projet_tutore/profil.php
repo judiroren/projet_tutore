@@ -49,6 +49,21 @@
 	//Récupération des réservations du client
 	$reserv = reservClient();
 	
+	if(isset($_SESSION['prestListe'])){
+		unset($_SESSION['prestListe']);
+	}
+	if(isset($_SESSION['date'])){
+		unset($_SESSION['date']);
+	}
+	if(isset($_SESSION['heure'])){
+		unset($_SESSION['heure']);
+	}
+	if(isset($_SESSION['duree'])){
+		unset($_SESSION['duree']);
+	}
+	if(isset($_SESSION['prix'])){
+		unset($_SESSION['prix']);
+	}
 	} } }
 
 ?>

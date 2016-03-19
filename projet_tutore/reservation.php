@@ -14,7 +14,7 @@
 								
 	} else {
 								
-		if(isset($_SESSION["estConnecteClient"])) {
+		//if(isset($_SESSION["estConnecteClient"])) {
 						
 			if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 						
@@ -132,10 +132,18 @@
 			}
 		}
 		}
-	
+		if(isset($_POST['annule'])){
+			header('Location: accueil_client.php?nomEntreprise='.$nomE);
+			unset($_SESSION['prestListe']);
+			unset($_SESSION['date']);
+			unset($_SESSION['heure']);
+			unset($_SESSION['duree']);
+			unset($_SESSION['prix']);
+		}
+		
 		}
 		}
-	}
+	//}
 	
 	
 ?>
@@ -164,7 +172,7 @@
 														
 							} else {
 														
-								if(isset($_SESSION["estConnecteClient"])) {
+								//if(isset($_SESSION["estConnecteClient"])) {
 												
 									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 												
@@ -184,7 +192,7 @@
 							
 							<?php 
 							
-							if(isset($_SESSION["estConnecte"])) {
+							if(isset($_SESSION["estConnecteClient"])) {
 								
 							?>
 								<a href="accueil_client.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
@@ -214,7 +222,7 @@
 								</div>
 							</form>
 							
-							<?php } } } } ?>
+							<?php } } } //} ?>
 
 			</div>
 		</div>
@@ -239,7 +247,7 @@
 						
 					} else {			
 					
-						if(isset($_SESSION["estConnecteClient"])) {
+						//if(isset($_SESSION["estConnecteClient"])) {
 						
 							if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 								
@@ -329,10 +337,11 @@
 							<input type="hidden" name="ajout" value="ok"> 
 							<div align = "center" class="12u$">
 								<input type="submit" name="reserv" value="Réserver" />
+								<input type="submit" name="annule" value="Annuler" />
 							</div>
 					</form>
 
-					<?php } } } ?>
+					<?php } } //} ?>
 			</div>
 		</div>
 	</body>
