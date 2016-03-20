@@ -36,7 +36,7 @@ function infosEntreprise() {
 function planningEmp($id_employe) {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$planning = $connexion->prepare('SELECT * FROM '.$nomE.'_planning JOIN '.$nomE.'_employe ON code_employe = id_employe where id_employe = "'.$id_employe.'"');
 	
 	$planning->execute();
@@ -49,7 +49,7 @@ function planningEmp($id_employe) {
 function planningEnt() {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	//$planning = $connexion->prepare('SELECT * FROM '.$nomE.'_planning');
 	$planning = $connexion->prepare('SELECT * FROM '.$nomE.'_planning JOIN '.$nomE.'_employe ON code_employe = id_employe');
 	
@@ -63,7 +63,7 @@ function planningEnt() {
 function reservationsEnt() {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$reserva = $connexion->prepare('SELECT * FROM '.$nomE.'_reserv 
 									JOIN '.$nomE.'_employe ON employe = id_employe 
 									JOIN '.$nomE.'_client ON client = id_client ');
@@ -77,7 +77,7 @@ function reservationsEnt() {
 function abscencesEnt() {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$absences = $connexion->prepare('SELECT * FROM '.$nomE.'_absence 
 									JOIN '.$nomE.'_employe ON code_employe = id_employe');
 	$absences->execute();
@@ -88,7 +88,7 @@ function abscencesEnt() {
 function listeAbscences() {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 
 	$absences = $connexion->prepare('SELECT id_absence FROM '.$nomE.'_absence');
 	$absences->execute();
@@ -100,7 +100,7 @@ function listeAbscences() {
 function listePrestations() {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$rqtPrestations = $connexion->prepare("SELECT id_presta, categorie, descriptif_presta FROM ".$nomE."_prestation");
 	$rqtPrestations->execute();
 	
@@ -111,7 +111,7 @@ function listePrestations() {
 function listePlanning() {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$rqtPlanning = $connexion->prepare("SELECT * FROM ".$nomE."_planning");
 	$rqtPlanning->execute();
 	
@@ -123,7 +123,7 @@ function listePlanning() {
 function infosPrestation($id) {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+$nomE = $_GET['nomEntreprise'];
 	$listePresta = $connexion->prepare("SELECT * FROM ".$nomE."_prestation WHERE id_presta = '".$id."'");
 	$listePresta->execute();
 	$listePresta->setFetchMode(PDO::FETCH_OBJ);
@@ -136,7 +136,7 @@ function infosPrestation($id) {
 function infosEmploye() {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$rqtInfosEmp = $connexion->prepare("SELECT * FROM ".$nomE."_employe");
 	$rqtInfosEmp->execute();
 	
@@ -162,7 +162,7 @@ function verifEntreprise($nomE) {
 function verifEmploye() {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$rqtVerifEmp = $connexion->prepare("SELECT nom_employe, prenom_employe FROM ".$nomE."_employe");
 	$rqtVerifEmp->execute();
 	
@@ -173,7 +173,7 @@ function verifEmploye() {
 function IdentEmploye($nomEmp) {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	//$rqtIdEmp = $connexion->prepare("SELECT id_employe FROM ".$nomE."_employe WHERE nom_employe = '".$nomEmp."'");
 	$rqtIdEmp = $connexion->prepare("SELECT id_employe FROM ".$nomE."_employe WHERE nom_employe = '".$nomEmp."'");
 	$rqtIdEmp->execute();
@@ -188,7 +188,7 @@ function IdentEmploye($nomEmp) {
 function InfosEmploye2($nomEmp) {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$rqtIdEmp = $connexion->prepare("SELECT * FROM ".$nomE."_employe WHERE id_employe = '".$nomEmp."'");
 	$rqtIdEmp->execute();
 	
@@ -200,7 +200,7 @@ function InfosEmploye2($nomEmp) {
 function reservationsEmp($idemp) {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	//$rqt = $connexion->query('SELECT * FROM '.$nomE.'_reserv WHERE employe = "'.$_POST['employe_modif'].'"');
 	$rqtReservEmp = $connexion->prepare('SELECT * FROM '.$nomE.'_reserv WHERE employe = ":idemp"');
 	$rqtReservEmp->execute(array('idemp' => $idemp));
@@ -213,7 +213,7 @@ function reservationsEmp($idemp) {
 function dateReservation($employeAbsent, $debutReserv, $finReserv) {
 	
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$reserv = $connexion->query('SELECT date FROM '.$nomE.'_reserv WHERE employe = "'.$employeAbsent.'" 
 								AND date BETWEEN '.$debutReserv.' AND '.$finReserv);
 	$reserv->execute();
@@ -224,7 +224,7 @@ function dateReservation($employeAbsent, $debutReserv, $finReserv) {
 //Récupére les informations de login d'un client 
 function logClient($log, $mdp){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$rqtLogClient = $connexion->prepare("SELECT login_client, mdp_client, id_client FROM ".$nomE."_client WHERE login_client = '".$log."' AND mdp_client = '".$mdp."'");
 	$rqtLogClient->execute();
 	$rqtLogClient->setFetchMode(PDO::FETCH_OBJ);
@@ -235,7 +235,7 @@ function logClient($log, $mdp){
 //Récupére les informations de login d'un client
 function infosClients(){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$client = $_SESSION["client"];
 	$rqtClient = $connexion->prepare("SELECT nom_client, prenom_client, mail, login_client FROM ".$nomE."_client WHERE id_client = '".$client."'");
 	$rqtClient->execute();
@@ -247,7 +247,7 @@ function infosClients(){
 //Récupère les réservations d'un client
 function reservClient(){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$client = $_SESSION["client"];
 	$rqtReservCli = $connexion->prepare("SELECT id_reserv, prix, duree, nom_employe, prenom_employe, paye, date, heure FROM ".$nomE."_reserv JOIN ".$nomE."_employe ON id_employe = employe WHERE client = '".$client."' ORDER BY date ASC");
 	$rqtReservCli->execute();
@@ -259,7 +259,7 @@ function reservClient(){
 function listeClient() {
 
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$rqtClient = $connexion->prepare("SELECT * FROM ".$nomE."_client");
 	$rqtClient->execute();
 
@@ -270,7 +270,7 @@ function listeClient() {
 //Recupère la liste des compétences de l'employé
 function listeCompetence($emp){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$rqtComp = $connexion->prepare("SELECT prestation, descriptif_presta FROM ".$nomE."_competence JOIN ".$nomE."_prestation ON prestation = id_presta WHERE employe = '".$emp."'");
 	$rqtComp->execute();
 	return $rqtComp;
@@ -279,7 +279,7 @@ function listeCompetence($emp){
 //Liste des prestations qui ne font pas partie des competences de l'employe
 function listePrestaNonComp($emp){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$rqtPrest = $connexion->prepare("SELECT id_presta, descriptif_presta FROM ".$nomE."_prestation LEFT OUTER JOIN ".$nomE."_competence ON id_presta = prestation WHERE prestation IS NULL");
 	$rqtPrest->execute();
 	
@@ -289,7 +289,7 @@ function listePrestaNonComp($emp){
 //Liste des employés qui peuvent faire la prestation
 function listeEmpCapable($presta){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$rqtListe = $connexion->prepare("SELECT employe, nom_employe, prenom_employe FROM ".$nomE."_competence JOIN ".$nomE."_employe ON employe = id_employe WHERE prestation = '".$presta."'");
 	$rqtListe->execute();
 	return $rqtListe;
@@ -297,7 +297,7 @@ function listeEmpCapable($presta){
 //Liste des employés qui ne peuvent pas faire la prestation
 function listeEmpNonCapable($presta){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	//$rqtListe = $connexion->prepare("SELECT id_employe, nom_employe, prenom_employe FROM ".$nomE."_employe LEFT OUTER JOIN ".$nomE."_competence ON id_employe = employe WHERE employe IS NULL");
 	$rqtListe = $connexion->prepare("SELECT id_employe, nom_employe, prenom_employe FROM ".$nomE."_employe WHERE id_employe NOT IN (SELECT employe FROM ".$nomE."_competence WHERE prestation = '".$presta."')");
 	$rqtListe->execute();
@@ -307,7 +307,7 @@ function listeEmpNonCapable($presta){
 
 //Créer l'identifiant en rapport avec le contexte
 function code($table, $id){
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$connexion = connect();
 
 		switch($table){
@@ -335,7 +335,7 @@ function code($table, $id){
 
 //Récupère les employés pouvant faire les prestations voulues
 function employeOk($tab){
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$connexion = connect();
 	$rqt = "";
 	$i = 0;
@@ -361,7 +361,7 @@ function employeOk($tab){
 
 //Récupère les prestations d'une réservation
 function prestaReserv($idRes){
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$connexion = connect();
 	$rqt = $connexion->prepare("SELECT DISTINCT descriptif_presta, prix FROM ".$nomE."_prestation JOIN ".$nomE."_prestresv ON prestation = id_presta JOIN ".$nomE."_reserv ON id_reserv = reservation WHERE reservation = '".$idRes."'");
 	$rqt->execute();
@@ -372,7 +372,7 @@ function prestaReserv($idRes){
 //Recupère la liste des categories
 function listeCategorie(){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$rqtcategorie = $connexion->prepare("SELECT * FROM ".$nomE."_categorie");
 	$rqtcategorie->execute();
 	return $rqtcategorie;
@@ -381,7 +381,7 @@ function listeCategorie(){
 //Récupère la catégorie d'une prestation
 function getCategorie($presta){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$rqt = $connexion->prepare("SELECT categorie FROM ".$nomE."_prestation WHERE id_presta = '".$presta."'");
 	$rqt->execute();
 	$rqt->setFetchMode(PDO::FETCH_OBJ);
@@ -392,7 +392,7 @@ function getCategorie($presta){
 //sélectionne l'employé qui fera une réservation
 function employeReserv($date, $jourSem, $heure, $listeEmp, $duree){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$h = substr($heure,0,2);
 	if(8 <= $h || $h <12){
 		$attribut = $jourSem.'M';
@@ -438,7 +438,7 @@ function employeReserv($date, $jourSem, $heure, $listeEmp, $duree){
 //Renvoi la liste des employés travaillant sur la demi-journé demandée
 function empPlanningOk($listeEmp, $attribut, $date){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$newListe = array();
 	foreach($listeEmp as $val){
 		$rqt = $connexion->prepare("SELECT ".$attribut." FROM ".$nomE."_planning WHERE code_employe = '".$val."'");
@@ -454,7 +454,7 @@ function empPlanningOk($listeEmp, $attribut, $date){
 //Renvoi la liste des employés sans absence à ce moment 
 function empAbsenceOk($listeEmp, $date, $moment){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$newListe = array();
 	foreach($listeEmp as $val){
 		$rqt = $connexion->prepare("SELECT dateDebut, dateFin, demiJourDebut, demiJourFin FROM ".$nomE."_absence WHERE code_employe = '".$val."' AND ".$date." BETWEEN dateDebut AND dateFin");
@@ -477,7 +477,7 @@ function empAbsenceOk($listeEmp, $date, $moment){
 //Renvoi la liste des employés pouvant faire la réservation
 function empHoraireOk($listeEmp, $date, $heure, $duree, $moment){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$newListe = array();
 	$heuredebut = new DateTime($heure);
 	$a = new DateInterval('PT'.$duree.'M');
@@ -506,7 +506,7 @@ function empHoraireOk($listeEmp, $date, $heure, $duree, $moment){
 function reservationsEmpDate($idemp,$date,$matin) {
 
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 
 	if($matin == 1){
 		$heureDebut = "08:00:00";
@@ -527,7 +527,7 @@ function reservationsEmpDate($idemp,$date,$matin) {
 function abscencesEntEmploye($idEmp) {
 
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$absences = $connexion->prepare('SELECT * FROM '.$nomE.'_absence
 									JOIN '.$nomE.'_employe ON code_employe = id_employe WHERE id_employe = "'.$idEmp.'"' );
 	$absences->execute();
@@ -537,7 +537,7 @@ function abscencesEntEmploye($idEmp) {
 //Récupère les créneaux de libres par employés
 function creneauLibreParEmp($listeEmp,$date){
 	$connexion = connect();
-	$nomE = $_SESSION["nomE"];
+	$nomE = $_GET['nomEntreprise'];
 	$i = 1;
 	$tabFinal = array(array());
 	

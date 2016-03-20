@@ -332,7 +332,7 @@
 										}
 										$dateF = $year.'-'.$mF.'-'.$dF;
 										$emp2 = employeOk($_SESSION['prestListe']);
-										//$libreMatin = horaireCreneauLibre($emp2, $connexion, $date->days[$w-1], 1, $dateF);
+										//$libreMatin = horaireCreneauLibre($_SESSION['prestListe'], $connexion, $date->days[$w-1], 1, $dateF);
 										//$libreAprem = horaireCreneauLibre($emp2, $connexion, $date->days[$w-1], 0, $dateF);
 										//$rqtReservCli = $connexion->prepare("SELECT date FROM ".$nomE."_reserv");
 										$i = 0;
