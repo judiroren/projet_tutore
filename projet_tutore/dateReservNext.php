@@ -240,59 +240,152 @@
 								<!-- Evenement : affiché sur le coté -->
 								<ul class="events">
 									<li>
-										
 										<?php 
-										if($m < 10){
-											$mF = '0'.$m;
-										}else{
-											$mF = $m;
-										}
-										if($d < 10){
-											$dF = '0'.$d;
-										}else{
-											$dF = $d;
-										}
-										$dateF = $year.'-'.$mF.'-'.$dF;
-										$emp2 = employeOk($_SESSION['prestListe']);
-										//$libreMatin = horaireCreneauLibre($emp2, $connexion, $date->days[$w-1], 1, $dateF);
-										//$libreAprem = horaireCreneauLibre($emp2, $connexion, $date->days[$w-1], 0, $dateF);
-										//$rqtReservCli = $connexion->prepare("SELECT date FROM ".$nomE."_reserv");
-										$i = 0;
-										echo "Créneau occupé par employé : </br>";
-										while($i < sizeof($emp2)){
-										$rqtReserv = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE date = '".$dateF."' AND employe = '".$emp2[$i]."' ORDER BY heure ASC");
-										$rqtReserv->execute();
-											$j = 0;
-											$num = $i+1;
-											echo "Employe ".$num. " : ";
-											while($donnees=$rqtReserv->fetch(PDO::FETCH_OBJ)){
-												$resDebut = new DateTime($donnees->heure);
-												$resDebut2 = new DateTime($donnees->heure);
-												$b = new DateInterval('PT'.$donnees->duree.'M');
-												$resFin = $resDebut->add($b);
-												$deb =  $resDebut2->format('H:i:s');
-												$fin =  $resFin->format('H:i:s');
-												if(!isset($tab)){
-													$tab[0][0] = $deb;
-													$tab[0][1] = $fin;
+										if($date->days[$w-1]!='Dimanche'){
+											if($m < 10){	$mF = '0'.$m;	}else{	$mF = $m;	}
+											if($d < 10){	$dF = '0'.$d;	}else{	$dF = $d;	}
+											$dateF = $year.'-'.$mF.'-'.$dF;
+											$emp2 = employeOk($_SESSION['prestListe']);
+											$i = 0;
+											echo "Créneau occupé par employé : </br>";
+											while($i < sizeof($emp2)){
+												$num = $i+1;
+												echo "Employe ".$num. " : ";
+												$jm = $date->days[$w-1].'M';
+												$ja = $date->days[$w-1].'A';
+												$rqtPlan = $connexion->prepare("SELECT ".$jm.", ".$ja." FROM ".$nomE."_planning WHERE code_employe = '".$emp2[$i]."'");
+												$rqtPlan->execute();
+												$donnees=$rqtPlan->fetch(PDO::FETCH_OBJ);
+												if($donnees->$jm == 0 && $donnees->$ja==0){
+													echo "Absent";
 												}else{
-													for($k = 0 ; $k < sizeof($tab) ; $k++){
-														$tab[$k++][0]=$deb;
-														$tab[$k++][1]=$fin;
+													$rqtAbs = $connexion->prepare("SELECT dateDebut, dateFin, demiJourDebut, demiJourFin FROM ".$nomE."_absence WHERE '".$dateF."' BETWEEN dateDebut AND dateFin AND code_employe = '".$emp2[$i]."' ORDER BY dateDebut ASC");
+													$rqtAbs->execute();
+													if($rqtAbs->rowCount()!=0){
+														$donnees2 = $rqtAbs->fetch(PDO::FETCH_OBJ);
+														if($donnees2->dateDebut == $dateF){
+															if($donnees2->demiJourDebut==0){
+																echo "Absent";
+															}else{
+																if($donnees->$jm==0){
+																	echo "Absent";	
+																}else{
+																	$rqtReserv = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE date = '".$dateF."' AND employe = '".$emp2[$i]."' ORDER BY heure ASC");
+																	$rqtReserv->execute();
+																	$j = 0;
+																	if($donnees->$jm==0){
+																		echo "Absent le matin "	;
+																	}
+																	while($donnees3=$rqtReserv->fetch(PDO::FETCH_OBJ)){
+																		$resDebut = new DateTime($donnees3->heure);
+																		$resDebut2 = new DateTime($donnees3->heure);
+																		$b = new DateInterval('PT'.$donnees3->duree.'M');
+																		$resFin = $resDebut->add($b);
+																		$deb =  $resDebut2->format('H:i:s');
+																		$fin =  $resFin->format('H:i:s');
+																		if(!isset($tab)){
+																			$tab[0][0] = $deb;
+																			$tab[0][1] = $fin;
+																		}else{
+																			for($k = 0 ; $k < sizeof($tab) ; $k++){
+																				$tab[$k++][0]=$deb;
+																				$tab[$k++][1]=$fin;
+																			}
+																		}
+																		$j++;
+																			
+																		for($k = 0 ; $k < sizeof($tab) ; $k++){
+																			echo $tab[$k][0]."-".$tab[$k][1]." / ";
+																			$k++;
+																		}
+																		unset($tab);
+																	}
+																	echo " Absent l'après-midi"	;
+																}
+															}
+														}else if($donnees2->dateFin == $dateF){
+															if($donnees2->demiJourFin==1){
+																echo "Absent";
+															}else{
+																if($donnees->$ja==0){
+																	echo "Absent";
+																}else{
+																	$rqtReserv = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE date = '".$dateF."' AND employe = '".$emp2[$i]."' ORDER BY heure ASC");
+																	$rqtReserv->execute();
+																	$j = 0;
+																	echo "Absent le matin "	;
+																	while($donnees3=$rqtReserv->fetch(PDO::FETCH_OBJ)){
+																		$resDebut = new DateTime($donnees3->heure);
+																		$resDebut2 = new DateTime($donnees3->heure);
+																		$b = new DateInterval('PT'.$donnees3->duree.'M');
+																		$resFin = $resDebut->add($b);
+																		$deb =  $resDebut2->format('H:i:s');
+																		$fin =  $resFin->format('H:i:s');
+																		if(!isset($tab)){
+																			$tab[0][0] = $deb;
+																			$tab[0][1] = $fin;
+																		}else{
+																			for($k = 0 ; $k < sizeof($tab) ; $k++){
+																				$tab[$k++][0]=$deb;
+																				$tab[$k++][1]=$fin;
+																			}
+																		}
+																		$j++;
+																		for($k = 0 ; $k < sizeof($tab) ; $k++){
+																			echo $tab[$k][0]."-".$tab[$k][1]." / ";
+																			$k++;
+																		}
+																	unset($tab);
+																	}
+																	if($donnees->$ja==0){
+																		echo " Absent l'après-midi"	;
+																	}
+																}
+															}
+														}else{
+															echo "Absent";
+														}
+													}else{
+														$rqtReserv = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE date = '".$dateF."' AND employe = '".$emp2[$i]."' ORDER BY heure ASC");
+														$rqtReserv->execute();
+														$j = 0;
+														if($donnees->$jm==0){
+															echo "Absent le matin"	;
+														}
+														while($donnees3=$rqtReserv->fetch(PDO::FETCH_OBJ)){
+															$resDebut = new DateTime($donnees3->heure);
+															$resDebut2 = new DateTime($donnees3->heure);
+															$b = new DateInterval('PT'.$donnees3->duree.'M');
+															$resFin = $resDebut->add($b);
+															$deb =  $resDebut2->format('H:i:s');
+															$fin =  $resFin->format('H:i:s');
+															if(!isset($tab)){
+																$tab[0][0] = $deb;
+																$tab[0][1] = $fin;
+															}else{
+																for($k = 0 ; $k < sizeof($tab) ; $k++){
+																	$tab[$k++][0]=$deb;
+																	$tab[$k++][1]=$fin;
+																}
+															}
+															$j++;
+															for($k = 0 ; $k < sizeof($tab) ; $k++){
+																echo $tab[$k][0]."-".$tab[$k][1]." / ";
+																$k++;
+															}
+														unset($tab);
+														}
+														if($donnees->$ja==0){
+															echo "Absent l'après-midi"	;
+														}
 													}
 												}
-												$j++;
-												
-												for($k = 0 ; $k < sizeof($tab) ; $k++){
-													echo $tab[$k][0]."-".$tab[$k][1]." / ";
-													$k++;
-												}
-												unset($tab);
-											}
-											
 											echo "</br>";
-										$i++;
-										}?>
+											$i++;
+											}
+									}else{
+										echo "Fermé";
+									}?>
 									</li>
 								</ul>
 							</td>

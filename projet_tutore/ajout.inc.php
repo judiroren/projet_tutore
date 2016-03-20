@@ -1,5 +1,5 @@
 <?php
-
+require "bd.inc.php";
 //Permet d'ajouter un employé
 function ajoutEmploye($connexion, $code, $nom, $prenom, $adresse, $mail, $tel, $presta) {
 	
@@ -243,30 +243,6 @@ function majPresta($connexion, $descrip, $cout, $duree, $categorie, $paypal, $id
 	
 }
 
-//Permet de mettre à jour la compétence A d'un employé
-function majCompA($connexion, $code, $employe) {
-	
-	$nomE = $_SESSION["nomE"];
-	$rqtMajComA = $connexion->prepare("UPDATE ".$nomE."_employe SET competenceA = :code WHERE id_employe = :employe");
-	$rqtMajComA->execute(array('code' => $code, 'employe' => $employe));
-}
-
-//Permet de mettre à jour la compétence B d'un employé
-function majCompB($connexion, $code, $employe) {
-	
-	$nomE = $_SESSION["nomE"];
-	$rqtMajComB = $connexion->prepare("UPDATE ".$nomE."_employe SET competenceB = :code WHERE id_employe = :employe");
-	$rqtMajComB->execute(array('code' => $code, 'employe' => $employe));
-}
-
-//Permet de mettre à jour la compétence C d'un employé
-function majCompC($connexion, $code, $employe) {
-	
-	$nomE = $_SESSION["nomE"];
-	$rqtMajComC = $connexion->prepare("UPDATE ".$nomE."_employe SET competenceC = :code WHERE id_employe = :employe");
-	$rqtMajComC->execute(array('code' => $code, 'employe' => $employe));
-}
-
 //Permet de supprimer une prestation
 function supprimerPresta($connexion, $presta) {
 	
@@ -351,6 +327,21 @@ function ajouteComp2($connexion, $tabNouveauEmp, $presta){
 //Ajout d'une réservation et des liens avec prestations
 function enregistreReserv($connexion, $listePrest, $client, $date, $heure, $paye, $duree, $prix){
 	$nomE = $_SESSION["nomE"];
+	$info = infosEntreprise();
+	if($info->CreneauLibre==0){
+		$minute = intval(substr($heure,3,4));
+		$limite = array(0,15,30,45,60);
+		while(!in_array($minute,$limite)){
+			$minute--;
+		}
+		$heure = substr($heure,0,1);
+		$heuredebut = new DateTime($heure.':'.$minute.':00');
+		$a = new DateInterval('PT'.$duree.'M');
+		$heurefin = $heuredebut->add($a);
+		while(in_array($duree,$limite)){
+			$duree++;
+		}
+	}
 	$id = code($nomE."_reserv", 'id_reserv');
 	$emp = employeOk($listePrest);
 	$emp = $emp[0];
