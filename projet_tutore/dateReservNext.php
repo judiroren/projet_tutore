@@ -239,7 +239,56 @@
 								</div>
 								<!-- Evenement : affiché sur le coté -->
 								<ul class="events">
-									<li>créneaux</li>
+									<li>
+										<?php 
+										if($m < 10){
+											$mF = '0'.$m;
+										}else{
+											$mF = $m;
+										}
+										if($d < 10){
+											$dF = '0'.$d;
+										}else{
+											$dF = $d;
+										}
+										$dateF = $year.'-'.$mF.'-'.$dF;
+										$emp2 = employeOk($_SESSION['prestListe']);
+										//$libreMatin = horaireCreneauLibre($emp2, $connexion, $date->days[$w-1], 1, $dateF);
+										//$libreAprem = horaireCreneauLibre($emp2, $connexion, $date->days[$w-1], 0, $dateF);
+										//$rqtReservCli = $connexion->prepare("SELECT date FROM ".$nomE."_reserv");
+										$i = 0;
+										while($i < sizeof($emp2)){
+										$rqtReserv = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE date = '".$dateF."' AND employe = '".$emp2[$i]."' ORDER BY heure ASC");
+										$rqtReserv->execute();
+											$j = 0;
+											while($donnees=$rqtReserv->fetch(PDO::FETCH_OBJ)){
+												$resDebut = new DateTime($donnees->heure);
+												$resDebut2 = new DateTime($donnees->heure);
+												$b = new DateInterval('PT'.$donnees->duree.'M');
+												$resFin = $resDebut->add($b);
+												$deb =  $resDebut2->format('H:i:s');
+												$fin =  $resFin->format('H:i:s');
+												if(!isset($tab)){
+													$tab[0][0] = $deb;
+													$tab[0][1] = $fin;
+												}else{
+													for($k = 0 ; $k < sizeof($tab) ; $k++){
+														$tab[$k++][0]=$deb;
+														$tab[$k++][1]=$fin;
+													}
+												}
+												$j++;
+												for($k = 0 ; $k < sizeof($tab) ; $k++){
+													echo $tab[$k][0]."-".$tab[$k][1]." / ";
+													$k++;
+												}
+												unset($tab);
+											}
+											
+											
+										$i++;
+										}?>
+									</li>
 								</ul>
 							</td>
 							<?php if($w == 7):?>

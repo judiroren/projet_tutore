@@ -291,9 +291,9 @@
 										<?php 
 										if($unePrest->categorie == $_POST['categorie']){
 											if(!empty($_SESSION['prestListe']) && in_array($unePrest->id_presta, $_SESSION['prestListe'])){
-												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' checked='checked' required></td>";
+												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' checked='checked' ></td>";
 											}else{
-												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' required ></td>";
+												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' ></td>";
 											}
 											
 											$unePresta = infosPrestation($unePrest->id_presta);

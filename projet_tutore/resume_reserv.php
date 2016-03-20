@@ -53,11 +53,6 @@
 		if(isset($_SESSION['client'])){
 			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 0, $_SESSION['duree'], $_SESSION['prix']);
 			$ok = 1;
-			unset($_SESSION['prestListe']);
-			unset($_SESSION['date']);
-			unset($_SESSION['heure']);
-			unset($_SESSION['duree']);
-			unset($_SESSION['prix']);
 		}
 	}
 	
@@ -65,11 +60,6 @@
 		if(isset($_SESSION['client'])){
 			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 1, $_SESSION['duree'], $_SESSION['prix']);
 			$ok = 2;
-			unset($_SESSION['prestListe']);
-			unset($_SESSION['date']);
-			unset($_SESSION['heure']);
-			unset($_SESSION['duree']);
-			unset($_SESSION['prix']);
 		}
 	}
 	if(isset($_POST['annule'])){

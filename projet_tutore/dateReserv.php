@@ -318,6 +318,7 @@
 								<!-- Evenement : affiché sur le coté -->
 								<ul class="events">
 									<li>
+										
 										<?php 
 										if($m < 10){
 											$mF = '0'.$m;
@@ -335,16 +336,41 @@
 										//$libreAprem = horaireCreneauLibre($emp2, $connexion, $date->days[$w-1], 0, $dateF);
 										//$rqtReservCli = $connexion->prepare("SELECT date FROM ".$nomE."_reserv");
 										$i = 0;
+										echo "Créneau occupé par employé : </br>";
 										while($i < sizeof($emp2)){
-										$rqtReservCli = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE date = '".$dateF."' AND employe = '".$emp2[0]."'");
-										$rqtReservCli->execute();
-										while($donnees=$rqtReservCli->fetch(PDO::FETCH_OBJ)){
-											$resDebut = new DateTime($donnees->heure);
-											$b = new DateInterval('PT'.$donnees->duree.'M');
-											$resFin = $resDebut->add($b);
-											//echo $resDebut->format('H:i:s');
-											echo $resFin->format('H:i:s');
-										}$i++;}?>
+										$rqtReserv = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE date = '".$dateF."' AND employe = '".$emp2[$i]."' ORDER BY heure ASC");
+										$rqtReserv->execute();
+											$j = 0;
+											$num = $i+1;
+											echo "Employe ".$num. " : ";
+											while($donnees=$rqtReserv->fetch(PDO::FETCH_OBJ)){
+												$resDebut = new DateTime($donnees->heure);
+												$resDebut2 = new DateTime($donnees->heure);
+												$b = new DateInterval('PT'.$donnees->duree.'M');
+												$resFin = $resDebut->add($b);
+												$deb =  $resDebut2->format('H:i:s');
+												$fin =  $resFin->format('H:i:s');
+												if(!isset($tab)){
+													$tab[0][0] = $deb;
+													$tab[0][1] = $fin;
+												}else{
+													for($k = 0 ; $k < sizeof($tab) ; $k++){
+														$tab[$k++][0]=$deb;
+														$tab[$k++][1]=$fin;
+													}
+												}
+												$j++;
+												
+												for($k = 0 ; $k < sizeof($tab) ; $k++){
+													echo $tab[$k][0]."-".$tab[$k][1]." / ";
+													$k++;
+												}
+												unset($tab);
+											}
+											
+											echo "</br>";
+										$i++;
+										}?>
 									</li>
 								</ul>
 							</td>
@@ -370,7 +396,7 @@
 			Heure de la réservation : </br>
 				<input type="time" name="heurerdv" />
 			</br></br>	
-			<div align = "center" class="12u$">
+			<div class="12u$">
 			<input type="submit" name="continue" value="Réserver" />
 			<input type="submit" name="annule" value="Annuler" />
 			</div>
