@@ -240,6 +240,7 @@
 								<!-- Evenement : affiché sur le coté -->
 								<ul class="events">
 									<li>
+										
 										<?php 
 										if($m < 10){
 											$mF = '0'.$m;
@@ -257,10 +258,13 @@
 										//$libreAprem = horaireCreneauLibre($emp2, $connexion, $date->days[$w-1], 0, $dateF);
 										//$rqtReservCli = $connexion->prepare("SELECT date FROM ".$nomE."_reserv");
 										$i = 0;
+										echo "Créneau occupé par employé : </br>";
 										while($i < sizeof($emp2)){
 										$rqtReserv = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE date = '".$dateF."' AND employe = '".$emp2[$i]."' ORDER BY heure ASC");
 										$rqtReserv->execute();
 											$j = 0;
+											$num = $i+1;
+											echo "Employe ".$num. " : ";
 											while($donnees=$rqtReserv->fetch(PDO::FETCH_OBJ)){
 												$resDebut = new DateTime($donnees->heure);
 												$resDebut2 = new DateTime($donnees->heure);
@@ -278,6 +282,7 @@
 													}
 												}
 												$j++;
+												
 												for($k = 0 ; $k < sizeof($tab) ; $k++){
 													echo $tab[$k][0]."-".$tab[$k][1]." / ";
 													$k++;
@@ -285,7 +290,7 @@
 												unset($tab);
 											}
 											
-											
+											echo "</br>";
 										$i++;
 										}?>
 									</li>
