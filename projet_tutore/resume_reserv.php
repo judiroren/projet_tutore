@@ -235,14 +235,14 @@
 							} else {
 								?>
 								
-								<A href="javascript:ouvre_popup('popupConnection.php?nomEntreprise=<?php echo $nomE ?>')">Attention : Veuillez vous connecter pour confirmer ou payer ! </A><br/><br/>
+								<A href="javascript:ouvre_popup('popupConnection.php?nomEntreprise=<?php echo $nomE ?>')">Attention : Veuillez vous connecter pour confirmer ou payer ! </A><br/>
 								<SCRIPT language="javascript">
 								function ouvre_popup(page) {
 								window.open(page,"nom_popup","menubar=no, status=no, scrollbars=no, menubar=no, width=600, height=400");
 								}
 								</SCRIPT></br>
 								<p>Pas encore inscrit ?</p>
-								<A href="javascript:ouvre_popup('popupInscription.php?nomEntreprise=<?php echo $nomE ?>')">Cliquer pour vous enregistrer.</A><br/><br/>
+								<A href="javascript:ouvre_popup('popupInscription.php?nomEntreprise=<?php echo $nomE ?>')">Cliquer pour vous enregistrer.</A><br/>
 								<SCRIPT language="javascript">
 								function ouvre_popup(page) {
 									window.open(page,"nom_popup","menubar=no, status=no, scrollbars=no, menubar=no, width=600, height=400");

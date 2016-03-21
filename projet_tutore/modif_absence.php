@@ -181,13 +181,12 @@
 											}
 										?>
 									</div>
-									</br>
 									</div>
-								</br>
+								
 								<input type="hidden" name="modif" value="ok"> 
 								<div align = "center" class="12u$">
 									<input type="submit" value="Modifier" />
-								</div>
+								</div></br>
 							</form>
 						</div>
 

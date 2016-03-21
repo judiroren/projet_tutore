@@ -1,5 +1,5 @@
 <?php
-require "bd.inc.php";
+
 //Permet d'ajouter un employé
 function ajoutEmploye($connexion, $code, $nom, $prenom, $adresse, $mail, $tel, $presta) {
 	
@@ -330,17 +330,17 @@ function enregistreReserv($connexion, $listePrest, $client, $date, $heure, $paye
 	$info = infosEntreprise();
 	if($info->CreneauLibre==0){
 		$minute = intval(substr($heure,3,4));
-		$limite = array(0,15,30,45,60);
+		$limite = array(0,15,30,45);
 		while(!in_array($minute,$limite)){
 			$minute--;
 		}
-		$heure = substr($heure,0,1);
-		$heuredebut = new DateTime($heure.':'.$minute.':00');
-		$a = new DateInterval('PT'.$duree.'M');
-		$heurefin = $heuredebut->add($a);
-		while(in_array($duree,$limite)){
+		$heure = intval(substr($heure,0,2));
+		$heure = new DateTime($heure.':'.$minute.':00');
+		$heure = $heure->format('H:i:s');
+		while($duree%15!=0){
 			$duree++;
 		}
+	
 	}
 	$id = code($nomE."_reserv", 'id_reserv');
 	$emp = employeOk($listePrest);
