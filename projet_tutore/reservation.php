@@ -109,7 +109,7 @@
 			}
 			foreach($_SESSION["prestListe"] as $val){
 				$c = getCategorie($val);
-				if($c->categorie==$categAncienne){
+				if($c->categorie==$_POST['categAncienne']){
 					if(!in_array($val,$_POST['choix'])){
 						unset($_SESSION["prestListe"][array_search($val, $_SESSION["prestListe"])]);
 					}

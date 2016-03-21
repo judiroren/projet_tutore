@@ -195,6 +195,33 @@
 			<div class="container">
 			<h1>Réservation : choix de la date et de l'heure</h1>
 					<?php
+					if(!isset($_GET['nomEntreprise'])) {
+					
+						echo "<h2>Le nom de l'entreprise doit être rajouté dans l'url à la suite sous la forme : ?nomEntreprise=nom.</h2>";
+					
+					} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
+					
+						echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";
+					
+					} else {
+							
+						//if(isset($_SESSION["estConnecteClient"])) {
+					
+						if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+					
+							echo "<h2>Vous devez d'abord vous connectez sur le coté client de cette entreprise </h2>";
+					
+						} else {
+							$valeurFaux = array(1,2,3,4);
+								if(isset($employe) && in_array($employe,$valeurFaux)){
+									switch($employe){
+										case 1 : 
+										case 2 : 
+										case 3 : echo "Aucun employe ne sera disponible à ce moment là ! "	;
+										break;
+										case 4 : echo "L'entreprise n'ouvre qu'entre 8h et 12h le matin et 13h et 18h l'après-midi";
+									}
+								}
 			require('date.php');
 			$date = new Date();
 			$year = date('Y')+1;
@@ -414,7 +441,7 @@
 			<input type="submit" name="annule" value="Annuler" />
 			</div>
 		</form>
-							<?php } ?>
+							<?php } } } ?>
 			</div>
 		</div>
 	</body>

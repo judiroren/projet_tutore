@@ -257,22 +257,20 @@
 						echo "<h2>Vous devez d'abord vous connectez sur le coté client de cette entreprise </h2>";
 						
 					} else {
+						?>
+						<h1>Réservation : choix de la date et de l'heure</h1>
+						<?php
+						$valeurFaux = array(1,2,3,4);
+						if(isset($employe) && in_array($employe,$valeurFaux)){
+							switch($employe){
+								case 1 : 
+								case 2 : 
+								case 3 : echo "Aucun employe ne sera disponible à ce moment là ! "	;
+								break;
+								case 4 : echo "L'entreprise n'ouvre qu'entre 8h et 12h le matin et 13h et 18h l'après-midi";
+							}
+						}
 			
-			$valeurFaux = array(1,2,3,4);
-			if(isset($employe) && in_array($employe,$valeurFaux)){
-				switch($employe){
-					case 1 : echo "Aucun employe ne sera disponible à ce moment là ! 1"	;
-					break;
-					case 2 : echo "Aucun employe ne sera disponible à ce moment là ! 2"	;
-					break;
-					case 3 : echo "Aucun employe ne sera disponible à ce moment là ! 3"	;
-					break;
-					case 4 : echo "L'entreprise n'ouvre qu'entre 8h et 12h le matin et 13h et 18h l'après-midi";
-				}
-			}
-			?>
-			<h1>Réservation : choix de la date et de l'heure</h1>
-					<?php
 			require('date.php');
 			$date = new Date();
 			$year = date('Y');
@@ -479,7 +477,6 @@
 				</table>
 				</div>
 			<?php endforeach; 
-		//	print_r($employe);
 			?>
 		</div>
 		<form method="post" action="">
