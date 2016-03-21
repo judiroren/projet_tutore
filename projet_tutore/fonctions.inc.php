@@ -1,13 +1,5 @@
 <?php
-	
-//Permet de détruire une session, c'est à dire se déconnecter
-/** function detruiteSession() {
-	
-	session_start();
-	session_destroy();
-	header('Location: http://localhost/projet_tutore/projet_tutore/accueil_backoffice.php?nomEntreprise='.$_GET['nomEntreprise']);
-} */
-	
+
 //Permet d'obtenir le tableau des absences
 function absence($nomE, $id_employe, $connexion){
 	
