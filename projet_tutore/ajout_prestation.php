@@ -65,9 +65,9 @@
 		
 	}
 	if(isset($_POST['modifie'])){
-		
-		header('Location: modif_prestation.php?nomEntreprise='.$nomE.'&id_presta='.$_POST['presta_modif']);
-		
+		if(isset($_POST['presta_modif'])){
+			header('Location: modif_prestation.php?nomEntreprise='.$nomE.'&id_presta='.$_POST['presta_modif']);
+		}
 	}
 	
 	}

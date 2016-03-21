@@ -75,7 +75,9 @@
 			
 	}
 	if(isset($_POST['modifie'])){
-		header('Location: modif_absence.php?nomEntreprise='.$nomE.'&id_absence='.$_POST['absence_modif']);
+		if(isset($_POST['absence_modif'])){
+			header('Location: modif_absence.php?nomEntreprise='.$nomE.'&id_absence='.$_POST['absence_modif']);
+		}
 	}
 	
 	}

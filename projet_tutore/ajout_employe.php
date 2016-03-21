@@ -133,7 +133,9 @@
 		}
 	}
 	if(isset($_POST['modifie'])){
-		header('Location: modif_employe.php?nomEntreprise='.$nomE.'&id_employe='.$_POST['employe_modif']);
+		if(isset($_POST['employe_modif'])){
+			header('Location: modif_employe.php?nomEntreprise='.$nomE.'&id_employe='.$_POST['employe_modif']);
+		}
 	}
 	
 	}
