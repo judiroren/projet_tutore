@@ -128,7 +128,7 @@
 								</div>
 								</br>
 								<div align = "center" class="12u$">
-									<input type="submit" name ="connecte" value="Connection" />
+									<input type="submit" name ="connecte" value="Connexion" />
 								</div>
 							</form>
 							<?php 

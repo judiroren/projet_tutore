@@ -148,7 +148,7 @@
 								echo $nomE;
 							?>
 							</h1>
-							<p>Page de gestion de l'entreprise</p>
+							<p>Réservation : choix de la date</p>
 							
 							<?php 
 							
@@ -195,6 +195,23 @@
 			<div class="container">
 			<h1>Réservation : choix de la date et de l'heure</h1>
 					<?php
+					$valeurFaux = array(1,2,3,4);
+					switch($erreur){
+						case 2 : echo "Saisissez une date et une heure ! ";
+						break;
+						case 3 : echo "Vous ne pouvez pas faire de réservation un Dimanche ! ";
+						break;
+					}
+					if(isset($employe) && in_array($employe,$valeurFaux)){
+						switch($employe){
+							case 1 :
+							case 2 :
+							case 3 : echo "Aucun employe ne sera disponible à ce moment là ! "	;
+							break;
+							case 4 : echo "L'entreprise n'ouvre qu'entre 8h et 12h le matin et 13h et 18h l'après-midi";
+						}
+					}
+					
 					if(!isset($_GET['nomEntreprise'])) {
 					
 						echo "<h2>Le nom de l'entreprise doit être rajouté dans l'url à la suite sous la forme : ?nomEntreprise=nom.</h2>";

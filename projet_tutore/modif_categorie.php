@@ -132,7 +132,7 @@
 								echo $nomE;
 							?>
 							</h1>
-							<p>Page de gestion de l'entreprise</p>
+							<p>Gestion des catégories</p>
 							
 								<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
 								<a href="modif_entreprise.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des informations de l'entreprise </a></br>

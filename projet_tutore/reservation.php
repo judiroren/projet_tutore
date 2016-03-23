@@ -109,7 +109,11 @@
 			}
 			foreach($_SESSION["prestListe"] as $val){
 				$c = getCategorie($val);
-				if($c->categorie==$_POST['categAncienne']){
+				$categAncienne="";
+				if(isset($_POST['categAncienne'])){
+					$categAncienne = $_POST['categAncienne'];
+				}
+				if($c->categorie==$categAncienne){
 					if(!in_array($val,$_POST['choix'])){
 						unset($_SESSION["prestListe"][array_search($val, $_SESSION["prestListe"])]);
 					}
@@ -188,7 +192,7 @@
 								echo $nomAffichage;
 							?>
 							</h1>
-							<p>Page de gestion de l'entreprise</p>
+							<p>Réservation : choix des réservations</p>
 							
 							<?php 
 							

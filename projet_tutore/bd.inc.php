@@ -393,11 +393,11 @@ function getCategorie($presta){
 function employeReserv($date, $jourSem, $heure, $listeEmp, $duree){
 	$connexion = connect();
 	$nomE = $_GET['nomEntreprise'];
-	$h = substr($heure,0,2);
+	$h = intval(substr($heure,0,1));
 	if(8 <= $h || $h <12){
 		$attribut = $jourSem.'M';
 		$liste = empPlanningOk($listeEmp, $attribut, $date);
-		if(sizeof($liste) == 0){
+		if($liste == null){
 			return 1;	//pas d'employe travaillant ce jour
 		}else{
 			$liste = empAbsenceOk($liste, $date, 'M');
@@ -408,14 +408,14 @@ function employeReserv($date, $jourSem, $heure, $listeEmp, $duree){
 				if(sizeof($liste) == 0){
 					return 3;	//aucun horaire de dispo
 				}else{
-					return liste;	//on a au moins quelqu'un
+					return $liste;	//on a au moins quelqu'un
 				}
 			}
 		}
-	}else if(13 <= $h || $h <18){
+	}else if(13 <= $h || $h < 18){
 		$attribut = $jourSem.'A';
 		$liste = empPlanningOk($listeEmp, $attribut, $date);
-		if(sizeof($liste) == 0){
+		if($liste == null){
 			return 1;	//pas d'employe travaillant ce jour
 		}else{
 			$liste = empAbsenceOk($liste, $date, 'A');
@@ -426,7 +426,7 @@ function employeReserv($date, $jourSem, $heure, $listeEmp, $duree){
 				if(sizeof($liste) == 0){
 					return 3;	//aucun horaire de dispo
 				}else{
-					return liste;	//on a au moins quelqu'un
+					return $liste;	//on a au moins quelqu'un
 				}
 			}
 		}
@@ -441,14 +441,43 @@ function empPlanningOk($listeEmp, $attribut, $date){
 	$nomE = $_GET['nomEntreprise'];
 	$newListe = array();
 	foreach($listeEmp as $val){
-		$rqt = $connexion->prepare("SELECT ".$attribut." FROM ".$nomE."_planning WHERE code_employe = '".$val."'");
+		$rqt = $connexion->prepare("SELECT * FROM ".$nomE."_planning WHERE code_employe = '".$val."'");
 		$rqt->execute();
 		$donnees = $rqt->fetch(PDO::FETCH_OBJ);
-		if($donnees->$attribut==1){
-			array_push($newListe, $val);
+		switch($attribut){
+			case 'LundiA' : if($donnees->LundiA==1){
+								array_push($newListe, $val);	}	break;	
+			case 'LundiM' : if($donnees->LundiM==1){
+								array_push($newListe, $val);	}	break;
+			case 'MardiA' : if($donnees->MardiA==1){
+								array_push($newListe, $val);	}	break;			
+			case 'MardiM' : if($donnees->MardiM==1){
+								array_push($newListe, $val);	}	break;			
+			case 'MercrediA' : if($donnees->MercrediA==1){
+								array_push($newListe, $val);	}	break;	
+			case 'MercrediM' : if($donnees->MercrediM==1){
+								array_push($newListe, $val);	}	break;
+			case 'JeudiA' : if($donnees->JeudiA==1){
+								array_push($newListe, $val);	}	break;
+			case 'JeudiM' : if($donnees->JeudiM==1){
+								array_push($newListe, $val);	}	break;
+			case 'VendrediA' : if($donnees->VendrediA==1){
+								array_push($newListe, $val);	}	break;
+			case 'VendrediM' : if($donnees->VendrediM==1){
+								array_push($newListe, $val);	}	break;
+			case 'SamediA' : if($donnees->SamediA==1){
+								array_push($newListe, $val);	}	break;
+			case 'SamediM' : if($donnees->SamediM==1){
+								array_push($newListe, $val);	}	break;
 		}
+		
 	}
-	return $newListe;
+	if(empty($newListe)){
+		return null;
+	}else{
+		return $newListe;
+	}
+	
 }
 
 //Renvoi la liste des employés sans absence à ce moment 
@@ -457,7 +486,7 @@ function empAbsenceOk($listeEmp, $date, $moment){
 	$nomE = $_GET['nomEntreprise'];
 	$newListe = array();
 	foreach($listeEmp as $val){
-		$rqt = $connexion->prepare("SELECT dateDebut, dateFin, demiJourDebut, demiJourFin FROM ".$nomE."_absence WHERE code_employe = '".$val."' AND ".$date." BETWEEN dateDebut AND dateFin");
+		$rqt = $connexion->prepare("SELECT dateDebut, dateFin, demiJourDebut, demiJourFin FROM ".$nomE."_absence WHERE code_employe = '".$val."' AND '".$date."' BETWEEN dateDebut AND dateFin");
 		$rqt->execute();
 		if($rqt->rowCount()==0){
 			array_push($newListe, $val);
@@ -483,12 +512,12 @@ function empHoraireOk($listeEmp, $date, $heure, $duree, $moment){
 	$a = new DateInterval('PT'.$duree.'M');
 	$heurefin = $heuredebut->add($a);
 	foreach($listeEmp as $val){
-		$rqt = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE employe = '".$val."' AND ".$date." = date");
+		$rqt = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE employe = '".$val."' AND '".$date."' = date");
 		$rqt->execute();
 		if($rqt->rowCount()==0){
 			array_push($newListe,$val);
 		}else{
-			while($donnes=$rqt->fetch(PDO::FETCH_OBJ)){
+			while($donnees=$rqt->fetch(PDO::FETCH_OBJ)){
 				$resDebut = new DateTime($donnees->heure);
 				$b = new DateInterval('PT'.$donnees->duree.'M');
 				$resFin = $resDebut->add($b);

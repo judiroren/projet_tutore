@@ -112,7 +112,7 @@
 	}	
 
 	if (isset($_POST['supprime'])) {
-		
+		if(isset($_POST['employe_modif'])){
 		//Permet de selectionner toutes les réservations de l'employé
 		$employe_modif = $_POST['employe_modif'];
 		$rqt = reservationsEmp($employe_modif);
@@ -130,6 +130,7 @@
 		}else{
 			
 			$supprimeOk = 0;
+		}
 		}
 	}
 	if(isset($_POST['modifie'])){
@@ -245,10 +246,10 @@
 								}
 							}
 							if(isset($_POST['supprime'])){
-								if($supprimeOk==1){
-									echo "<p> Suppression d'employé effectué. </p>";
+								if(isset($supprimeOk) && $supprimeOk==1){
+									echo "<p> Suppression de l'employé effectuée. </p>";
 								}else{
-									echo "<p> Suppression d'employe impossible : cet employé à encore des rendez-vous de prévu. </p>";	
+									echo "<p> Suppression de l'employé impossible.</p>";	
 								}
 							}
 							?>

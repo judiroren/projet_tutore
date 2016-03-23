@@ -67,12 +67,12 @@
 	}
 	
 	if (isset($_POST['supprime'])) {
-			
+		if(isset($_POST['absence_modif'])){
 			//Permet de supprimer l'absence
 			supprimerAbsence($connexion, $_POST['absence_modif']);
 			
 			$supprimeOk = 1;
-			
+		}
 	}
 	if(isset($_POST['modifie'])){
 		if(isset($_POST['absence_modif'])){
@@ -171,12 +171,14 @@
 								
 							}
 							if(isset($_POST['supprime'])){
-								if($supprimeOk==1){
+								if(isset($supprimeOk) && $supprimeOk==1){
 									echo "<p> Suppression de l'absence effectuée. </p>";
 								}else{
 									echo "<p> Suppression de l'absence impossible.</p>";	
 								}
+								
 							}
+							
 							
 							?>
 							

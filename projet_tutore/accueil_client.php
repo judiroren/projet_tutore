@@ -116,7 +116,7 @@
 								
 							?>
 							</h1>
-							<p>Page de gestion de l'entreprise</p>
+							<p>Page d'accueil de l'entreprise</p>
 							
 							<?php 
 							}	
@@ -161,7 +161,7 @@
 								</div>
 								</br>
 								<div align = "center" class="12u$">
-									<input type="submit" name ="connecte" value="Connection" />
+									<input type="submit" name ="connecte" value="Connexion" />
 								</div>
 							</form>
 							

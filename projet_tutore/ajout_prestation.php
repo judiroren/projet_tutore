@@ -60,9 +60,10 @@
 	}
 
 	if(isset($_POST['supprime'])){
-		
-		supprimerPresta($connexion, $_POST['presta_modif']);
-		
+		if(isset($_POST['presta_modif'])){
+			supprimerPresta($connexion, $_POST['presta_modif']);
+			$supprimeok = 1;
+		}
 	}
 	if(isset($_POST['modifie'])){
 		if(isset($_POST['presta_modif'])){
@@ -166,7 +167,11 @@
 								}
 							}
 							if(isset($_POST['supprime'])){
-								echo "<p> Suppression de prestation effectué </p>";
+								if(isset($supprimeOk) && $supprimeOk==1){
+									echo "<p> Suppression de la prestation effectuée. </p>";
+								}else{
+									echo "<p> Suppression de la prestation impossible.</p>";	
+								}
 							}
 							?>
 							<form method="post" action="">

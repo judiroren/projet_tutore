@@ -100,7 +100,7 @@
 								echo $nomAffichage;
 							?>
 							</h1>
-							<p>Page de gestion de l'entreprise</p>
+							<p>Page d'inscription client</p>
 							
 						</div>
 						<a href="accueil_client.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>

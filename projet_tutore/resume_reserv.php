@@ -167,7 +167,7 @@
 	
 							<h1>Résumé de la réservation : </h1>
 							<?php 
-							
+						//echo	$_SESSION["rst"];
 							if(!isset($_GET['nomEntreprise'])) {
 						
 								echo "<h2>Le nom de l'entreprise doit être rajouté dans l'url à la suite sous la forme : ?nomEntreprise=nom.</h2>";

@@ -78,8 +78,6 @@
 				$erreur = 2;
 			}
 					
-		}else{
-			$erreur = 1;
 		}
 		
 		if(isset($_POST['annule'])){
@@ -183,7 +181,7 @@
 						}	} 	//}
 						?>
 							</h1>
-							<p>Page de gestion de l'entreprise</p>
+							<p>Réservation : choix de la date</p>
 							
 							<?php 
 							
@@ -199,7 +197,7 @@
 												
 									} else {
 							
-							if(isset($_SESSION["estConnecte"])) {
+							if(isset($_SESSION["estConnecteClient"])) {
 								
 							?>
 								<a href="accueil_client.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
@@ -261,6 +259,12 @@
 						<h1>Réservation : choix de la date et de l'heure</h1>
 						<?php
 						$valeurFaux = array(1,2,3,4);
+						switch($erreur){
+							case 2 : echo "Saisissez une date et une heure ! ";
+							break;
+							case 3 : echo "Vous ne pouvez pas faire de réservation un Dimanche ! ";
+							break;
+						}
 						if(isset($employe) && in_array($employe,$valeurFaux)){
 							switch($employe){
 								case 1 : 
