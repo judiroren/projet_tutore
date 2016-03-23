@@ -133,14 +133,17 @@
 								
 							} else {
 							
+							
+							?>
+							</br>
+							<h2>Modification d'une absence</h2>
+							<?php 
 							if(isset($_POST['modif'])){
 								echo "<p> Modification de l'absence effectuée </p>";
 							}
 							?>
-							</br>
-							<h2>Modification d'une absence</h2>
 							<form method="post" action="">
-								</br>
+								
 									</br>
 									Motif de l'absence : <div class="6u 12u$(mobile)"><input type="text" name="motif"  value="<?php echo $valAbs->motif;?>"></div>			
 									</br>

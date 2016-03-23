@@ -379,4 +379,26 @@ function supprimeCategorie($connexion, $categorie){
 	$rqtModifPrest->execute();
 }
 
+//Permet de modifier une absence
+function modifierAbsence($connexion, $code, $motif, $debutReserv, $finReserv, $demiDebut, $demiFin) {
+
+	$nomE = $_SESSION["nomSession"];
+ 
+	$rqtMajAbs = $connexion->prepare("UPDATE ".$nomE."_absence SET motif = :motif, dateDebut = :debutReserv, dateFin = :finReserv,
+            demiJourDebut = :demiDebut, demiJourFin = :demiFin WHERE id_absence = :code");
+
+	$rqtMajAbs->execute(array('motif' => $motif, 'debutReserv' => $debutReserv,
+			'finReserv' => $finReserv, 'demiDebut' => $demiDebut, 'demiFin' => $demiFin, 'code' => $code));
+
+}
+
+//Permet de supprimer une absence
+function supprimerAbsence($connexion, $code) {
+
+	$nomE = $_SESSION["nomSession"];
+	 
+	$rqtSupAbs = $connexion->prepare("DELETE FROM ".$nomE."_absence WHERE id_absence='".$code."'");
+	$rqtSupAbs->execute();
+
+}
 ?>
