@@ -47,7 +47,7 @@
 					if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
 						$_SESSION["client"] = $j->id_client;
 						$_SESSION["estConnecteClient"] = 1;
-						
+						$_SESSION["nomSession"] = $_GET['nomEntreprise'];
 							
 					}
 				}
