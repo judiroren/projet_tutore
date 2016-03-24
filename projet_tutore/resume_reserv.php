@@ -48,7 +48,7 @@
 			}
 		}
 	}
-
+	$ok = 0;
 	if(isset($_POST['sanspaiement'])){
 		if(isset($_SESSION['client'])){
 			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 0, $_SESSION['duree'], $_SESSION['prix']);
@@ -228,10 +228,17 @@
 							<form method="post" action="">
 							<?php
 							if(isset($_SESSION["estConnecteClient"])) {
+								if($ok==0){
 								?>
 								<input type="submit" name="sanspaiement" value="Confirmation" />
-								<input type="submit" name="avecpaiement" value="Paiment" />
+								<input type="submit" name="avecpaiement" value="Paiement" />
 								<?php
+								}else{
+								?>
+								<input type="submit" name="retour" value="Retour à l'accueil" />
+								<input type="submit" name="reserv" value="Nouvelle réservation" />
+								<?php
+								}
 							} else {
 								?>
 								
@@ -249,8 +256,10 @@
 								}
 								<?php
 							}
+							if($ok == 0){
 							?>
 							<input type="submit" name="annule" value="Annulation" />
+							<?php }?>
 							</form>
 							
 							<?php } } //} ?>

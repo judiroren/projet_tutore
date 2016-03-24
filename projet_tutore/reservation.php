@@ -146,6 +146,21 @@
 		}
 		
 		}
+		if(isset($_SESSION['prestListe']) && !isset($_POST['reserv']) && !isset($_POST['categorie'])){
+			unset($_SESSION['prestListe']);
+		}
+		if(isset($_SESSION['date'])){
+			unset($_SESSION['date']);
+		}
+		if(isset($_SESSION['heure'])){
+			unset($_SESSION['heure']);
+		}
+		if(isset($_SESSION['duree'])){
+			unset($_SESSION['duree']);
+		}
+		if(isset($_SESSION['prix'])){
+			unset($_SESSION['prix']);
+		}
 		}
 	//}
 	
@@ -279,7 +294,11 @@
 						Catégorie : <div class="6u 12u$(mobile)"><select name="categorie">
 						<option value=""></option>
 						<?php while($donnees = $catego->fetch(PDO::FETCH_OBJ)){
-							echo "<option value='$donnees->categorie'>$donnees->categorie</option>";
+							if($donnees->categorie==$categActuelle){
+								echo "<option value='$donnees->categorie' selected='selected'>$donnees->categorie</option>";
+							}else{
+								echo "<option value='$donnees->categorie'>$donnees->categorie</option>";
+							}
 						}?>
 						</select></div></br>
 						<input type="submit" name="ChoixCat" value="Choisir"/></br></br>
