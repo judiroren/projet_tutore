@@ -145,7 +145,7 @@
 
 <html>
 	<head>
-		<title>Portail de réservation : BackOffice</title>
+		<title>Portail entreprise : gestion employé</title>
 		<link rel="stylesheet" href="assets/css/main.css" />
 
 	</head>
@@ -276,22 +276,80 @@
 							<form method="post" action="" class="formulaire">
 								
 								</br>
-									Nom de l'employé : <div class="6u 12u$(mobile)"><input type="text" name="nom"  required/></div>	
+									Nom de l'employé :
+									<?php
+										if ( isset($_POST["nom"]) ) {
+									?>
+									<div class="6u 12u$(mobile)"><input type="text" name="nom" value="<?php echo $_POST['nom'];?>" required/></div>	
+									<?php
+										} else { 
+									?>
+									<div class="6u 12u$(mobile)"><input type="text" name="nom" required/></div>
+									<?php
+										}
+									?>	
 									</br>
-									Prénom de l'employé: <div class="6u 12u$(mobile)"><input type="text" name="prenom" required/></div>				
+									Prénom de l'employé: 
+									<?php
+										if ( isset($_POST["prenom"]) ) {
+									?>
+									<div class="6u 12u$(mobile)"><input type="text" name="prenom" value="<?php echo $_POST['prenom'];?>" required/></div>	
+									<?php
+										} else { 
+									?>		
+									<div class="6u 12u$(mobile)"><input type="text" name="prenom" required/></div>
+									<?php
+										}
+									?>
 									</br>
-									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" required/></div>		
+									Adresse postale :
+									<?php
+										if ( isset($_POST["adresse"]) ) {
+									?>		
+									<div class="6u 12u$(mobile)"><input type="text" name="adresse" value="<?php echo $_POST['adresse'];?>" required/></div>	
+									<?php
+										} else { 
+									?>	
+									<div class="6u 12u$(mobile)"><input type="text" name="adresse" required/></div>	
+									<?php
+										}
+									?>
 									</br>
-									Adresse mail : <div class="6u 12u$(mobile)"><input type="email" name="mail" required/></div>			
+									Adresse mail :</br>
+									<font size=3>format du champs : email classique avec un seul '@' et un seul '.' après l'@ (ex : truc.machin@hotmail.com)</font>
+									<?php
+										if ( isset($_POST["mail"]) ) {
+									?>	
+									<div class="6u 12u$(mobile)"><input type="email" name="mail" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+$" value="<?php echo $_POST['mail'];?>" required/></div>
+									<?php
+										} else { 
+									?>	
+									<div class="6u 12u$(mobile)"><input type="email" name="mail" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+$" required/></div>
+									<?php
+										}
+									?>
 									</br>
-									Numéro de téléphone : <div class="6u 12u$(mobile)"><input type="text" pattern="^0[1-9][0-9]{8}" name="tel" required/></div>					
+									Numéro de téléphone :</br>
+									<font size=3>format du champs : un "0" suivi d'un chiffre allant de "1 à 6" ou un "8" suivi de 7 chiffres (ex : 0607891254)</font>
+									<?php
+										if ( isset($_POST["tel"]) ) {
+									?>	
+									<div class="6u 12u$(mobile)"><input type="text" pattern="^0[1-68][0-9]{8}$" name="tel" value="<?php echo $_POST['tel'];?>" required/></div>
+									<?php
+										} else { 
+									?>	
+									<div class="6u 12u$(mobile)"><input type="text" pattern="^0[1-68][0-9]{8}$" name="tel" required/></div>
+									<?php
+										}
+									?>		
 									</br>
-									Compétence : <div class="6u 12u$(mobile)"><select name="presta[]" multiple>
+									Compétence : 
+									<div class="6u 12u$(mobile)"><select name="presta[]" multiple>
 										<option value=""  selected="selected"></option>
 									<?php 
 									while($rqtPresta=$listePresta->fetch(PDO::FETCH_OBJ)){
 										?>
-										<option value="<?php echo $rqtPresta->id_presta;?>"><?php echo $rqtPresta->descriptif_presta;?></option>
+										<option value="<?php echo $rqtPresta->id_presta;?>"><?php echo $rqtPresta->descriptif_presta." ".$rqtPresta->categorie;?></option>
 									<?php 
 									}
 									?>

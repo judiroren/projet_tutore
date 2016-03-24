@@ -320,7 +320,7 @@
 											}
 											
 											$unePresta = infosPrestation($unePrest->id_presta);
-											echo "<td>$unePresta->descriptif_presta</td>
+											echo "<td>$unePresta->descriptif_presta  $unePresta->categorie</td>
 													  <td>$unePresta->cout €</td>
 													  <td>";
 											if ($unePresta->paypal >= 1 ) {
@@ -340,7 +340,7 @@
 												echo "<tr><td> <input type='checkbox' name='choix[]' value='$unePrest->id_presta' ></td>";
 											}
 										$unePresta = infosPrestation($unePrest->id_presta);
-										echo "<td>$unePresta->descriptif_presta</td>
+										echo "<td>$unePresta->descriptif_presta  $unePresta->categorie</td>
 										<td>$unePresta->cout €</td>
 										<td>";
 										if ($unePresta->paypal >= 1 ) {

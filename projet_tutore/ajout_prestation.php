@@ -82,7 +82,7 @@
 
 <html>
 	<head>
-		<title>Portail de réservation : BackOffice</title>
+		<title>Portail entreprise : prestations</title>
 		<link rel="stylesheet" href="assets/css/main.css" />
 
 	</head>
@@ -179,7 +179,7 @@
 								<?php 
 								while($donnees=$listePresta->fetch(PDO::FETCH_OBJ)){
 								?>
-									<option value="<?php echo $donnees->id_presta ?>"><?php echo $donnees->descriptif_presta; ?></option>   
+									<option value="<?php echo $donnees->id_presta ?>"><?php echo $donnees->descriptif_presta." ".$donnees->categorie; ?></option>   
 								<?php
 								}
 								?>
@@ -195,11 +195,45 @@
 							<form method="post" action="">
 								</br>
 									Descriptif de la prestation : </br>
-									<div class="6u 12u$(mobile)"><textarea name="descrip" required></textarea></div>			
+									<?php
+										if ( isset($_POST["descrip"]) ) {
+									?>
+									<div class="6u 12u$(mobile)"><textarea name="descrip" value="<?php echo $_POST['descrip'];?>" required></textarea></div>	
+									<?php
+										} else { 
+									?>
+									<div class="6u 12u$(mobile)"><textarea name="descrip" required></textarea></div>
+									<?php
+										}
+									?>
 									</br>
-									Prix de la prestation (en €): <div class="6u 12u$(mobile)"><input type="text" pattern="[0-9]{1,}[.,]{0,1}[0-9]{0,2}" name="cout" required/></div>				
+									Prix de la prestation (en €):</br>
+									<font size=-1>format du champs : chiffres suivi d'un "." suivi de chiffres (ex : 15.90)</font>
+									<?php
+										if ( isset($_POST["cout"]) ) {
+									?>
+									<div class="6u 12u$(mobile)"><input type="text" pattern="[0-9]{1,}[.,]{0,1}[0-9]{0,2}" name="cout" value="<?php echo $_POST['cout'];?>" required/></div>	
+									<?php
+										} else { 
+									?>
+									<div class="6u 12u$(mobile)"><input type="text" pattern="[0-9]{1,}[.,]{0,1}[0-9]{0,2}" name="cout" required/></div>
+									<?php
+										}
+									?>
 									</br>
-									Durée de la prestation (en minutes) : <div class="6u 12u$(mobile)"><input type="text" pattern="[0-9]+" name="duree" required/></div>	
+									Durée de la prestation (en minutes) :</br>
+									<font size=-1>format du champs : chiffres uniquement (ex : 65)</font>
+									<?php
+										if ( isset($_POST["duree"]) ) {
+									?>
+									<div class="6u 12u$(mobile)"><input type="text" pattern="[0-9]+" name="duree" value="<?php echo $_POST['duree'];?>" required/></div>	
+									<?php
+										} else { 
+									?>
+									<div class="6u 12u$(mobile)"><input type="text" pattern="[0-9]+" name="duree" required/></div>
+									<?php
+										}
+									?>
 									</br>
 									Paiement PayPal : <input type="checkbox" name="paypal" value=1 />
 								

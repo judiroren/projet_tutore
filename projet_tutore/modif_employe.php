@@ -201,21 +201,26 @@
 									Prénom de l'employé: <div class="6u 12u$(mobile)">
 									<input type="text" name="prenom" value="<?php echo $valEmp->prenom_employe;?>"></div>				
 									</br>
-									Adresse postale : <div class="6u 12u$(mobile)">
+									Adresse postale :
+									<div class="6u 12u$(mobile)">
 									<input type="text" name="adresse" value="<?php echo $valEmp->adresse_emp;?>"></div>	
 									</br>
-									Adresse mail : <div class="6u 12u$(mobile)">
-									<input type="email" name="mail" value="<?php echo $valEmp->mail_emp;?>"></div>				
+									Adresse mail : </br>
+									<font size=3>format du champs : email classique avec un seul '@' et un seul '.' après l'@ (ex : truc.machin@hotmail.com)</font>
+									<div class="6u 12u$(mobile)">
+									<input type="email" name="mail" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+$" value="<?php echo $valEmp->mail_emp;?>"></div>				
 									</br>
-									Numéro de téléphone : <div class="6u 12u$(mobile)">
-									<input type="text" pattern="^0[1-9][0-9]{8}" name="tel" value="<?php echo $valEmp->telephone_emp;?>"></div>				
+									Numéro de téléphone : </br>
+									<font size=3>format du champs : un "0" suivi d'un chiffre allant de "1 à 6" ou un "8" suivi de 7 chiffres (ex : 0607891254)</font>
+									<div class="6u 12u$(mobile)">
+									<input type="text" pattern="^0[1-68][0-9]{8}$" name="tel" value="<?php echo $valEmp->telephone_emp;?>"></div>				
 									</br>
 									Compétences déjà acquise : <div class="6u 12u$(mobile)"><select name="competence[]" id="competence" size=3 multiple>
 										
 									<?php 
 									while($rqtComp=$comp->fetch(PDO::FETCH_OBJ)){
 									?>
-										<option value="<?php echo $rqtComp->prestation;?>" ><?php echo $rqtComp->descriptif_presta;?></option>
+										<option value="<?php echo $rqtComp->prestation;?>" ><?php echo $rqtComp->descriptif_presta." ".$rqtComp->categorie;?></option>
 									<?php 	
 									
 									}
@@ -224,7 +229,7 @@
 									</br><center>
 									<INPUT type="button" value="\/" onClick="Deplacer(this.form.competence,this.form.prestation)">
 									<INPUT type="button" value="/\" onClick="Deplacer(this.form.prestation,this.form.competence)">	
-										<INPUT type="button" value="Valider" onClick="Valider(this.form.prestation,this.form.competence)">
+									<INPUT type="button" value="Verrouiller les compétences" onClick="Valider(this.form.prestation,this.form.competence)">
 									</center>
 									Prestations : <div class="6u 12u$(mobile)"><select name="prestation[]" id="prestation" size=3 multiple>
 										
@@ -232,7 +237,7 @@
 									$i=0;
 									while($rqtPrest = $presta->fetch(PDO::FETCH_OBJ)){
 									?>
-										<option value="<?php echo $rqtPrest->id_presta;?>" ><?php echo $rqtPrest->descriptif_presta;?></option>
+										<option value="<?php echo $rqtPrest->id_presta;?>" ><?php echo $rqtPrest->descriptif_presta." ".$rqtPrest->categorie;?></option>
 									<?php 	
 									$i++;
 									}

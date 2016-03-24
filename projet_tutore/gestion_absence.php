@@ -86,7 +86,7 @@
 
 <html>
 	<head>
-		<title>Portail de réservation : BackOffice</title>
+		<title>Portail entreprise : gestion des absences</title>
 		<link rel="stylesheet" href="assets/css/main.css" />
 
 	</head>
@@ -185,10 +185,18 @@
 							<form method="post" action="" class="formulaire">
 								<div class="6u 12u$(mobile)"><select name="absence_modif">
 								<?php 
-								$listeAbs = $connexion->query("SELECT id_absence, code_employe, motif, dateDebut, dateFin, nom_employe, prenom_employe 
+								$listeAbs = $connexion->query("SELECT id_absence, code_employe, motif, dateDebut, dateFin, demiJourDebut, demiJourFin, nom_employe, prenom_employe 
 								FROM ".$nomE."_absence JOIN ".$nomE."_employe ON code_employe = id_employe");
 								while($donnees=$listeAbs->fetch(PDO::FETCH_OBJ)){
-									$absences = "du ".$donnees->dateDebut." au ".$donnees->dateFin." ".$donnees->nom_employe." ".$donnees->prenom_employe." : ".$donnees->motif;
+									if( ($donnees->demiJourDebut) == 0 && ($donnees->demiJourFin) == 0) {
+										$absences = "du ".$donnees->dateDebut." matin au ".$donnees->dateFin." matin : ".$donnees->nom_employe." ".$donnees->prenom_employe." : ".$donnees->motif;
+									} else if( ($donnees->demiJourDebut) == 1 && ($donnees->demiJourFin) == 0) {
+										$absences = "du ".$donnees->dateDebut." après-midi au ".$donnees->dateFin." matin : ".$donnees->nom_employe." ".$donnees->prenom_employe." : ".$donnees->motif;
+									} else if(($donnees->demiJourDebut) == 1 && ($donnees->demiJourFin) == 1) {
+										$absences = "du ".$donnees->dateDebut." après-midi au ".$donnees->dateFin." après-midi : ".$donnees->nom_employe." ".$donnees->prenom_employe." : ".$donnees->motif;
+									} else if(($donnees->demiJourDebut) == 0 && ($donnees->demiJourFin) == 1){
+										$absences = "du ".$donnees->dateDebut." matin au ".$donnees->dateFin." après-midi : ".$donnees->nom_employe." ".$donnees->prenom_employe." : ".$donnees->motif;
+									}	
 								?>
 									<option value="<?php echo $donnees->id_absence ?>"><?php echo $absences; ?></option>   
 								<?php
@@ -216,7 +224,18 @@
 									?>
 									</select>
 									</br>
-									Motif de l'absence : <div class="6u 12u$(mobile)"><input type="text" name="motif"  /></div>			
+									Motif de l'absence : 
+									<?php
+										if ( isset($_POST["motif"]) ) {
+									?>	
+									<div class="6u 12u$(mobile)"><input type="text" name="motif" value="<?php echo $_POST['motif'];?>"  /></div>	
+									<?php
+										} else { 
+									?>
+									<div class="6u 12u$(mobile)"><input type="text" name="motif"  /></div>	
+									<?php
+										}
+									?>
 									</br>
 									Début de l'absence : 
 									<div class="6u 12u$(mobile)">

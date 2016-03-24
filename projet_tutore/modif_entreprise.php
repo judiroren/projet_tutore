@@ -60,7 +60,7 @@
 
 <html>
 	<head>
-		<title>Portail de réservation : BackOffice</title>
+		<title>Portail entreprise : informations</title>
 		<link rel="stylesheet" href="assets/css/main.css" />
 
 	</head>
@@ -89,7 +89,7 @@
 							
 							?>
 							<h1><?php echo $nomE?></h1>
-							<p>Modification des informations de l'entreprise</p>
+							<p>gestion informations</p>
 							<a href="accueil_backoffice.php?nomEntreprise=<?php echo $nomE ?>"> Accueil </a></br>
 							<a href="modif_entreprise.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des informations de l'entreprise </a></br>
 							<a href="ajout_employe.php?nomEntreprise=<?php echo $nomE ?>"> Gestion des employés </a></br>
@@ -142,7 +142,6 @@
 								echo "<p>Pour changer de mot de passe, il faut renseigner 2 fois le nouveau mot de passe</p>";
 								}else{
 								echo "<p> Changement effectué </p>";
-								//header('Location: accueil_backoffice.php?nomEntreprise='.$nomE.'');
 								}
 							}
 				
@@ -157,9 +156,13 @@
 									Confirmer le mot de passe : <div class="6u 12u$(mobile)"><input type="text" name="mdp2" /></div>								
 									</br>
 									<h3>Informations générale : </h3></br>
-									E-mail : <div class="6u 12u$(mobile)"><input type="email" name="mail" value="<?php echo $i->mailEntreprise?>" /></div>			
+									E-mail : </br>
+									<font size=3>format du champs : email classique avec un seul '@' et un seul '.' après l'@ (ex : truc.machin@hotmail.com)</font>
+									<div class="6u 12u$(mobile)"><input type="email" name="mail" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+$" value="<?php echo $i->mailEntreprise?>" /></div>			
 									</br>
-									Téléphone : <div class="6u 12u$(mobile)"><input type="text" pattern="^0[1-9][0-9]{8}" name="tel" value="<?php echo $i->telEntreprise?>"/></div>				
+									Téléphone : </br>
+									<font size=3>format du champs : un "0" suivi d'un chiffre allant de "1 à 6" ou un "8" suivi de 7 chiffres( ex : 0607891254)</font>
+									<div class="6u 12u$(mobile)"><input type="text" pattern="^0[1-68][0-9]{8}$" name="tel" value="<?php echo $i->telEntreprise?>"/></div>				
 									</br>
 									Adresse postale : <div class="6u 12u$(mobile)"><input type="text" name="adresse" value="<?php echo $i->adresseEntreprise?>"/></div>	
 									</br>
