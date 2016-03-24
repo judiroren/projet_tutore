@@ -635,4 +635,30 @@ function assemblageCren($tabFinal, $tab){
 		}
 	}
 }
+
+//Vérifie l'existance d'un login pour un client
+function existeLoginClient($log){
+	$connexion = connect();
+	$nomE = $_GET['nomEntreprise']; 
+	$rqt = $connexion->prepare('SELECT * FROM '.$nomE.'_client WHERE login_client = "'.$log.'"');
+	$rqt->execute();
+	if($rqt->rowCount()==0){
+		return 0;
+	}else{
+		return 1;
+	}
+}
+
+//Vérifie l'existance d'un login pour une entreprise
+function existeLoginEntreprise($log){
+	$connexion = connect();
+	$_SESSION['t'] = 'SELECT * FROM entreprise WHERE loginAdmin = "'.$log.'"';
+	$rqt = $connexion->prepare('SELECT * FROM entreprise WHERE loginAdmin = "'.$log.'"');
+	$rqt->execute();
+	if($rqt->rowCount()==0){
+		return 0;
+	}else{
+		return 1;
+	}
+}
 ?>

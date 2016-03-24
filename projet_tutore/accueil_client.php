@@ -16,7 +16,6 @@
 								
 	} else {
 								
-		//if(isset($_SESSION["estConnecteClient"])) {
 		$_SESSION["nomSession"] = $_GET['nomEntreprise'];
 			if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 						
@@ -31,14 +30,7 @@
 				
 			//récupère la liste des prestations de l'entreprise
 			$prest = listePrestations();
-
-			//Le mot de passe doit être renseigner
-			if(isset($_POST['mdp'])) {
-					
-				//$mdp = md5($_POST['mdp']);
-				$mdp = $_POST['mdp'];
-			} 
-				
+	
 			//Les informations doivent être correcte
 			if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
 				//récupération des infos de connexion des clients
@@ -98,30 +90,23 @@
 								
 							} else {
 								
-								//if(isset($_SESSION["estConnecteClient"])) {
+								if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 						
-									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								} else {
 						
-									} else {
-						
-							if($i->logoEntreprise !="") {
-							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
-							} 
+									if($i->logoEntreprise !="") {
+										echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
+									} 
 								
-						?>
-							<h1>
-							<?php 
-							
-								echo $nomAffichage;
+								echo "<h1>".$nomAffichage."</h1>";
 								
 							?>
-							</h1>
+							
 							<p>Page d'accueil de l'entreprise</p>
 							
 							<?php 
 							}	
 							}
-						//	}
 							
 							if(!isset($_GET['nomEntreprise'])) {
 		
@@ -129,11 +114,9 @@
 								
 							} else {
 								
-								//if(isset($_SESSION["estConnecteClient"])) {
-						
-									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 								
-									} else {
+								} else {
 							
 							if(isset($_SESSION["estConnecteClient"])) {
 								
@@ -170,10 +153,8 @@
 								}
 								}
 							}
-						//	}
 								
 							?>
-
 			</div>
 		</div>
 
@@ -195,13 +176,11 @@
 						
 					} else {			
 					
-						//if(isset($_SESSION["estConnecteClient"])) {
-						
-							if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+						if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 								
 								echo "<h2>Vous devez d'abord vous connectez sur le coté client de cette entreprise </h2>";
 						
-							} else {
+						} else {
 					
 					
 					?>
@@ -233,9 +212,8 @@
 						} 
 						
 					}
-				//	}
 						?>
-							</table>
+					</table>
 			</div>
 		</div>
 	</body>

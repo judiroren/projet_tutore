@@ -12,12 +12,6 @@
 	
 	$nomE = $_GET['nomEntreprise'];
 	
-	if(isset($_POST['mdp'])) {
-			
-			//$mdp = md5($_POST['mdp']);
-			$mdp = $_POST['mdp'];
-		} 
-		
 	if( isset($_POST['nomClient']) && isset($_POST['mailClient']) && isset($_POST['prenomClient']) && isset($_POST['loginClient']) 
 																										&& isset($_POST['mdpClient']) ) {
 		//récupération des infos de connexion des clients
@@ -28,11 +22,9 @@
 		$prenomClient = $_POST['prenomClient'];
 		$mail = $_POST['mailClient'];
 		$login = $_POST['loginClient'];
-		//$mdpHash = md5($_POST['mdp']);
-		$mdp = $_POST['mdpClient'];
 			
 		//faire fonction ajouter client
-		ajoutClient($connexion, $id, $nomClient, $prenomClient, $mail, $login, $mdp, $nomE);
+		ajoutClient($connexion, $id, $nomClient, $prenomClient, $mail, $login, $_POST['mdpClient'], $nomE);
 	
 		$_SESSION["estConnecte"] = 1;
 		$_SESSION["nomSession"] = $_GET['nomEntreprise'];

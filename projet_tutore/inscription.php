@@ -21,21 +21,12 @@
 		//permet de récuperer les infos de connexion
 		$i = infosEntreprise();
 		
-		
-
-		//Le mot de passe doit être renseigner
-		if(isset($_POST['mdp'])) {
-			
-			//$mdp = md5($_POST['mdp']);
-			$mdp = $_POST['mdp'];
-		} 
-		
 		//Les informations doivent être correcte
 		if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
 			//récupération des infos de connexion des clients
 			$j = logClient($_POST['login'], $_POST['mdp']);
 			if($j!=null){
-				if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
+				if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
 					$_SESSION["client"] = $j->id_client;
 					$_SESSION["estConnecte"] = 1;
 					$_SESSION["nomSession"] = $_GET['nomEntreprise'];
@@ -59,6 +50,13 @@
 			unset($_SESSION['prix']);
 		}
 
+		if(isset($_POST['valide'])){
+			if(existeLoginClient($_POST['loginClient'])==0){
+				header('Location: inscriptionClient_valide.php?nomEntreprise='.$nomE);
+			}else{
+				$erreur = 1;
+			}
+		}
 	}
 
 ?>
@@ -130,7 +128,9 @@
 				<h1>Inscription d'un client :</h1>
 				
 				<?php
-				
+				if(isset($erreur) && $erreur==1){
+					echo "Login déjà pris. Veuillez en prendre un autre";
+				}
 				if(!isset($_GET['nomEntreprise'])) {
 								
 					echo "<h2>Le nom de l'entreprise doit être rajouté dans l'url à la suite sous la forme : ?nomEntreprise=nom.</h2>";
@@ -143,7 +143,7 @@
 								
 				?>				
 				
-				<form method="post" action="inscriptionClient_valide.php?nomEntreprise=<?php echo $nomE ?>" class="formulaire">
+				<form method="post" action="" class="formulaire">
 					</br>
 					Nom du client :<div class="6u 12u$(mobile)"><input type="text" name="nomClient" required/></div>
 					</br>
@@ -156,7 +156,7 @@
 					Mot de passe : <div class="6u 12u$(mobile)"><input type="password" name="mdpClient" required/></div>
 				</br>
 				<div align = "center" class="12u$">
-				<input type="submit" value="Valider" />
+				<input type="submit" name="valide" value="Valider" />
 				</div>
 				</form>
 							<?php } ?>

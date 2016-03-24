@@ -20,11 +20,9 @@
 			$entreprise = str_replace(' ', '_', $entreprise);
 			$mail = $_POST['mail'];
 			$login = $_POST['login'];
-			//$mdpHash = md5($_POST['mdp']);
-			$mdpHash = $_POST['mdp'];
 			$creneau = $_POST['creneau'];
 			
-			creerEntreprise($connexion, $entreprise, $mail, $login, $mdpHash, $creneau);
+			creerEntreprise($connexion, $entreprise, $mail, $login, $_POST['mdp'], $creneau);
 			
 			$temploye = $_POST['entreprise']."_employe";
 			$tableEmp = str_replace(' ', '_', $temploye);
@@ -86,7 +84,7 @@
 				<!-- Intro -->
 					
 						<div class="container">
-
+<?php echo $_SESSION['t'];?>
 							<h1>Inscription d'une entreprise sur le portail : Résumé</h1>
 							<p>Ajout des informations de l'entreprise à la table 'entreprise'</p>
 							<p>Tables de l'entreprise 

@@ -19,7 +19,6 @@ function ajoutEmploye($connexion, $code, $nom, $prenom, $adresse, $mail, $tel, $
 			$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation) 
 					VALUES (:id, :employe, :presta)");
 			$rqtAjoutComp->execute(array("id" => $i, "employe" => $code, "presta" => $val));
-			//$i++;
 		}
 	}
 								
@@ -167,10 +166,6 @@ function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv
 function modifEntreprise($connexion, $mail, $tel, $adresse, $logo, $descrip, $login, $mdp) {
 	
 	$nomE = $_SESSION["nomE"];
-	/* $modifInfosEnt = $connexion->prepare("UPDATE entreprise SET mailEntreprise = '".$mail."', telEntreprise = '".$tel."', 
-								adresseEntreprise = '".$adresse."', logoEntreprise = '".$logo."', 
-								descEntreprise = '".$descrip."', loginAdmin = '".$login."', mdpAdmin = '".$mdp."' 
-								WHERE nomEntreprise = '".$nomE."'"); */
 								
 	$modifInfosEnt = $connexion->prepare("UPDATE entreprise SET mailEntreprise = :mail, telEntreprise = :tel, 
 								adresseEntreprise = :adresse, logoEntreprise = :logo, 
@@ -185,10 +180,7 @@ function modifEntreprise($connexion, $mail, $tel, $adresse, $logo, $descrip, $lo
 function modifEnt($connexion, $mail, $tel, $adresse, $logo, $descrip, $login) {
 	
 	$nomE = $_SESSION["nomE"];
-	/** $modifInfosEnt2 = $connexion->prepare("UPDATE entreprise SET mailEntreprise = '".$mail."', telEntreprise = '".$tel."', 
-						adresseEntreprise = '".$adresse."', logoEntreprise = '".$logo."', 
-						descEntreprise = '".$descrip."', loginAdmin = '".$login."' WHERE nomEntreprise = '".$nomE."'"); */
-						
+							
 	$modifInfosEnt2 = $connexion->prepare("UPDATE entreprise SET mailEntreprise = :mail, telEntreprise = :tel, 
 								adresseEntreprise = :adresse, logoEntreprise = :logo, 
 								descEntreprise = :descrip, loginAdmin = :login WHERE nomEntreprise = :nomE");						
@@ -260,9 +252,6 @@ function ajoutAbscence($connexion, $code, $employeAbsent, $motif, $debutReserv, 
 	
 	$nomE = $_SESSION["nomSession"];
 	
-	/**$connexion->exec("INSERT INTO ".$nomE."_absence(id_absence, code_employe, motif, dateDebut, dateFin, absenceFini) 
-					VALUES ('".$code."', '".$_POST['employe_absent']."', '".$_POST['motif']."', '".$_POST['debut']."', '".$_POST['fin']."', '".$fin."')"); */
-					
 	$rqtAjoutAbs = $connexion->prepare("INSERT INTO ".$nomE."_absence(id_absence, code_employe, motif, dateDebut, dateFin, demiJourDebut, demiJourFin, absenceFini) 
 					VALUES (:code, :employeAbsent, :motif, :debutReserv, :finReserv, :demiDebut, :demiFin, :fin)");
 

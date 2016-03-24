@@ -38,22 +38,15 @@
 		
 		$connexion = connect();
 		$nomE = $_GET['nomEntreprise'];
-		//$nomE = str_replace(' ', '_', $nomE);
+		$nomE = str_replace(' ', '_', $nomE);
 
 		//permet de récuperer les infos de connexion
 		$i = infosEntreprise();
 
-		//Le mot de passe doit être renseigner
-		if(isset($_POST['mdp'])) {
-			
-			//$mdp = md5($_POST['mdp']);
-			$mdp = $_POST['mdp'];
-		} 
-		
 		//Les informations doivent être correcte
 		if( isset($_POST['login']) && isset($_POST['mdp']) ) {
 			
-			if( $_POST['login'] == $i->loginAdmin && $mdp == $i->mdpAdmin ) {
+			if( $_POST['login'] == $i->loginAdmin && $_POST['mdp'] == $i->mdpAdmin ) {
 				
 				$_SESSION["estConnecte"] = 1;
 				$_SESSION["nomSession"] = $_GET['nomEntreprise'];

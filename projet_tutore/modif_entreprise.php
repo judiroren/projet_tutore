@@ -35,10 +35,8 @@
 		
 			if( !empty($_POST['mdp']) && !empty($_POST['mdp2'])) {
 			
-				//$mdp = md5($_POST['mdp']);
 				if($_POST['mdp']==$_POST['mdp2']){
-					$mdp = $_POST['mdp'];
-					modifEntreprise($connexion, $_POST['mail'], $_POST['tel'], $_POST['adresse'], $_POST['logo'], $_POST['descrip'], $_POST['login'], $mdp);
+					modifEntreprise($connexion, $_POST['mail'], $_POST['tel'], $_POST['adresse'], $_POST['logo'], $_POST['descrip'], $_POST['login'], $_POST['mdp']);
 					$i = infosEntreprise();
 				}else{
 					$erreur=2;

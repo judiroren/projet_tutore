@@ -1,3 +1,12 @@
+<?php 
+if(isset($_POST['valide'])){
+	if(existeLoginEntreprise($_POST['login'])==0){
+		header('Location: resume_inscrip.php');
+	}else{
+		$erreur = 1;
+	}
+}
+?>
 <!DOCTYPE HTML>
 <html>
 	<head>
@@ -35,7 +44,10 @@
 						<div class="container">
 							
 							<h1>Inscription d'une entreprise sur le portail</h1>
-							<form method="post" action="resume_inscrip.php" class="formulaire">
+							<?php if(isset($erreur)){
+								echo "Login déjà existant. Veuillez en changer !";
+							}?>
+							<form method="post" action="" class="formulaire">
 									</br>
 									Nom de l'entreprise :</br>
 									<font size=3>format du champs : Seul les chiffres, lettres et espaces sont acceptés (ex : la boulangerie du 82)</font>
@@ -53,7 +65,7 @@
 									Libre : <input type="radio" name="creneau" value="1" checked="checked" /></br>
 									Fixe : <input type="radio" name="creneau" value="0" /></br>
 								<div align = "center" class="12u$">
-									<input type="submit" value="Valider" />
+									<input type="submit" name="valide" value="Valider" />
 								</div>
 							</form>
 
