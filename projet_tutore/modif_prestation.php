@@ -47,7 +47,25 @@
 		
 		}
 		
+		if(isset($_POST['creer'])){
+			header('Location: ajout_prestation.php?nomEntreprise='.$nomE);
+		}
+		
+		if(isset($_POST['supprime'])){
+			if(isset($_POST['presta_modif'])){
+				supprimerPresta($connexion, $_POST['presta_modif']);
+				$supprimeok = 1;
+			}
+		}
+		if(isset($_POST['modifie'])){
+			if(isset($_POST['presta_modif'])){
+				header('Location: modif_prestation.php?nomEntreprise='.$nomE.'&id_presta='.$_POST['presta_modif']);
+			}
+		}
+		
 		$i = infosEntreprise();
+
+		$listePresta = listePrestations();
 		
 		$presta = infosPrestation($id);
 
@@ -174,7 +192,22 @@
 								echo "<p> Modification de prestation effectué </p>";
 							}
 							?>
-							
+							<form method="post" action="">
+								<div class="6u 12u$(mobile)"><select name="presta_modif">
+								<?php 
+								while($donnees=$listePresta->fetch(PDO::FETCH_OBJ)){
+								?>
+									<option value="<?php echo $donnees->id_presta ?>"><?php echo $donnees->descriptif_presta." ".$donnees->categorie; ?></option>   
+								<?php
+								}
+								?>
+								</select></div></br>
+								<div align = "center" class="12u$">
+									<input type="submit"  name="supprime" value="Supprimer" />
+									<input type="submit"  name="modifie" value="Modifier" /></br></br>
+									<input type="submit"  name="creer" value="Créer une nouvelle prestation" />
+								</div>
+							</form>
 							
 							</br>
 							<h2>Modification d'une prestation</h2>

@@ -172,15 +172,10 @@
 							if($i->logoEntreprise !="") {
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
 							} 
+							echo"<h1>".$nomAffichage."</h1>";
+							}	} 	//}
 						?>
-							<h1>
-						<?php 
 							
-								echo $nomAffichage;
-								
-						}	} 	//}
-						?>
-							</h1>
 							<p>Réservation : choix de la date</p>
 							
 							<?php 

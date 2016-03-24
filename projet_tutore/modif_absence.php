@@ -46,6 +46,24 @@
 	$rqtAbs->execute(array(':idAbsence' => $idAbsence));
 	$valAbs = $rqtAbs->fetch(PDO::FETCH_OBJ);
 	
+	if (isset($_POST['supprime'])) {
+		if(isset($_POST['absence_modif'])){
+			//Permet de supprimer l'absence
+			supprimerAbsence($connexion, $_POST['absence_modif']);
+				
+			$supprimeOk = 1;
+		}
+	}
+	if(isset($_POST['modifie'])){
+		if(isset($_POST['absence_modif'])){
+			header('Location: modif_absence.php?nomEntreprise='.$nomE.'&id_absence='.$_POST['absence_modif']);
+		}
+	}
+	
+	if(isset($_POST['creer'])){
+		header('Location: gestion_absence.php?nomEntreprise='.$nomE);
+	}
+	
 	}
 
 ?>
@@ -135,6 +153,33 @@
 							
 							
 							?>
+							<form method="post" action="" class="formulaire">
+								<div class="6u 12u$(mobile)"><select name="absence_modif">
+								<?php 
+								$listeAbs = $connexion->query("SELECT id_absence, code_employe, motif, dateDebut, dateFin, demiJourDebut, demiJourFin, nom_employe, prenom_employe 
+								FROM ".$nomE."_absence JOIN ".$nomE."_employe ON code_employe = id_employe");
+								while($donnees=$listeAbs->fetch(PDO::FETCH_OBJ)){
+									if( ($donnees->demiJourDebut) == 0 && ($donnees->demiJourFin) == 0) {
+										$absences = "du ".$donnees->dateDebut." matin au ".$donnees->dateFin." matin : ".$donnees->nom_employe." ".$donnees->prenom_employe." : ".$donnees->motif;
+									} else if( ($donnees->demiJourDebut) == 1 && ($donnees->demiJourFin) == 0) {
+										$absences = "du ".$donnees->dateDebut." après-midi au ".$donnees->dateFin." matin : ".$donnees->nom_employe." ".$donnees->prenom_employe." : ".$donnees->motif;
+									} else if(($donnees->demiJourDebut) == 1 && ($donnees->demiJourFin) == 1) {
+										$absences = "du ".$donnees->dateDebut." après-midi au ".$donnees->dateFin." après-midi : ".$donnees->nom_employe." ".$donnees->prenom_employe." : ".$donnees->motif;
+									} else if(($donnees->demiJourDebut) == 0 && ($donnees->demiJourFin) == 1){
+										$absences = "du ".$donnees->dateDebut." matin au ".$donnees->dateFin." après-midi : ".$donnees->nom_employe." ".$donnees->prenom_employe." : ".$donnees->motif;
+									}	
+								?>
+									<option value="<?php echo $donnees->id_absence ?>"><?php echo $absences; ?></option>   
+								<?php
+								}
+								?>
+								</select></div></br>
+								<div align = "center" class="12u$">
+									<input type="submit"  name="supprime" value="Supprimer" />
+									<input type="submit"  name="modifie" value="Modifier" /></br></br>
+									<input type="submit" name="creer" value="Enregistrer une nouvelle absence"/>
+								</div>
+							</form>
 							</br>
 							<h2>Modification d'une absence</h2>
 							<?php 

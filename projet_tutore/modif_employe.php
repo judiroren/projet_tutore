@@ -69,6 +69,37 @@
 	
 	$i = infosEntreprise();
 	
+	if (isset($_POST['supprime'])) {
+		if(isset($_POST['employe_modif'])){
+			//Permet de selectionner toutes les réservations de l'employé
+			$employe_modif = $_POST['employe_modif'];
+			$rqt = reservationsEmp($employe_modif);
+	
+			if($rqt->rowCount()==0){
+					
+				//Permet de supprimer un employé
+				supprimerEmp($connexion, $_POST['employe_modif']);
+					
+				//Permet de supprimer le planning d'un employé
+				supprimerPlan($connexion, $_POST['employe_modif']);
+					
+				$supprimeOk = 1;
+					
+			}else{
+					
+				$supprimeOk = 0;
+			}
+		}
+	}
+	if(isset($_POST['modifie'])){
+		if(isset($_POST['employe_modif'])){
+			header('Location: modif_employe.php?nomEntreprise='.$nomE.'&id_employe='.$_POST['employe_modif']);
+		}
+	}
+	if(isset($_POST['creer'])){
+		header('Location: ajout_employe.php?nomEntreprise='.$nomE);
+	}
+	
 	}
 
 ?>
@@ -191,6 +222,24 @@
 							}
 							?>
 							</br>
+							<form method="post" action="" class="formulaire">
+								<div class="6u 12u$(mobile)"><select name="employe_modif">
+								<?php 
+								$listeEmp = $connexion->query("SELECT id_employe, nom_employe, prenom_employe FROM ".$nomE."_employe");
+								while($donnees=$listeEmp->fetch(PDO::FETCH_OBJ)){
+									$identite = $donnees->nom_employe." ".$donnees->prenom_employe;
+								?>
+									<option value="<?php echo $donnees->id_employe ?>" ><?php echo $identite; ?></option>   
+								<?php
+								}
+								?>
+								</select></div></br>
+								<div align = "center" class="12u$">
+									<input type="submit"  name="supprime" value="Supprimer" />
+									<input type="submit"  name="modifie" value="Modifier" /></br></br>
+									<input type="submit" name="creer" value="Créer un nouvel employé"/>
+								</div>
+							</form>
 							<h2>Modification d'un employé</h2>
 							<form method="post" action="">
 								

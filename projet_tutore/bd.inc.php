@@ -393,8 +393,8 @@ function getCategorie($presta){
 function employeReserv($date, $jourSem, $heure, $listeEmp, $duree){
 	$connexion = connect();
 	$nomE = $_GET['nomEntreprise'];
-	$h = intval(substr($heure,0,1));
-	if(8 <= $h || $h <12){
+	$h = intval(substr($heure,0,2));
+	if(8 <= $h && $h <12){
 		$attribut = $jourSem.'M';
 		$liste = empPlanningOk($listeEmp, $attribut, $date);
 		if($liste == null){
@@ -412,7 +412,7 @@ function employeReserv($date, $jourSem, $heure, $listeEmp, $duree){
 				}
 			}
 		}
-	}else if(13 <= $h || $h < 18){
+	}else if(13 <= $h && $h < 18){
 		$attribut = $jourSem.'A';
 		$liste = empPlanningOk($listeEmp, $attribut, $date);
 		if($liste == null){
@@ -511,6 +511,7 @@ function empHoraireOk($listeEmp, $date, $heure, $duree, $moment){
 	$heuredebut = new DateTime($heure);
 	$a = new DateInterval('PT'.$duree.'M');
 	$heurefin = $heuredebut->add($a);
+	$heurefin = new DateTime($heurefin->format('H:i:s'));
 	foreach($listeEmp as $val){
 		$rqt = $connexion->prepare("SELECT heure, duree FROM ".$nomE."_reserv WHERE employe = '".$val."' AND '".$date."' = date");
 		$rqt->execute();
@@ -521,8 +522,9 @@ function empHoraireOk($listeEmp, $date, $heure, $duree, $moment){
 				$resDebut = new DateTime($donnees->heure);
 				$b = new DateInterval('PT'.$donnees->duree.'M');
 				$resFin = $resDebut->add($b);
-				if(($heuredebut < $resDebut && $heurefin <= $resDebut)
-						|| ($heuredebut >= $resFin && $heurefin > $resFin)){
+				$resFin = new DateTime($resFin->format('H:i:s'));
+				if((var_dump($heuredebut < $resDebut)=='bool(true)' && var_dump($heurefin <= $resDebut)=='bool(true)')
+						|| var_dump(($heuredebut >= $resFin)=='bool(true)' && var_dump($heurefin > $resFin)=='bool(true)')){
 					array_push($newListe,$val);
 				}
 			}

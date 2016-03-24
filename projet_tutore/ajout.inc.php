@@ -325,7 +325,7 @@ function ajouteComp2($connexion, $tabNouveauEmp, $presta){
 }
 
 //Ajout d'une réservation et des liens avec prestations
-function enregistreReserv($connexion, $listePrest, $client, $date, $heure, $paye, $duree, $prix){
+function enregistreReserv($connexion, $listePrest, $client, $date, $heure, $paye, $duree, $prix, $emp){
 	$nomE = $_SESSION["nomE"];
 	$info = infosEntreprise();
 	if($info->CreneauLibre==0){
@@ -342,9 +342,8 @@ function enregistreReserv($connexion, $listePrest, $client, $date, $heure, $paye
 		}
 	
 	}
-	$id = code($nomE."_reserv", 'id_reserv');
-	$emp = employeOk($listePrest);
 	$emp = $emp[0];
+	$id = code($nomE."_reserv", 'id_reserv');
 	$rqtAjoutRes = $connexion->prepare("INSERT INTO ".$nomE."_reserv(id_reserv, client, employe, paye, date, heure, prix, duree)
 					VALUES (:id, :cli, :emp, :payer, :d, :h, :p, :du)");
 	$rqtAjoutRes->execute(array('id' => $id, 'cli' =>$client, 'emp' => $emp, 'payer' => $paye, 'd' => $date, 'h' => $heure, 'p' => $prix, 'du' => $duree));
