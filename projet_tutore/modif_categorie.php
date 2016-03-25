@@ -80,7 +80,10 @@
 			
 		}
 		if(isset($_POST['suppr'])){
-			supprimeCategorie($connexion, $_POST['categorie_suppr']);
+			if(isset($_POST['categorie_suppr']) && $_POST['categorie_suppr']!=""){
+				supprimeCategorie($connexion, $_POST['categorie_suppr']);
+				$suppr = 1;
+			}
 		}
 	}
 	
@@ -107,8 +110,6 @@
 						
 							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
 		
-							/*} else if (!isset($_GET['id_presta'])) {*/
-							
 							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
 								
 							} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
@@ -163,10 +164,6 @@
 								
 								echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme ?nomEntreprise=nom.</p>";
 		
-							/*} else if (!isset($_GET['id_presta'])) {
-								
-								echo "<p>Le nom de l'entreprise doit être renseigné dans l'url sous la forme &id_employe=id.</p>";
-							*/
 							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
 								
 								echo "<p>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</p>";
@@ -183,7 +180,7 @@
 								echo "<p> Attention, Champ vide !<p>";
 							}elseif(isset($ok) && !$ok){
 								echo "<p> Attention, cette categorie existe déjà !<p>";
-							}elseif(isset($_POST['suppr'])){
+							}elseif(isset($suppr) && $suppr==1){
 								echo "<p> Suppression de la categorie effectué </p>";	
 							}
 							?>

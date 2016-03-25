@@ -1,9 +1,20 @@
 <?php 
+session_start();
+require ("bd.inc.php");
 if(isset($_POST['valide'])){
-	if(existeLoginEntreprise($_POST['login'])==0){
-		header('Location: resume_inscrip.php');
-	}else{
-		$erreur = 1;
+	if( $_POST['entreprise'] == null || $_POST['mail'] == null || $_POST['login'] == null || $_POST['mdp'] == null ) {
+		$erreur = 2;	
+	} else {
+		if(existeLoginEntreprise($_POST['login'])==0){
+			$_SESSION["entreprise"] = $_POST["entreprise"];
+			$_SESSION["mail"] = $_POST["mail"];
+			$_SESSION["login"] = $_POST["login"];
+			$_SESSION["mdp"] = $_POST["mdp"];
+			$_SESSION["creneau"] = $_POST["creneau"];
+			header('Location: resume_inscrip.php');
+		}else{
+			$erreur = 1;
+		}
 	}
 }
 ?>

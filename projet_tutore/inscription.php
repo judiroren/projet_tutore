@@ -52,6 +52,11 @@
 
 		if(isset($_POST['valide'])){
 			if(existeLoginClient($_POST['loginClient'])==0){
+				$_SESSION['loginClient'] = $_POST['loginClient'];
+				$_SESSION['mdpClient'] = $_POST['mdpClient'];
+				$_SESSION['mailClient'] = $_POST['mailClient'];
+				$_SESSION['nomClient'] = $_POST['nomClient'];
+				$_SESSION['prenomClient'] = $_POST['prenomClient'];
 				header('Location: inscriptionClient_valide.php?nomEntreprise='.$nomE);
 			}else{
 				$erreur = 1;

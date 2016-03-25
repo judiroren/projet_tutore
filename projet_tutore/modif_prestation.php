@@ -242,7 +242,7 @@
 								</div><center>
 									<INPUT type="button" value="\/" onClick="Deplacer(this.form.dejaCap,this.form.nonCap)">
 									<INPUT type="button" value="/\" onClick="Deplacer(this.form.nonCap,this.form.dejaCap)">	
-										<INPUT type="button" value="Valider" onClick="Valider(this.form.nonCap,this.form.dejaCap)">
+										<INPUT type="button" value="Confirmer les changements de compétences" onClick="Valider(this.form.nonCap,this.form.dejaCap)">
 									</center>
 								</br>
 								Autres employés : <div class="6u 12u$(mobile)"><select name="nonCap[]" id="nonCap" size=3 multiple>

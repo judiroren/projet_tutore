@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `entreprise` (
   `mailEntreprise` varchar(30) NOT NULL,
   `telEntreprise` char(10) NOT NULL,
   `adresseEntreprise` varchar(150) NOT NULL,
-  `logoEntreprise` varchar(100) NOT NULL,
+  `logoEntreprise` varchar(2000) NOT NULL,
   `descEntreprise` text NOT NULL,
   `loginAdmin` varchar(30) NOT NULL,
   `mdpAdmin` varchar(300) NOT NULL,

@@ -91,12 +91,12 @@ function supprimerPlan($connexion, $IDemp) {
 }
 
 //Permet de créer une entreprise
-function creerEntreprise($connexion, $entreprise, $mail, $login, $mdpHash, $creneau) {
+function creerEntreprise($connexion, $entreprise, $mail, $login, $mdp, $creneau) {
 	
 	$rqtCreerEnt = $connexion->prepare("INSERT INTO entreprise(nomEntreprise, mailEntreprise, loginAdmin, mdpAdmin, CreneauLibre) 
-						VALUES (:entreprise, :mail, :login, :mdpHash, :CreneauLibre)");
+						VALUES (:entreprise, :mail, :login, :mdp, :CreneauLibre)");
 						
-	$rqtCreerEnt->execute(array("entreprise" => $entreprise, "mail" => $mail, "login" => $login, "mdpHash" => $mdpHash, "CreneauLibre" => $creneau));					
+	$rqtCreerEnt->execute(array("entreprise" => $entreprise, "mail" => $mail, "login" => $login, "mdp" => $mdp, "CreneauLibre" => $creneau));					
 		   
 }
 

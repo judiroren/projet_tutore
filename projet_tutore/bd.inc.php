@@ -652,8 +652,8 @@ function existeLoginClient($log){
 //Vérifie l'existance d'un login pour une entreprise
 function existeLoginEntreprise($log){
 	$connexion = connect();
-	$_SESSION['t'] = 'SELECT * FROM entreprise WHERE loginAdmin = "'.$log.'"';
-	$rqt = $connexion->prepare('SELECT * FROM entreprise WHERE loginAdmin = "'.$log.'"');
+	$_SESSION['t'] = "SELECT * FROM entreprise WHERE loginAdmin = '".$log."'";
+	$rqt = $connexion->prepare("SELECT * FROM entreprise WHERE loginAdmin = '".$log."'");
 	$rqt->execute();
 	if($rqt->rowCount()==0){
 		return 0;

@@ -278,7 +278,7 @@
 									</br><center>
 									<INPUT type="button" value="\/" onClick="Deplacer(this.form.competence,this.form.prestation)">
 									<INPUT type="button" value="/\" onClick="Deplacer(this.form.prestation,this.form.competence)">	
-									<INPUT type="button" value="Verrouiller les compétences" onClick="Valider(this.form.prestation,this.form.competence)">
+									<INPUT type="button" value="Confirmer les changements de compétences" onClick="Valider(this.form.prestation,this.form.competence)">
 									</center>
 									Prestations : <div class="6u 12u$(mobile)"><select name="prestation[]" id="prestation" size=3 multiple>
 										

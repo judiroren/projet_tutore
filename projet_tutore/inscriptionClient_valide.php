@@ -8,8 +8,8 @@
 		
 	} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
 		
-	} else if(!isset($_POST['nomClient']) && !isset($_POST['prenomClient']) && !isset($_POST['mailClient']) 
-					&& !isset($_POST['loginClient']) && !isset($_POST['mdpClient']) ){
+	} else if(!isset($_SESSION['nomClient']) && !isset($_SESSION['prenomClient']) && !isset($_SESSION['mailClient']) 
+					&& !isset($_SESSION['loginClient']) && !isset($_SESSION['mdpClient']) ){
 						
 	} else {					
 	
@@ -25,14 +25,15 @@
 		$code = code($nomE."_client", 'id_client');
 		
 		$id = $code;	
-		$nomClient = $_POST['nomClient'];
-		$prenomClient = $_POST['prenomClient'];
-		$mail = $_POST['mailClient'];
-		$login = $_POST['loginClient'];
+		$nomClient = $_SESSION['nomClient'];
+		$prenomClient = $_SESSION['prenomClient'];
+		$mail = $_SESSION['mailClient'];
+		$login = $_SESSION['loginClient'];
 	
 		//faire fonction ajouter client
-		ajoutClient($connexion, $id, $nomClient, $prenomClient, $mail, $login, $_POST['mdpClient'], $nomE);		
+		ajoutClient($connexion, $id, $nomClient, $prenomClient, $mail, $login, $_SESSION['mdpClient'], $nomE);		
 
+		
 		//Les informations doivent être correcte
 		if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
 			//récupération des infos de connexion des clients
@@ -77,8 +78,8 @@
 								
 								}	
 								
-						} else if(!isset($_POST['nomClient']) && !isset($_POST['prenomClient']) && !isset($_POST['mailClient']) 
-										&& !isset($_POST['loginClient']) && !isset($_POST['mdpClient']) ){
+						} else if(!isset($_SESSION['nomClient']) && !isset($_SESSION['prenomClient']) && !isset($_SESSION['mailClient']) 
+										&& !isset($_SESSION['loginClient']) && !isset($_SESSION['mdpClient']) ){
 						
 						} else {	
 						
@@ -139,53 +140,48 @@
 				
 							} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
 								
-								echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";
-								
-							} else if(isset($_SESSION["estConnecteClient"])) {
-								
-									if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+								echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";							
 										
-										echo "<h2>Vous devez d'abord vous connectez sur le coté client de cette entreprise </h2>";
 								
-									}	
-								
-							} else if(!isset($_POST['nomClient']) && !isset($_POST['prenomClient']) && !isset($_POST['mailClient']) 
-										&& !isset($_POST['loginClient']) && !isset($_POST['mdpClient']) ){
-											
-										echo "<h2>Vous devez d'abord renseigner tous les champs !</h2>";
-						
 							} else {	
 								
 							?>	
 							
 							<p>Nom du client : 
 							<?php 
-								echo $_POST['nomClient'];
+								echo $_SESSION['nomClient'];
 							?>
 							</p>
 							<p>Prénom du client : 
 							<?php 
-								echo $_POST['prenomClient'];
+								echo $_SESSION['prenomClient'];
 							?>
 							</p>
 							<p>Adresse mail du client : 
 							<?php 
-							echo $_POST['mailClient'];
+							echo $_SESSION['mailClient'];
 							?>
 							<p>Login du client : 
 							<?php 
-								echo $_POST['loginClient'];
+								echo $_SESSION['loginClient'];
 							?>
 							</p>
 							<p>Mot de passe du client : 
 							<?php 
-							echo $_POST['mdpClient'];
+							echo $_SESSION['mdpClient'];
 							?>
 							</p>
 							
 							</br>
 							
-							<?php } ?>
+							<?php } 
+							
+		unset($_SESSION["mailClient"]);
+		unset($_SESSION["nomClient"]);
+		unset($_SESSION["prenomClient"]);
+		unset($_SESSION["loginClient"]);
+		unset($_SESSION["mdpClient"]);
+		?>
 						</div>
 			</div>
 
