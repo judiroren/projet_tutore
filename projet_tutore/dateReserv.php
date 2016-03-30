@@ -20,69 +20,69 @@
 						
 			} else {
 		
-		$_SESSION["nomE"] = $_GET['nomEntreprise'];	
+				$_SESSION["nomE"] = $_GET['nomEntreprise'];	
+				
+				$connexion = connect();
+				$nomE = $_GET['nomEntreprise'];
+				$nomAffichage = str_replace(' ', '_', $nomE);
 		
-		$connexion = connect();
-		$nomE = $_GET['nomEntreprise'];
-		$nomAffichage = str_replace(' ', '_', $nomE);
-
-		//permet de récuperer les infos de connexion
-		$i = infosEntreprise();
+				//permet de récuperer les infos de connexion
+				$i = infosEntreprise();
+				
+				//récupère la liste des prestations de l'entreprise
+				$prest = listePrestations();
 		
-		//récupère la liste des prestations de l'entreprise
-		$prest = listePrestations();
-
-		//Le mot de passe doit être renseigner
-		if(isset($_POST['mdp'])) {
-			
-			//$mdp = md5($_POST['mdp']);
-			$mdp = $_POST['mdp'];
-		} 
+				//Le mot de passe doit être renseigner
+				if(isset($_POST['mdp'])) {
+					
+					//$mdp = md5($_POST['mdp']);
+					$mdp = $_POST['mdp'];
+				} 
 		
-		//Les informations doivent être correcte
-		if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
-			//récupération des infos de connexion des clients
-			$j = logClient($_POST['login'], $_POST['mdp']);
-			if($j!=null){	
-				if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
-					$_SESSION["client"] = $j->id_client;
-					$_SESSION["estConnecte"] = 1;
-					$_SESSION["nomSession"] = $_GET['nomEntreprise'];
-				}
-			}
-		}
-		$erreur = 0;
-		if(isset($_POST['continue'])){
-			if(!empty($_POST['daterdv']) && !empty($_POST['heurerdv'])){
-				$days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
-				$jn = $days[date('w', strtotime($_POST['daterdv']))];
-				if($_POST['daterdv'] < date('Y-m-d')){
-					$erreur = 1;
-				}else{
-					if($jn!='Dimanche'){
-						$dureeRes = 0;
-						foreach ($_SESSION['prestListe'] as $val){
-							$info = infosPrestation($val);
-							$dureeRes = $dureeRes + $info->duree;
+				//Les informations doivent être correcte
+				if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
+					//récupération des infos de connexion des clients
+					$j = logClient($_POST['login'], $_POST['mdp']);
+					if($j!=null){	
+						if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
+							$_SESSION["client"] = $j->id_client;
+							$_SESSION["estConnecte"] = 1;
+							$_SESSION["nomSession"] = $_GET['nomEntreprise'];
 						}
-						$emp = employeOk($_SESSION['prestListe']);
-						$employe = employeReserv($_POST['daterdv'], $jn, $_POST['heurerdv'], $emp, $dureeRes);
-						$valeurFaux = array(1,2,3,4);
-						if(!in_array($employe,$valeurFaux)){
-							$_SESSION["date"] = $_POST['daterdv'];
-							$_SESSION["heure"] = $_POST['heurerdv'];
-							$_SESSION["employeRes"] = $employe;
-							header('Location: resume_reserv.php?nomEntreprise='.$nomE);
-						}
-					}else{
-						$erreur = 3;
 					}
 				}
-			}else{
-				$erreur = 2;
-			}
-					
-		}
+				$erreur = 0;
+				if(isset($_POST['continue'])){
+					if(!empty($_POST['daterdv']) && !empty($_POST['heurerdv'])){
+						$days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
+						$jn = $days[date('w', strtotime($_POST['daterdv']))];
+						if($_POST['daterdv'] < date('Y-m-d')){
+							$erreur = 1;
+						}else{
+							if($jn!='Dimanche'){
+								$dureeRes = 0;
+								foreach ($_SESSION['prestListe'] as $val){
+									$info = infosPrestation($val);
+									$dureeRes = $dureeRes + $info->duree;
+								}
+								$emp = employeOk($_SESSION['prestListe']);
+								$employe = employeReserv($_POST['daterdv'], $jn, $_POST['heurerdv'], $emp, $dureeRes);
+								$valeurFaux = array(1,2,3,4);
+								if(!in_array($employe,$valeurFaux)){
+									$_SESSION["date"] = $_POST['daterdv'];
+									$_SESSION["heure"] = $_POST['heurerdv'];
+									$_SESSION["employeRes"] = $employe;
+									header('Location: resume_reserv.php?nomEntreprise='.$nomE);
+								}
+							}else{
+								$erreur = 3;
+							}
+						}
+					}else{
+						$erreur = 2;
+					}
+							
+				}
 		
 		if(isset($_POST['annule'])){
 			header('Location: accueil_client.php?nomEntreprise='.$nomE);
