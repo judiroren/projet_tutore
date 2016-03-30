@@ -26,7 +26,7 @@
 			//récupération des infos de connexion des clients
 			$j = logClient($_POST['login'], $_POST['mdp']);
 			if($j!=null){
-				if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
+				if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
 					$_SESSION["client"] = $j->id_client;
 					$_SESSION["estConnecte"] = 1;
 					$_SESSION["nomSession"] = $_GET['nomEntreprise'];
@@ -133,7 +133,7 @@
 				<h1>Inscription d'un client :</h1>
 				
 				<?php
-				if(isset($erreur) && $erreur==1){
+				if(isset($erreur)){
 					echo "Login déjà pris. Veuillez en prendre un autre";
 				}
 				if(!isset($_GET['nomEntreprise'])) {
@@ -161,7 +161,7 @@
 					Mot de passe : <div class="6u 12u$(mobile)"><input type="password" name="mdpClient" required/></div>
 				</br>
 				<div align = "center" class="12u$">
-				<input type="submit" name="valide" value="Valider" />
+				<input type="submit" value="Valider" />
 				</div>
 				</form>
 							<?php } ?>

@@ -12,7 +12,12 @@
 	
 	$nomE = $_GET['nomEntreprise'];
 	
-	
+	if(isset($_POST['mdp'])) {
+			
+			//$mdp = md5($_POST['mdp']);
+			$mdp = $_POST['mdp'];
+		} 
+		
 	if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
 		//récupération des infos de connexion des clients
 		$j = logClient($_POST['login'], $_POST['mdp']);

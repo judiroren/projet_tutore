@@ -8,8 +8,8 @@
 		
 	} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
 		
-	} else if(!isset($_SESSION['nomClient']) && !isset($_SESSION['prenomClient']) && !isset($_SESSION['mailClient']) 
-					&& !isset($_SESSION['loginClient']) && !isset($_SESSION['mdpClient']) ){
+	} else if(!isset($_POST['nomClient']) && !isset($_POST['prenomClient']) && !isset($_POST['mailClient']) 
+					&& !isset($_POST['loginClient']) && !isset($_POST['mdpClient']) ){
 						
 	} else {					
 	
@@ -25,11 +25,11 @@
 		$code = code($nomE."_client", 'id_client');
 		
 		$id = $code;	
-		$nomClient = $_SESSION['nomClient'];
-		$prenomClient = $_SESSION['prenomClient'];
-		$mail = $_SESSION['mailClient'];
-		$login = $_SESSION['loginClient'];
-	
+		$nomClient = $_POST['nomClient'];
+		$prenomClient = $_POST['prenomClient'];
+		$mail = $_POST['mailClient'];
+		$login = $_POST['loginClient'];
+						
 		//faire fonction ajouter client
 		ajoutClient($connexion, $id, $nomClient, $prenomClient, $mail, $login, $_SESSION['mdpClient'], $nomE);		
 
@@ -39,7 +39,7 @@
 			//récupération des infos de connexion des clients
 			$j = logClient($_POST['login'], $_POST['mdp']);
 			if($j!=null){
-				if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
+				if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
 					$_SESSION["client"] = $j->id_client;
 					$_SESSION["estConnecte"] = 1;
 					$_SESSION["nomSession"] = $_GET['nomEntreprise'];
@@ -78,8 +78,8 @@
 								
 								}	
 								
-						} else if(!isset($_SESSION['nomClient']) && !isset($_SESSION['prenomClient']) && !isset($_SESSION['mailClient']) 
-										&& !isset($_SESSION['loginClient']) && !isset($_SESSION['mdpClient']) ){
+						} else if(!isset($_POST['nomClient']) && !isset($_POST['prenomClient']) && !isset($_POST['mailClient']) 
+										&& !isset($_POST['loginClient']) && !isset($_POST['mdpClient']) ){
 						
 						} else {	
 						
@@ -140,8 +140,7 @@
 				
 							} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
 								
-								echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";							
-										
+								echo "<h2>Le nom de l'entreprise contenue dans l'url n'existe pas dans la base de donnée</h2>";
 								
 							} else {	
 								
@@ -149,26 +148,26 @@
 							
 							<p>Nom du client : 
 							<?php 
-								echo $_SESSION['nomClient'];
+								echo $_POST['nomClient'];
 							?>
 							</p>
 							<p>Prénom du client : 
 							<?php 
-								echo $_SESSION['prenomClient'];
+								echo $_POST['prenomClient'];
 							?>
 							</p>
 							<p>Adresse mail du client : 
 							<?php 
-							echo $_SESSION['mailClient'];
+							echo $_POST['mailClient'];
 							?>
 							<p>Login du client : 
 							<?php 
-								echo $_SESSION['loginClient'];
+								echo $_POST['loginClient'];
 							?>
 							</p>
 							<p>Mot de passe du client : 
 							<?php 
-							echo $_SESSION['mdpClient'];
+							echo $_POST['mdpClient'];
 							?>
 							</p>
 							

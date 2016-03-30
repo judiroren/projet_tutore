@@ -19,6 +19,7 @@ function ajoutEmploye($connexion, $code, $nom, $prenom, $adresse, $mail, $tel, $
 			$rqtAjoutComp = $connexion->prepare("INSERT INTO ".$nomE."_competence(id_competence, employe, prestation) 
 					VALUES (:id, :employe, :presta)");
 			$rqtAjoutComp->execute(array("id" => $i, "employe" => $code, "presta" => $val));
+			//$i++;
 		}
 	}
 								
@@ -91,12 +92,12 @@ function supprimerPlan($connexion, $IDemp) {
 }
 
 //Permet de créer une entreprise
-function creerEntreprise($connexion, $entreprise, $mail, $login, $mdp, $creneau) {
+function creerEntreprise($connexion, $entreprise, $mail, $login, $mdpHash, $creneau) {
 	
 	$rqtCreerEnt = $connexion->prepare("INSERT INTO entreprise(nomEntreprise, mailEntreprise, loginAdmin, mdpAdmin, CreneauLibre) 
-						VALUES (:entreprise, :mail, :login, :mdp, :CreneauLibre)");
+						VALUES (:entreprise, :mail, :login, :mdpHash, :CreneauLibre)");
 						
-	$rqtCreerEnt->execute(array("entreprise" => $entreprise, "mail" => $mail, "login" => $login, "mdp" => $mdp, "CreneauLibre" => $creneau));					
+	$rqtCreerEnt->execute(array("entreprise" => $entreprise, "mail" => $mail, "login" => $login, "mdpHash" => $mdpHash, "CreneauLibre" => $creneau));					
 		   
 }
 
@@ -166,6 +167,10 @@ function ajoutEntreprise($connexion, $temploye, $tprestation, $tclient, $treserv
 function modifEntreprise($connexion, $mail, $tel, $adresse, $logo, $descrip, $login, $mdp) {
 	
 	$nomE = $_SESSION["nomE"];
+	/* $modifInfosEnt = $connexion->prepare("UPDATE entreprise SET mailEntreprise = '".$mail."', telEntreprise = '".$tel."', 
+								adresseEntreprise = '".$adresse."', logoEntreprise = '".$logo."', 
+								descEntreprise = '".$descrip."', loginAdmin = '".$login."', mdpAdmin = '".$mdp."' 
+								WHERE nomEntreprise = '".$nomE."'"); */
 								
 	$modifInfosEnt = $connexion->prepare("UPDATE entreprise SET mailEntreprise = :mail, telEntreprise = :tel, 
 								adresseEntreprise = :adresse, logoEntreprise = :logo, 
@@ -180,7 +185,10 @@ function modifEntreprise($connexion, $mail, $tel, $adresse, $logo, $descrip, $lo
 function modifEnt($connexion, $mail, $tel, $adresse, $logo, $descrip, $login) {
 	
 	$nomE = $_SESSION["nomE"];
-							
+	/** $modifInfosEnt2 = $connexion->prepare("UPDATE entreprise SET mailEntreprise = '".$mail."', telEntreprise = '".$tel."', 
+						adresseEntreprise = '".$adresse."', logoEntreprise = '".$logo."', 
+						descEntreprise = '".$descrip."', loginAdmin = '".$login."' WHERE nomEntreprise = '".$nomE."'"); */
+						
 	$modifInfosEnt2 = $connexion->prepare("UPDATE entreprise SET mailEntreprise = :mail, telEntreprise = :tel, 
 								adresseEntreprise = :adresse, logoEntreprise = :logo, 
 								descEntreprise = :descrip, loginAdmin = :login WHERE nomEntreprise = :nomE");						
@@ -252,6 +260,9 @@ function ajoutAbscence($connexion, $code, $employeAbsent, $motif, $debutReserv, 
 	
 	$nomE = $_SESSION["nomSession"];
 	
+	/**$connexion->exec("INSERT INTO ".$nomE."_absence(id_absence, code_employe, motif, dateDebut, dateFin, absenceFini) 
+					VALUES ('".$code."', '".$_POST['employe_absent']."', '".$_POST['motif']."', '".$_POST['debut']."', '".$_POST['fin']."', '".$fin."')"); */
+					
 	$rqtAjoutAbs = $connexion->prepare("INSERT INTO ".$nomE."_absence(id_absence, code_employe, motif, dateDebut, dateFin, demiJourDebut, demiJourFin, absenceFini) 
 					VALUES (:code, :employeAbsent, :motif, :debutReserv, :finReserv, :demiDebut, :demiFin, :fin)");
 
@@ -314,7 +325,7 @@ function ajouteComp2($connexion, $tabNouveauEmp, $presta){
 }
 
 //Ajout d'une réservation et des liens avec prestations
-function enregistreReserv($connexion, $listePrest, $client, $date, $heure, $paye, $duree, $prix, $emp){
+function enregistreReserv($connexion, $listePrest, $client, $date, $heure, $paye, $duree, $prix){
 	$nomE = $_SESSION["nomE"];
 	$info = infosEntreprise();
 	if($info->CreneauLibre==0){
@@ -331,8 +342,9 @@ function enregistreReserv($connexion, $listePrest, $client, $date, $heure, $paye
 		}
 	
 	}
-	$emp = $emp[0];
 	$id = code($nomE."_reserv", 'id_reserv');
+	$emp = employeOk($listePrest);
+	$emp = $emp[0];
 	$rqtAjoutRes = $connexion->prepare("INSERT INTO ".$nomE."_reserv(id_reserv, client, employe, paye, date, heure, prix, duree)
 					VALUES (:id, :cli, :emp, :payer, :d, :h, :p, :du)");
 	$rqtAjoutRes->execute(array('id' => $id, 'cli' =>$client, 'emp' => $emp, 'payer' => $paye, 'd' => $date, 'h' => $heure, 'p' => $prix, 'du' => $duree));

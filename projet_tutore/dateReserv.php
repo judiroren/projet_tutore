@@ -14,9 +14,11 @@
 								
 	} else {
 								
-		if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+		//if(isset($_SESSION["estConnecteClient"])) {
 						
-		} else {
+			if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+						
+			} else {
 		
 		$_SESSION["nomE"] = $_GET['nomEntreprise'];	
 		
@@ -30,12 +32,19 @@
 		//récupère la liste des prestations de l'entreprise
 		$prest = listePrestations();
 
+		//Le mot de passe doit être renseigner
+		if(isset($_POST['mdp'])) {
+			
+			//$mdp = md5($_POST['mdp']);
+			$mdp = $_POST['mdp'];
+		} 
+		
 		//Les informations doivent être correcte
 		if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
 			//récupération des infos de connexion des clients
 			$j = logClient($_POST['login'], $_POST['mdp']);
 			if($j!=null){	
-				if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
+				if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
 					$_SESSION["client"] = $j->id_client;
 					$_SESSION["estConnecte"] = 1;
 					$_SESSION["nomSession"] = $_GET['nomEntreprise'];
@@ -167,10 +176,15 @@
 							if($i->logoEntreprise !="") {
 							echo "<span class='image avatar48'><img src='".$i->logoEntreprise."' alt='' /></span>";
 							} 
-							echo"<h1>".$nomAffichage."</h1>";
-							}	} 	//}
 						?>
+							<h1>
+						<?php 
 							
+								echo $nomAffichage;
+								
+						}	} 	//}
+						?>
+							</h1>
 							<p>Réservation : choix de la date</p>
 							
 							<?php 

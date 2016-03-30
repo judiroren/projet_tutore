@@ -5,6 +5,8 @@
 //Permet d'ajouter un client à une entreprise
 function ajoutClient($connexion, $id, $nom, $prenom, $mail, $login, $mdp, $nomE) {
 	
+	//$nomE = $_GET["nomEntreprise"];
+
 	$rqtAjoutClient = $connexion->prepare("INSERT INTO ".$nomE."_client(id_client, nom_client, prenom_client, mail, login_client, mdp_client) 
 						VALUES (:id, :nom, :prenom, :mail, :login, :mdp)");
 						

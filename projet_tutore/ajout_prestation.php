@@ -5,7 +5,7 @@
 	
 	try {
 		
-		if(isset($_GET['nomEntreprise']) ) {
+		if(isset($_GET['nomEntreprise'])) {
 			$_SESSION["nomE"] = $_GET['nomEntreprise'];
 		} else {
 			$_SESSION["nomE"] = "Nom de l'entreprise non spécifiée";
@@ -21,8 +21,6 @@
 	if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
 		
 	} else if( verifEntreprise($_SESSION['nomE']) == null ) {
-		
-	} else if (!isset($_SESSION["nomSession"])) {
 		
 	} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 		
@@ -74,6 +72,11 @@
 	}
 	
 	}
+	$i = infosEntreprise();
+	
+	$listePresta = listePrestations();
+	
+	$emp = infosEmploye();
 
 ?>
 
@@ -97,8 +100,7 @@
 							if( $_SESSION["nomE"] == "Nom de l'entreprise non spécifiée" ) {
 		
 							} else if( verifEntreprise($_SESSION['nomE']) == null ) {
-									
-							
+								
 							} else if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
 								
 							} else {
@@ -272,8 +274,12 @@
 						</div>
 
 						<?php
+						
 							}
+						
 						?>
+						
 			</div>
+
 	</body>
 </html>

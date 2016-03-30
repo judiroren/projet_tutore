@@ -6,7 +6,17 @@
 	require "bd.inc.php";
 	
 	$connexion = connect();
+		
+		if( $_SESSION['entreprise'] == null || $_SESSION['mail'] == null || $_SESSION['login'] == null || $_SESSION['mdp'] == null ) {
+	
+			echo "<div class='alert alert-dismissable alert-danger'>
+			<p>Tous les champs doivent être remplis. Vous allez être redirigé vers la page propriétaire.</p>
+			<meta http-equiv='refresh' content='5; URL=page_proprietaire.php'>
+			</div>";
+	
+		} else {
 			
+		
 			$entreprise = $_SESSION["entreprise"];
 			$entreprise = str_replace(' ', '_', $entreprise);
 			$mail = $_SESSION["mail"];
@@ -41,7 +51,7 @@
 			unset($_SESSION["mail"]);
 			unset($_SESSION["creneau"]);
 			unset($_SESSION["login"]);
-			unset($_SESSION["mdp"]);
+			
 
 ?>
 <html>
@@ -93,6 +103,7 @@
 							<p>Mot de passe administrateur : 
 							<?php 
 							echo $_SESSION["mdp"];
+							unset($_SESSION["mdp"]);
 							?>
 							</p>
 							<p>Adresse mail de l'entreprise : 
@@ -129,7 +140,9 @@
 							" </a></p></br>
 						</div>
 			</div>
-
+			<?php
+			}
+			?>
 
 	</body>
 </html>	

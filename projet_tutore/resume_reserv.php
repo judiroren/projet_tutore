@@ -15,9 +15,11 @@
 								
 	} else {
 								
-	if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+	//	if(isset($_SESSION["estConnecteClient"])) {
 						
-	} else {
+			if($_SESSION["nomSession"] != $_GET['nomEntreprise']) {
+						
+			} else {
 	
 	$connexion = connect();
 	$nomE = $_GET['nomEntreprise'];
@@ -26,12 +28,19 @@
 	//permet de récuperer les infos de connexion
 	$i = infosEntreprise();
 
+	//Le mot de passe doit être renseigner
+	if(isset($_POST['mdp'])) {
+		
+		//$mdp = md5($_POST['mdp']);
+		$mdp = $_POST['mdp'];
+	} 
+	
 	//Les informations doivent être correcte
 	if( !empty($_POST['login']) && !empty($_POST['mdp']) ) {
 		//récupération des infos de connexion des clients
 		$j = logClient($_POST['login'], $_POST['mdp']);
 		if($j!=null){
-			if( $_POST['login'] == $j->login_client && $_POST['mdp'] == $j->mdp_client ) {
+			if( $_POST['login'] == $j->login_client && $mdp == $j->mdp_client ) {
 				$_SESSION["client"] = $j->id_client;
 				$_SESSION["estConnecteClient"] = 1;
 				$_SESSION["nomSession"] = $_GET['nomEntreprise'];
@@ -42,14 +51,14 @@
 	$ok = 0;
 	if(isset($_POST['sanspaiement'])){
 		if(isset($_SESSION['client'])){
-			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 0, $_SESSION['duree'], $_SESSION['prix'], $_SESSION["employeRes"]);
+			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 0, $_SESSION['duree'], $_SESSION['prix']);
 			$ok = 1;
 		}
 	}
 	
 	if(isset($_POST['avecpaiement'])){
 		if(isset($_SESSION['client'])){
-			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 1, $_SESSION['duree'], $_SESSION['prix'], $_SESSION["employeRes"]);
+			enregistreReserv($connexion, $_SESSION['prestListe'], $_SESSION['client'], $_SESSION['date'], $_SESSION['heure'], 1, $_SESSION['duree'], $_SESSION['prix']);
 			$ok = 2;
 		}
 	}
@@ -61,14 +70,10 @@
 		unset($_SESSION['duree']);
 		unset($_SESSION['prix']);
 	}
-	if(isset($_POST['retour'])){
-		header('Location: accueil_client.php?nomEntreprise='.$nomE);
-	}
-	if(isset($_POST['reserv'])){
-		header('Location: reservation.php?nomEntreprise='.$nomE);
+	
 	}
 	}
-}
+	//}
 ?>
 
 <html>
@@ -88,6 +93,7 @@
 						<div id="logo">
 						
 						<?php 
+						
 						if(!isset($_GET['nomEntreprise'])) {
 		
 						} else if( verifEntreprise($_GET['nomEntreprise']) == null ) {
@@ -158,9 +164,8 @@
 				<!-- Intro -->
 					
 			<div class="container">
-							</br>
-							<table>	
-							<tr><td><h1>Résumé de la réservation : </h1></td></tr>
+	
+							<h1>Résumé de la réservation : </h1>
 							<?php 
 						//echo	$_SESSION["rst"];
 							if(!isset($_GET['nomEntreprise'])) {
@@ -189,19 +194,24 @@
 										echo "Reservation avec paiement effectuée";
 									}
 								}
-															
+							?>
+							<p>
+								<?php 
+								
 									$days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
 									$months = array('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre');
 									$j = date('d', strtotime($_SESSION['date']));
 									  $jn = $days[date('w', strtotime($_SESSION['date']))];
 									  $m = $months[date('n', strtotime($_SESSION['date']))-1];
 									  $a = date('Y', strtotime($_SESSION['date']));?>
-							
-							<tr><td>Jour de la réservation : <?php echo $jn." ".$j." ".$m." ".$a." ";?></td></tr>
-							
-							<tr><td>	Heure de la réservation : <?php echo $_SESSION['heure']."</br>";?></td></tr>
-							
-								<tr><td>Prestations choisies : </br>
+								Jour de la réservation : <?php echo $jn." ".$j." ".$m." ".$a." ";?>
+							</p>
+							<p>
+								Heure de la réservation : <?php echo $_SESSION['heure']."</br>";?>
+							</p>
+
+							<p>
+								Prestations choisies : </br>
 								<?php 
 								$prixtotal = 0;
 								$dureetotale = 0;
@@ -211,10 +221,10 @@
 									$prixtotal = $prixtotal + $info->cout;
 									$dureetotale = $dureetotale + $info->duree;
 								}
-								?></td></tr>
-							<tr><td> Durée de la réservation : <?php echo $dureetotale; $_SESSION['duree']=$dureetotale;?> minutes</td></tr>
-							<tr><td> Prix total : <?php echo $prixtotal; $_SESSION['prix']=$prixtotal;?> € </td></tr>
-							</table>
+								?>
+							</p>
+							<p> Durée de la réservation : <?php echo $dureetotale; $_SESSION['duree']=$dureetotale;?> minutes</p>
+							<p> Prix total : <?php echo $prixtotal; $_SESSION['prix']=$prixtotal;?> €</p>
 							<form method="post" action="">
 							<?php
 							if(isset($_SESSION["estConnecteClient"])) {
